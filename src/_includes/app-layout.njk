@@ -23,20 +23,27 @@ description: A streamlined way to keep track of your money.
       <header class="container">
         <nav class="cluster">
           <div class="justify-content:space-between">
-            <a href="/" class="nav-link">
+            <a href="/overview" class="nav-link">
               Cash Cache
             </a>
             <div class="cluster">
               <div>
-                <a href="/" class="nav-link">Settings</a>
-                <a href="/" class="nav-link">Log In</a>
+                <a href="/insights" class="nav-link">
+                  Insights
+                </a>
+                <a href="/settings" class="nav-link">
+                  Settings
+                </a>
+                <a href="/login" class="nav-link">
+                  Log In
+                </a>
               </div>
             </div>
           </div>
         </nav>
       </header>
       <main>
-        <article class="container stack">
+        <article class="container stack" style="--max-width: 1200px">
           {{ content | safe }}
         </article>
       </main>

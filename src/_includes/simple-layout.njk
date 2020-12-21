@@ -1,0 +1,60 @@
+---
+title: Cash Cache
+description: A streamlined way to keep track of your money.
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ renderData.title or title }} | Cash Cache</title>
+    <meta name="description" content="{{ description }}">
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#202020">
+    <link rel="apple-touch-icon" href="/icons/icon_192.png">
+    <style>
+      {% include "styles.css" %}
+    </style>
+  </head>
+  <body>
+    <div class="spread">
+      <header class="container">
+        <nav class="cluster">
+          <div class="justify-content:space-between">
+            <a href="/overview" class="nav-link">
+              Cash Cache
+            </a>
+            <div class="cluster">
+              <div>
+                <a href="/insights" class="nav-link">
+                  Insights
+                </a>
+                <a href="/settings" class="nav-link">
+                  Settings
+                </a>
+                <a href="/login" class="nav-link">
+                  Log In
+                </a>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main>
+        <article class="container stack">
+          {{ content | safe }}
+        </article>
+      </main>
+    </div>
+
+    {% if env.environment == 'production' %}
+      <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js');
+        }
+      </script>
+    {% endif %}
+  </body>
+</html>

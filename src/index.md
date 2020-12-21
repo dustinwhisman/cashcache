@@ -1,6 +1,6 @@
 ---
-title: Welcome!
-layout: layout.njk
+title: Welcome
+layout: simple-layout.njk
 ---
 
 # A Better Way to Track Your Money

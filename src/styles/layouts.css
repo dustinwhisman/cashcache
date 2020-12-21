@@ -17,9 +17,12 @@
   min-height: 100vh;
 }
 
-.spread footer,
 .spread header {
-  padding-block: 1rem;
+  padding-block-start: 1rem;
+}
+
+.spread footer {
+  padding-block-end: 1rem;
 }
 
 .cluster {
