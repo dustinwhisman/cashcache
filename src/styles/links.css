@@ -1,0 +1,8 @@
+a {
+  color: var(--text-color);
+}
+
+a:focus {
+  outline: 0.05em dashed white;
+  outline-offset: 0.1em;
+}

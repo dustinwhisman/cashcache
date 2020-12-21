@@ -10,7 +10,7 @@ description: A streamlined way to keep track of your money.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ renderData.title or title }} | Cash Cache</title>
     <meta name="description" content="{{ description }}">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#202020">
     <link rel="apple-touch-icon" href="/icons/icon_192.png">
@@ -19,16 +19,28 @@ description: A streamlined way to keep track of your money.
     </style>
   </head>
   <body>
-    <div>
-      <header>
-        This is the header.
+    <div class="spread">
+      <header class="container">
+        <nav class="cluster">
+          <div class="justify-content:space-between">
+            <a href="/" class="nav-link">
+              Cash Cache
+            </a>
+            <div class="cluster">
+              <div>
+                <a href="/" class="nav-link">Settings</a>
+                <a href="/" class="nav-link">Log In</a>
+              </div>
+            </div>
+          </div>
+        </nav>
       </header>
       <main>
-        <article>
+        <article class="container stack">
           {{ content | safe }}
         </article>
       </main>
-      <footer>
+      <footer class="container">
         This is the footer.
       </footer>
     </div>
