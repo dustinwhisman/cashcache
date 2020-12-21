@@ -3,4 +3,124 @@ title: Overview
 layout: app-layout.njk
 ---
 
+<style>
+  article {
+    height: 100%;
+  }
+
+  .grid-wrapper {
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .sections {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(4, minmax(calc((var(--max-width) - 3rem) / 4), 1fr));
+    height: 100%;
+  }
+
+  .sections section {
+    height: 100%;
+    overflow-y: auto;
+    scroll-snap-align: start;
+  }
+
+  section {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .full-width-button {
+    display: block;
+    width: 100%;
+    padding: 0.5em;
+    border: 0.125em solid var(--text-color);
+    text-decoration: none;
+    text-align: center;
+  }
+
+  [data-section-heading] {
+    border-block-end: 0.125em solid var(--text-color);
+  }
+</style>
+
 {% include "month-nav.njk" %}
+
+<div class="grid-wrapper">
+  <div class="sections">
+    <section>
+      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+        <div class="justify-content:space-between">
+          <h2 class="h5">
+            Expenses
+          </h2>
+          <p data-total-expenses>
+            $0.00
+          </p>
+        </div>
+      </div>
+      <div></div>
+      <div>
+        <a href="/add-expense" class="full-width-button">
+          Add Expense
+        </a>
+      </div>
+    </section>
+    <section>
+      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+        <div class="justify-content:space-between">
+          <h2 class="h5">
+            Income
+          </h2>
+          <p data-total-income>
+            $0.00
+          </p>
+        </div>
+      </div>
+      <div></div>
+      <div>
+        <a href="/add-income" class="full-width-button">
+          Add Income
+        </a>
+      </div>
+    </section>
+    <section>
+      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+        <div class="justify-content:space-between">
+          <h2 class="h5">
+            Savings
+          </h2>
+          <p data-total-savings>
+            $0.00
+          </p>
+        </div>
+      </div>
+      <div></div>
+      <div>
+        <a href="/add-savings" class="full-width-button">
+          Add Savings
+        </a>
+      </div>
+    </section>
+    <section>
+      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+        <div class="justify-content:space-between">
+          <h2 class="h5">
+            Debt
+          </h2>
+          <p data-total-debt>
+            $0.00
+          </p>
+        </div>
+      </div>
+       <div></div>
+      <div>
+        <a href="/add-debt" class="full-width-button">
+          Add Debt
+        </a>
+      </div>
+   </section>
+  </div>
+</div>
