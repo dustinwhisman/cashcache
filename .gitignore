@@ -1,3 +1,4 @@
 node_modules
 dist
+src/_includes/styles.css
 .env
