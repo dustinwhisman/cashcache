@@ -12,6 +12,7 @@
   --h3: var(--h4) * var(--ratio);
   --h2: var(--h3) * var(--ratio);
   --h1: var(--h2) * var(--ratio);
+  --tiny: var(--h6) / var(--ratio);
 
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -78,6 +79,10 @@ h5, .h5 {
 
 h6, .h6, .small {
   font-size: calc(var(--h6));
+}
+
+.tiny {
+  font-size: calc(var(--tiny));
 }
 
 p,

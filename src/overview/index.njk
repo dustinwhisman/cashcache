@@ -23,7 +23,6 @@ layout: app-layout.njk
 
   .sections section {
     height: 100%;
-    overflow-y: auto;
     scroll-snap-align: start;
   }
 
@@ -44,6 +43,11 @@ layout: app-layout.njk
   [data-section-heading] {
     border-block-end: 0.125em solid var(--text-color);
   }
+
+  [data-section-body] {
+    max-height: calc(100vh - 13rem);
+    overflow-y: auto;
+  }
 </style>
 
 {% include "month-nav.njk" %}
@@ -61,7 +65,189 @@ layout: app-layout.njk
           </p>
         </div>
       </div>
-      <div></div>
+      <div class="stack padding:halfem" data-section-body>
+        <div>
+          <p>
+            You haven't tracked any expenses yet.
+          </p>
+        </div>
+        <div>
+          <div class="cluster">
+            <div class="justify-content:space-between">
+              <h3 class="h5">
+                Housing
+              </h3>
+              <p class="h5">
+                $1,543.84
+              </p>
+            </div>
+          </div>
+          <div class="stack" style="--stack-space: 0.75em">
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cluster">
+            <div class="justify-content:space-between">
+              <h3 class="h5">
+                Housing
+              </h3>
+              <p class="h5">
+                $1,543.84
+              </p>
+            </div>
+          </div>
+          <div class="stack" style="--stack-space: 0.75em">
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cluster">
+            <div class="justify-content:space-between">
+              <h3 class="h5">
+                Housing
+              </h3>
+              <p class="h5">
+                $1,543.84
+              </p>
+            </div>
+          </div>
+          <div class="stack" style="--stack-space: 0.75em">
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cluster">
+            <div class="justify-content:space-between">
+              <h3 class="h5">
+                Housing
+              </h3>
+              <p class="h5">
+                $1,543.84
+              </p>
+            </div>
+          </div>
+          <div class="stack" style="--stack-space: 0.75em">
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p class="tiny font-style:italic">
+                12/1/20
+              </p>
+              <div class="cluster small">
+                <div class="justify-content:space-between">
+                  <a href="/">
+                    Rent
+                  </a>
+                  <p>
+                    $1,543.84
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div>
         <a href="/add-expense" class="full-width-button">
           Add Expense
@@ -79,7 +265,13 @@ layout: app-layout.njk
           </p>
         </div>
       </div>
-      <div></div>
+      <div class="stack padding:halfem" data-section-body>
+        <div>
+          <p>
+            You haven't tracked any income yet.
+          </p>
+        </div>
+      </div>
       <div>
         <a href="/add-income" class="full-width-button">
           Add Income
@@ -97,7 +289,13 @@ layout: app-layout.njk
           </p>
         </div>
       </div>
-      <div></div>
+      <div class="stack padding:halfem" data-section-body>
+        <div>
+          <p>
+            You haven't tracked any savings yet.
+          </p>
+        </div>
+      </div>
       <div>
         <a href="/add-savings" class="full-width-button">
           Add Savings
@@ -115,7 +313,13 @@ layout: app-layout.njk
           </p>
         </div>
       </div>
-       <div></div>
+      <div class="stack padding:halfem" data-section-body>
+        <div>
+          <p>
+            You haven't tracked any debt yet.
+          </p>
+        </div>
+      </div>
       <div>
         <a href="/add-debt" class="full-width-button">
           Add Debt
