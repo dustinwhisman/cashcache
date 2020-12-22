@@ -48,6 +48,25 @@ layout: app-layout.njk
     max-height: calc(100vh - 13rem);
     overflow-y: auto;
   }
+
+  [data-section-body]::-webkit-scrollbar {
+    width: 11px;
+  }
+
+  [data-section-body] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-color) transparent;
+  }
+
+  [data-section-body]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  [data-section-body]::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-color);
+    border-radius: 6px;
+    border: 3px solid var(--scrollbar-color);
+  }
 </style>
 
 {% include "month-nav.njk" %}

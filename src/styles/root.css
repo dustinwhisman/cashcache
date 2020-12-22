@@ -1,6 +1,7 @@
 :root {
   --bg-color: #fafafa;
   --text-color: #202020;
+  --scrollbar-color: #aaaaaa;
   --font-weight: 400;
   --heading-font-weight: 700;
 
@@ -28,6 +29,7 @@
   :root {
     --bg-color: #202020;
     --text-color: #fafafa;
+    --scrollbar-color: #555555;
     --font-weight: 380;
     --heading-font-weight: 500;
   }
@@ -36,6 +38,7 @@
 .light-mode {
   --bg-color: #fafafa;
   --text-color: #202020;
+  --scrollbar-color: #aaaaaa;
   --font-weight: 400;
   --heading-font-weight: 700
 }
@@ -43,6 +46,7 @@
 .dark-mode {
   --bg-color: #202020;
   --text-color: #fafafa;
+  --scrollbar-color: #555555;
   --font-weight: 380;
   --heading-font-weight: 500;
 }
