@@ -1,0 +1,54 @@
+---
+title: Add Debt
+layout: simple-layout.njk
+---
+
+<h1>
+  Add Debt
+</h1>
+
+<div>
+  <a href="/overview">
+    Go Back
+  </a>
+</div>
+
+<form data-add-debt-form class="stack">
+  {% include "year-month-inputs.njk" %}
+  {% include "category-inputs.njk" %}
+  <div>
+    <label for="debt-description">
+      Description
+    </label>
+    <input id="debt-description" type="text" name="debt-description" required>
+  </div>
+  <div>
+    <label for="amount">
+      Balance
+    </label>
+    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <label for="minimum-payment">
+      Minimum Payment
+    </label>
+    <input id="minimum-payment" type="text" name="minimum-payment" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <label for="interest-rate">
+      Interest Rate
+    </label>
+    <input id="interest-rate" type="text" name="interest-rate" inputmode="numeric" pattern="^(\s{1,})?\d{1,2}(\.\d+)?(%)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <button type="submit">
+      Save Debt
+    </button>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+  });
+</script>
