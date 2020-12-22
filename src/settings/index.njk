@@ -6,3 +6,57 @@ layout: simple-layout.njk
 <h1>
   Settings
 </h1>
+
+<h2>
+  Display Settings
+</h2>
+
+<fieldset>
+  <legend>
+    Brightness
+  </legend>
+  <div class="stack" style="--stack-space: 0.5em">
+    <label class="custom-checkbox">
+      <input type="radio" name="brightness-mode" value="light-mode">
+      {% include "radio-svg.njk" %}
+      <span>
+        Light Mode
+      </span>
+    </label>
+    <label class="custom-checkbox">
+      <input type="radio" name="brightness-mode" value="dark-mode">
+      {% include "radio-svg.njk" %}
+      <span>
+        Dark Mode
+      </span>
+    </label>
+    <label class="custom-checkbox">
+      <input type="radio" name="brightness-mode" value="" checked>
+      {% include "radio-svg.njk" %}
+      <span>
+        Use System Settings
+      </span>
+    </label>
+  </div>
+</fieldset>
+
+<script>
+  if (brightnessMode) {
+    const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
+    brightnessInput.checked = true;
+  }
+
+  document.addEventListener('change', (event) => {
+    if (event.target.matches('[name=brightness-mode]')) {
+      const rootElement = document.documentElement;
+      const preference = event.target.value;
+      rootElement.classList.remove(...rootElement.classList);
+      if (preference) {
+        rootElement.classList.add(preference);
+        localStorage.setItem('brightness-mode', preference);
+      } else {
+        localStorage.removeItem('brightness-mode');
+      }
+    }
+  });
+</script>
