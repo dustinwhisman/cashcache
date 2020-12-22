@@ -1,0 +1,42 @@
+---
+title: Add Savings
+layout: simple-layout.njk
+---
+
+<h1>
+  Add Savings
+</h1>
+
+<div>
+  <a href="/overview">
+    Go Back
+  </a>
+</div>
+
+<form data-add-savings-form class="stack">
+  {% include "year-month-inputs.njk" %}
+  {% include "category-inputs.njk" %}
+  <div>
+    <label for="savings-description">
+      Description
+    </label>
+    <input id="savings-description" type="text" name="savings-description" required>
+  </div>
+  <div>
+    <label for="amount">
+      Balance
+    </label>
+    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <button type="submit">
+      Save Savings
+    </button>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+  });
+</script>

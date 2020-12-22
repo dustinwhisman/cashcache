@@ -1,0 +1,33 @@
+<div class="cluster">
+  <div>
+    <div>
+      <label for="year">Year</label>
+      <input id="year" type="text" name="year" inputmode="numeric" pattern="^[1-2][0-9][0-9][0-9]$" autofill="false" autocomplete="off" style="max-width: 8ch" required>
+    </div>
+    <div>
+      <label for="month">Month</label>
+      <input id="month" type="text" name="month" inputmode="numeric" pattern="^(0?[1-9]|1[012])$" autofill="false" autocomplete="off" style="max-width: 6ch" required>
+    </div>
+  </div>
+</div>
+
+<script>
+  const today = new Date();
+  let month = today.getMonth();
+  let year = today.getFullYear();
+  const params = new URLSearchParams(window.location.search);
+
+  if (params?.has('m')) {
+    month = Number(params.get('m'));
+  }
+
+  if (params?.has('y')) {
+    year = Number(params.get('y'));
+  }
+
+  const yearInput = document.querySelector('#year');
+  yearInput.value = year;
+
+  const monthInput = document.querySelector('#month');
+  monthInput.value = month + 1;
+</script>
