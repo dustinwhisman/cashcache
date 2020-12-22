@@ -15,28 +15,7 @@ layout: simple-layout.njk
 
 <form data-add-expense-form class="stack">
   {% include "date-inputs.njk" %}
-  <div>
-    <fieldset>
-      <legend>
-        Category
-      </legend>
-      <div data-category>
-        <label class="custom-checkbox">
-          <input type="radio" name="category" value="new-category" required>
-          {% include "radio-svg.njk" %}
-          <span>
-            New Category
-          </span>
-        </label>
-      </div>
-    </fieldset>
-  </div>
-  <div data-new-category>
-    <label for="new-category">
-      New Category
-    </label>
-    <input id="new-category" type="text" name="new-category" autofill="false" autocomplete="off" required>
-  </div>
+  {% include "category-inputs.njk" %}
   <div>
     <label for="expense-description">
       Description

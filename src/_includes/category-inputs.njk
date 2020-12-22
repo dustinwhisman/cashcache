@@ -1,0 +1,35 @@
+<div>
+  <fieldset>
+    <legend>
+      Category
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em" data-category>
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    </div>
+  </fieldset>
+</div>
+<div data-new-category hidden>
+  <label for="new-category">
+    New Category
+  </label>
+  <input id="new-category" type="text" name="new-category" autofill="false" autocomplete="off" required>
+</div>
+
+<script>
+  document.addEventListener('change', (event) => {
+    if (event.target.matches('[name=category]')) {
+      const newCategoryDiv = document.querySelector('[data-new-category]');
+      if (event.target.value === 'new-category') {
+        newCategoryDiv.removeAttribute('hidden');
+      } else {
+        newCategoryDiv.setAttribute('hidden', true);
+      }
+    }
+  });
+</script>
