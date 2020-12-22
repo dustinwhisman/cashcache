@@ -28,6 +28,16 @@ button[type="submit"] {
   box-shadow: var(--box-shadow-width) var(--box-shadow-width) var(--box-shadow-spread) var(--box-shadow-spread) var(--box-shadow-color);
 }
 
+button[data-delete] {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 0.125em solid var(--text-color);
+  padding: 0.25em 0.5em;
+  max-width: 100%;
+  font-size: calc(var(--h6));
+  box-shadow: var(--box-shadow-width) var(--box-shadow-width) var(--box-shadow-spread) var(--box-shadow-spread) var(--box-shadow-color);
+}
+
 .custom-checkbox {
   position: relative;
   display: flex;
