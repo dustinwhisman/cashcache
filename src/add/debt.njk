@@ -7,11 +7,7 @@ layout: simple-layout.njk
   Add Debt
 </h1>
 
-<div>
-  <a href="/overview">
-    Go Back
-  </a>
-</div>
+{% include "back-link.njk" %}
 
 <form data-add-debt-form class="stack">
   {% include "year-month-inputs.njk" %}

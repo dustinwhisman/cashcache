@@ -1,0 +1,12 @@
+<div>
+  <a href="/overview" data-back-link>
+    Go Back
+  </a>
+</div>
+
+<script>
+  if (document.referrer) {
+    const backLink = document.querySelector('[data-back-link]');
+    backLink.href = document.referrer;
+  }
+</script>
