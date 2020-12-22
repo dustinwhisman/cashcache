@@ -24,6 +24,7 @@ layout: simple-layout.njk
     </label>
     <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
   </div>
+  <input type="hidden" name="key" value="">
   <div>
     <button type="submit">
       Save Expense
@@ -31,8 +32,52 @@ layout: simple-layout.njk
   </div>
 </form>
 
-<script>
+{% include "sanitize.njk" %}
+<script type="module">
+  import { getAllCategories, addToDb } from '/scripts/db.mjs';
+
+  const getCategories = async () => {
+    const categories = await getAllCategories('expenses');
+    const categoriesDiv = document.querySelector('[data-category]');
+    categories?.sort().forEach((category) => {
+      const categoryTemplate = `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+      categoriesDiv.innerHTML += categoryTemplate;
+    });
+  };
+
   document.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    const { elements } = event.target;
+    const expense = {
+      key: elements['key'].value || null,
+      year: Number(elements['year'].value),
+      month: Number(elements['month'].value) - 1,
+      day: Number(elements['day'].value),
+      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+      description: elements['expense-description'].value,
+      amount: sanitize(elements['amount'].value),
+    };
+
+    addToDb('expenses', expense);
   });
+
+  document.addEventListener('item-added', () => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    const month = Number(elements['month'].value) - 1;
+    const year = Number(elements['year'].value);
+    window.location.href = `/overview?m=${month}&y=${year}`;
+  });
+
+  getCategories();
 </script>

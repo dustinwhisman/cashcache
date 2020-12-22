@@ -45,6 +45,36 @@ export const getAllFromIndex = (storeName, indexName, year, month) => {
   });
 };
 
+export const getAllCategories = (storeName) => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(schemaName, schemaVersion);
+    request.onupgradeneeded = updateSchema;
+
+    request.onerror = (event) => {
+      const error = `Database error: ${event.target.errorCode}`;
+      reject(error);
+    };
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], 'readonly');
+      const result = transaction.objectStore(storeName).openCursor(null, 'nextunique');
+      const categories = [];
+      result.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+          if (!categories.includes(cursor.value.category)) {
+            categories.push(cursor.value.category);
+          }
+          cursor.continue();
+        } else {
+          resolve(categories);
+        }
+      }
+    }
+  });
+};
+
 export const addToDb = (storeName, thingToAdd) => {
   if (thingToAdd.key == null) {
     thingToAdd.key = uuid();
