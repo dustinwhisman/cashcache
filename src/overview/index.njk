@@ -12,6 +12,7 @@ layout: app-layout.njk
     height: 100%;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    padding-block-end: 11px;
   }
 
   .sections {
@@ -49,19 +50,23 @@ layout: app-layout.njk
     overflow-y: auto;
   }
 
+  .grid-wrapper::-webkit-scrollbar,
   [data-section-body]::-webkit-scrollbar {
     width: 11px;
   }
 
+  .grid-wrapper,
   [data-section-body] {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-color) transparent;
   }
 
+  .grid-wrapper::-webkit-scrollbar-track,
   [data-section-body]::-webkit-scrollbar-track {
     background: transparent;
   }
 
+  .grid-wrapper::-webkit-scrollbar-thumb,
   [data-section-body]::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-color);
     border-radius: 6px;
