@@ -273,7 +273,7 @@ layout: app-layout.njk
         </div>
       </div>
       <div>
-        <a href="/add/expense" class="full-width-button">
+        <a href="/add/expense" class="full-width-button" data-add-expense-link>
           Add Expense
         </a>
       </div>
@@ -297,7 +297,7 @@ layout: app-layout.njk
         </div>
       </div>
       <div>
-        <a href="/add/income" class="full-width-button">
+        <a href="/add/income" class="full-width-button" data-add-income-link>
           Add Income
         </a>
       </div>
@@ -321,7 +321,7 @@ layout: app-layout.njk
         </div>
       </div>
       <div>
-        <a href="/add/savings" class="full-width-button">
+        <a href="/add/savings" class="full-width-button" data-add-savings-link>
           Add Savings
         </a>
       </div>
@@ -345,10 +345,22 @@ layout: app-layout.njk
         </div>
       </div>
       <div>
-        <a href="/add/debt" class="full-width-button">
+        <a href="/add/debt" class="full-width-button" data-add-debt-link>
           Add Debt
         </a>
       </div>
    </section>
   </div>
 </div>
+
+<script>
+  const addExpenseLink = document.querySelector('[data-add-expense-link]');
+  const addIncomeLink = document.querySelector('[data-add-income-link]');
+  const addSavingsLink = document.querySelector('[data-add-savings-link]');
+  const addDebtLink = document.querySelector('[data-add-debt-link]');
+
+  addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
+  addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
+  addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
+  addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
+</script>
