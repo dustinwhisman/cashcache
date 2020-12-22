@@ -1,0 +1,107 @@
+label {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin-block-end: 0.25em;
+}
+
+input[type="text"],
+button[type="submit"] {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 0.125em solid var(--text-color);
+  padding: 0.25em 0.5em;
+  width: 30ch;
+  max-width: 100%;
+  font-size: calc(var(--h6));
+}
+
+@media screen and (max-width: 450px) {
+  input[type="text"],
+  button[type="submit"] {
+    width: 100%;
+  }
+}
+
+button[type="submit"] {
+  font-size: calc(var(--h5));
+  box-shadow: var(--box-shadow-width) var(--box-shadow-width) var(--box-shadow-spread) var(--box-shadow-spread) var(--box-shadow-color);
+}
+
+.custom-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.custom-checkbox span {
+  line-height: 1;
+  margin-inline-start: 0.35em;
+}
+
+.custom-checkbox input[type="checkbox"],
+.custom-checkbox input[type="radio"] {
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  opacity: 0;
+}
+
+.custom-checkbox.double-size input[type="checkbox"],
+.custom-checkbox.double-size input[type="radio"] {
+  width: 1.625em;
+  height: 1.625em;
+}
+
+.custom-checkbox input[type="checkbox"]:focus + svg,
+.custom-checkbox input[type="radio"]:focus + svg {
+  outline: 1px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.custom-checkbox input[type="checkbox"]:focus:not(:focus-visible) + svg,
+.custom-checkbox input[type="radio"]:focus:not(:focus-visible) + svg {
+  outline: none;
+}
+
+.custom-checkbox svg {
+  width: 1em;
+  height: 1em;
+}
+
+.custom-checkbox.double-size svg {
+  width: 1.625em;
+  height: 1.625em;
+}
+
+.custom-checkbox svg * {
+  transition: all 0.1s linear;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + svg .checkbox__bg,
+.custom-checkbox input[type="radio"]:checked + svg .checkbox__bg {
+  fill: var(--bg-color);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + svg .checkbox__checkmark {
+  stroke: var(--text-color);
+}
+
+.custom-checkbox input[type="radio"]:checked + svg .checkbox__checkmark {
+  stroke: var(--text-color);
+  fill: var(--text-color);
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .custom-checkbox svg .checkbox__bg {
+    stroke: windowText;
+  }
+
+  .custom-checkbox input[type="checkbox"]:checked + svg .checkbox__bg {
+    fill: windowText;
+  }
+
+  .custom-checkbox input[type="checkbox"]:checked + svg .checkbox__checkmark {
+    stroke: highlight;
+  }
+}
