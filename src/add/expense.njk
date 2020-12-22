@@ -36,23 +36,7 @@ layout: simple-layout.njk
 <script type="module">
   import { getAllCategories, addToDb } from '/scripts/db.mjs';
 
-  const getCategories = async () => {
-    const categories = await getAllCategories('expenses');
-    const categoriesDiv = document.querySelector('[data-category]');
-    categories?.sort().forEach((category) => {
-      const categoryTemplate = `
-        <label class="custom-checkbox">
-          <input type="radio" name="category" value="${category}" required>
-          {% include "radio-svg.njk" %}
-          <span>
-            ${category}
-          </span>
-        </label>
-      `;
-
-      categoriesDiv.innerHTML += categoryTemplate;
-    });
-  };
+  {% include "get-categories.njk" %}
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -71,13 +55,7 @@ layout: simple-layout.njk
     addToDb('expenses', expense);
   });
 
-  document.addEventListener('item-added', () => {
-    const form = document.querySelector('form');
-    const { elements } = form;
-    const month = Number(elements['month'].value) - 1;
-    const year = Number(elements['year'].value);
-    window.location.href = `/overview?m=${month}&y=${year}`;
-  });
+  {% include "item-added-listener.njk" %}
 
-  getCategories();
+  getCategories('expenses');
 </script>
