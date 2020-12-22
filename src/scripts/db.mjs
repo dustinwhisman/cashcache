@@ -22,7 +22,7 @@ export const getFromDb = (storeName, key) => {
   });
 };
 
-export const getAllFromDb = (storeName) => {
+export const getAllFromIndex = (storeName, indexName, year, month) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -35,10 +35,11 @@ export const getAllFromDb = (storeName) => {
     request.onsuccess = (event) => {
       const db = event.target.result;
       const transaction = db.transaction([storeName], 'readonly');
-      const objectStore = transaction.objectStore(storeName);
-      const result = objectStore.getAll();
+      const index = transaction.objectStore(storeName).index(indexName);
+      const range = IDBKeyRange.only([year, month]);
+      const result = index.getAll(range);
       result.onsuccess = (event) => {
-        resolve(event.target.result);
+        resolve(event.target.result.filter(x => !x.isDeleted));
       };
     }
   });
@@ -91,7 +92,9 @@ export const deleteFromDb = (storeName, key) => {
       const objectStore = transaction.objectStore(storeName);
       const result = objectStore.get(key);
       result.onsuccess = (event) => {
-        const endResult = objectStore.delete(key);
+        const data = event.target.result;
+        data.isDeleted = true;
+        const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
           const successEvent = new CustomEvent('item-deleted');
           document.dispatchEvent(successEvent);
