@@ -89,187 +89,11 @@ layout: app-layout.njk
           </p>
         </div>
       </div>
-      <div class="stack padding:halfem" data-section-body>
-        <div>
+      <div class="stack padding:halfem" data-expenses data-section-body>
+        <div data-no-expenses hidden>
           <p>
             You haven't tracked any expenses yet.
           </p>
-        </div>
-        <div>
-          <div class="cluster">
-            <div class="justify-content:space-between">
-              <h3 class="h5">
-                Housing
-              </h3>
-              <p class="h5">
-                $1,543.84
-              </p>
-            </div>
-          </div>
-          <div class="stack" style="--stack-space: 0.75em">
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="cluster">
-            <div class="justify-content:space-between">
-              <h3 class="h5">
-                Housing
-              </h3>
-              <p class="h5">
-                $1,543.84
-              </p>
-            </div>
-          </div>
-          <div class="stack" style="--stack-space: 0.75em">
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="cluster">
-            <div class="justify-content:space-between">
-              <h3 class="h5">
-                Housing
-              </h3>
-              <p class="h5">
-                $1,543.84
-              </p>
-            </div>
-          </div>
-          <div class="stack" style="--stack-space: 0.75em">
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="cluster">
-            <div class="justify-content:space-between">
-              <h3 class="h5">
-                Housing
-              </h3>
-              <p class="h5">
-                $1,543.84
-              </p>
-            </div>
-          </div>
-          <div class="stack" style="--stack-space: 0.75em">
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p class="tiny font-style:italic">
-                12/1/20
-              </p>
-              <div class="cluster small">
-                <div class="justify-content:space-between">
-                  <a href="/">
-                    Rent
-                  </a>
-                  <p>
-                    $1,543.84
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       <div>
@@ -363,4 +187,102 @@ layout: app-layout.njk
   addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
   addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
   addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
+</script>
+<script>
+  const formatCurrency = (value, locale = 'en-US', currency = 'USD') => new Intl
+  .NumberFormat(locale, { style: 'currency', currency })
+  .format(value);
+</script>
+<script>
+  const formatDate = (year, month, day, locale = 'en-US') => new Intl
+  .DateTimeFormat(locale, { year: '2-digit', month: 'numeric', day: 'numeric' })
+  .format(new Date(year, month, day));
+</script>
+<script type="module">
+  import { getAllFromIndex } from '/scripts/db.mjs';
+
+  const getExpenses = async () => {
+    const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
+    if (!expenses?.length) {
+      const noExpensesMessage = document.querySelector('[data-no-expenses]');
+      noExpensesMessage.removeAttribute('hidden');
+      return;
+    }
+
+    const total = expenses.reduce((a, b) => a + b.amount, 0);
+    const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
+    totalExpensesIndicator.innerHTML = formatCurrency(total);
+
+    let categories = expenses.reduce((acc, expense) => {
+      if (acc[expense.category]) {
+        acc[expense.category].expenses.push(expense);
+      } else {
+        acc[expense.category] = {
+          name: expense.category,
+          expenses: [expense],
+        };
+      }
+
+      return acc;
+    }, {});
+
+    const expensesBody = document.querySelector('[data-expenses][data-section-body]');
+    const expensesBlock = Object.keys(categories)
+      .sort((a, b) => {
+        const aTotal = categories[a].expenses.reduce((a, b) => a + b.amount, 0);
+        const bTotal = categories[b].expenses.reduce((a, b) => a + b.amount, 0);
+        if (aTotal < bTotal) {
+          return 1;
+        }
+
+        if (aTotal > bTotal) {
+          return -1;
+        }
+
+        return 0;
+      })
+    .map((key) => {
+      const category = categories[key];
+      const categoryTotal = category.expenses.reduce((a, b) => a + b.amount, 0);
+      return `
+        <div>
+          <div class="cluster">
+            <div class="justify-content:space-between">
+              <h3 class="h5">
+                ${category.name}
+              </h3>
+              <p class="h5">
+                ${formatCurrency(categoryTotal)}
+              </p>
+            </div>
+          </div>
+          <div class="stack" style="--stack-space: 0.75em">
+            ${category.expenses.map((expense) => {
+              return `
+                <div>
+                  <p class="tiny font-style:italic">
+                    ${formatDate(expense.year, expense.month, expense.day)}
+                  </p>
+                  <div class="cluster small">
+                    <div class="justify-content:space-between">
+                      <a href="/edit/expense?key=${expense.key}">
+                        ${expense.description}
+                      </a>
+                      <p>
+                        ${formatCurrency(expense.amount)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    expensesBody.innerHTML = expensesBlock;
+  };
+
+  getExpenses();
 </script>
