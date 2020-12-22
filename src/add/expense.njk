@@ -14,22 +14,7 @@ layout: simple-layout.njk
 </div>
 
 <form data-add-expense-form class="stack">
-  <div class="cluster">
-    <div>
-      <div>
-        <label for="year">Year</label>
-        <input id="year" type="text" name="year" inputmode="numeric" pattern="^[1-2][0-9][0-9][0-9]$" autofill="false" autocomplete="off" style="max-width: 8ch" required>
-      </div>
-      <div>
-        <label for="month">Month</label>
-        <input id="month" type="text" name="month" inputmode="numeric" pattern="^(0?[1-9]|1[012])$" autofill="false" autocomplete="off" style="max-width: 6ch" required>
-      </div>
-      <div>
-        <label for="day">Day</label>
-        <input id="day" type="text" name="day" inputmode="numeric" pattern="^(0?[1-9]|[12]\d|3[01])$" autofill="false" autocomplete="off" style="max-width: 6ch" required>
-      </div>
-    </div>
-  </div>
+  {% include "month-inputs.njk" %}
   <div>
     <fieldset>
       <legend>

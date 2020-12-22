@@ -9,8 +9,9 @@
 </div>
 
 <script>
-  let month = new Date().getMonth();
-  let year = new Date().getFullYear();
+  const today = new Date();
+  let month = today.getMonth();
+  let year = today.getFullYear();
   const params = new URLSearchParams(window.location.search);
 
   if (params?.has('m')) {
