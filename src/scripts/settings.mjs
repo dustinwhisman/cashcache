@@ -1,4 +1,4 @@
-import { addToDb } from './db.mjs';
+import { addToDb, getAllFromObjectStore } from './db.mjs';
 
 const importData = async (data) => {
   const importProgressIndicator = document.querySelector('[data-import-progress]');
@@ -260,5 +260,25 @@ document.addEventListener('submit', (event) => {
     localStorage.setItem('debt-preferences', JSON.stringify(preferences));
     const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
     savePreferencesButton.innerHTML = 'Saved!';
+  }
+});
+
+document.addEventListener('click', async (event) => {
+  if (event.target.matches('[data-export-data]')) {
+    const data = {
+      expenses: await getAllFromObjectStore('expenses'),
+      income: await getAllFromObjectStore('income'),
+      savings: await getAllFromObjectStore('savings'),
+      debt: await getAllFromObjectStore('debt'),
+    };
+
+    const today = new Date();
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', dataStr);
+    anchor.setAttribute('download', `cash-cache.${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.json`);
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
   }
 });

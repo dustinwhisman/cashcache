@@ -45,6 +45,28 @@ export const getAllFromIndex = (storeName, indexName, year, month) => {
   });
 };
 
+export const getAllFromObjectStore = (storeName) => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(schemaName, schemaVersion);
+    request.onupgradeneeded = updateSchema;
+
+    request.onerror = (event) => {
+      const error = `Database error: ${event.target.errorCode}`;
+      reject(error);
+    };
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], 'readonly');
+      const objectStore = transaction.objectStore(storeName);
+      const result = objectStore.getAll();
+      result.onsuccess = (event) => {
+        resolve(event.target.result);
+      };
+    }
+  });
+};
+
 export const getAllCategories = (storeName) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
