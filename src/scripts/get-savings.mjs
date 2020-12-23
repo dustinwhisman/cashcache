@@ -10,79 +10,112 @@ export const getSavings = async (year, month) => {
   const totalSavingsIndicator = document.querySelector('[data-total-savings]');
   totalSavingsIndicator.innerHTML = formatCurrency(total);
 
-  let categories = savings.reduce((acc, fund) => {
-    if (acc[fund.category]) {
-      acc[fund.category].savings.push(fund);
-    } else {
-      acc[fund.category] = {
-        name: fund.category,
-        savings: [fund],
-      };
+  const preferences = localStorage.getItem('savings-preferences') || '{}';
+  const {
+    groupByCategory = true,
+    order = 'descending'
+  } = JSON.parse(preferences);
+
+  const sortingFunction = (a, b) => {
+    if (a.amount < b.amount) {
+      return order === 'descending' ? 1 : -1;
     }
 
-    return acc;
-  }, {});
+    if (a.amount > b.amount) {
+      return order === 'descending' ? -1 : 1;
+    }
 
-  return Object.keys(categories)
-    .sort((a, b) => {
-      const aTotal = categories[a].savings.reduce((a, b) => a + b.amount, 0);
-      const bTotal = categories[b].savings.reduce((a, b) => a + b.amount, 0);
-      if (aTotal < bTotal) {
-        return 1;
+    return 0;
+  };
+
+  if (groupByCategory) {
+    let categories = savings.reduce((acc, fund) => {
+      if (acc[fund.category]) {
+        acc[fund.category].savings.push(fund);
+      } else {
+        acc[fund.category] = {
+          name: fund.category,
+          savings: [fund],
+        };
       }
 
-      if (aTotal > bTotal) {
-        return -1;
-      }
+      return acc;
+    }, {});
 
-      return 0;
-    })
-  .map((key) => {
-    const category = categories[key];
-    const categoryTotal = category.savings.reduce((a, b) => a + b.amount, 0);
-    return `
-      <div>
-        <div class="cluster heading">
-          <div class="justify-content:space-between" style="align-items: flex-end">
-            <h3 class="h6" style="max-width: 50%">
-              ${category.name}
-            </h3>
-            <p class="h6" style="margin-inline-start: auto">
-              ${formatCurrency(categoryTotal)}
-            </p>
+    return Object.keys(categories)
+      .sort((a, b) => {
+        const aTotal = categories[a].savings.reduce((a, b) => a + b.amount, 0);
+        const bTotal = categories[b].savings.reduce((a, b) => a + b.amount, 0);
+        if (aTotal < bTotal) {
+          return 1;
+        }
+
+        if (aTotal > bTotal) {
+          return -1;
+        }
+
+        return 0;
+      })
+    .map((key) => {
+      const category = categories[key];
+      const categoryTotal = category.savings.reduce((a, b) => a + b.amount, 0);
+      return `
+        <div>
+          <div class="cluster heading">
+            <div class="justify-content:space-between" style="align-items: flex-end">
+              <h3 class="h6" style="max-width: 50%">
+                ${category.name}
+              </h3>
+              <p class="h6" style="margin-inline-start: auto">
+                ${formatCurrency(categoryTotal)}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="stack" style="--stack-space: 0.75em">
-          ${category.savings
-            .sort((a, b) => {
-              if (a.amount < b.amount) {
-                return 1;
-              }
-
-              if (a.amount > b.amount) {
-                return -1;
-              }
-
-              return 0;
-            })
-            .map((fund) => {
-              return `
-                <div>
-                  <div class="cluster small">
-                    <div class="justify-content:space-between" style="align-items: flex-end">
-                      <a href="/edit/savings?key=${fund.key}" style="max-width: 50%">
-                        ${fund.description}
-                      </a>
-                      <p style="margin-inline-start: auto">
-                        ${formatCurrency(fund.amount)}
-                      </p>
+          <div class="stack" style="--stack-space: 0.75em">
+            ${category.savings
+              .sort(sortingFunction)
+              .map((fund) => {
+                return `
+                  <div>
+                    <div class="cluster small">
+                      <div class="justify-content:space-between" style="align-items: flex-end">
+                        <a href="/edit/savings?key=${fund.key}" style="max-width: 50%">
+                          ${fund.description}
+                        </a>
+                        <p style="margin-inline-start: auto">
+                          ${formatCurrency(fund.amount)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              `;
-            }).join('')}
+                `;
+              }).join('')}
+          </div>
         </div>
+      `;
+    }).join('');
+  } else {
+    return `
+      <div class="stack" style="--stack-space: 0.75em">
+        ${savings
+          .sort(sortingFunction)
+          .map((fund) => {
+            return `
+              <div>
+                <div class="cluster small">
+                  <div class="justify-content:space-between" style="align-items: flex-end">
+                    <a href="/edit/savings?key=${fund.key}" style="max-width: 50%">
+                      ${fund.description}
+                    </a>
+                    <p style="margin-inline-start: auto">
+                      ${formatCurrency(fund.amount)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
       </div>
     `;
-  }).join('');
+  }
 };
