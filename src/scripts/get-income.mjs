@@ -13,8 +13,8 @@ export const getIncome = async (year, month) => {
   const preferences = localStorage.getItem('income-preferences') || '{}';
   const {
     groupByCategory = true,
-    sortBy = 'day',
-    order = 'ascending'
+    sortBy = 'amount',
+    order = 'descending'
   } = JSON.parse(preferences);
 
   const sortingFunction = (a, b) => {

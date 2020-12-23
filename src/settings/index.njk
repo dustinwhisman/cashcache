@@ -7,6 +7,8 @@ layout: layouts/simple-layout.njk
   Settings
 </h1>
 
+{% include "components/back-link.njk" %}
+
 <h2>
   Display Settings
 </h2>
@@ -40,11 +42,103 @@ layout: layouts/simple-layout.njk
   </div>
 </fieldset>
 
+<h2>
+  Sorting Preferences: Expenses
+</h2>
+<form class="stack" data-expenses-preferences-form>
+  <label class="custom-checkbox">
+    <input type="checkbox" name="group-expenses-by-category">
+    {% include "svgs/checkbox-svg.njk" %}
+    <span>
+      Group By Category
+    </span>
+  </label>
+
+  <fieldset>
+    <legend>
+      Sort By
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="sort-expenses-by" value="amount">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Amount
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="sort-expenses-by" value="day">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Date
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>
+      Sort Order
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="expenses-sort-order" value="descending">
+        {% include "svgs/radio-svg.njk" %}
+        <span data-expenses-descending-label>
+          Descending
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="expenses-sort-order" value="ascending">
+        {% include "svgs/radio-svg.njk" %}
+        <span data-expenses-ascending-label>
+          Ascending
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div>
+    <button type="submit" data-save-expense-preferences>
+      Save Preferences
+    </button>
+  </div>
+</form>
+
 <script>
   if (brightnessMode) {
     const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
     brightnessInput.checked = true;
   }
+
+  (() => {
+    const preferences = localStorage.getItem('expenses-preferences') || '{}';
+    const {
+      groupByCategory = true,
+      sortBy = 'amount',
+      order = 'descending'
+    } = JSON.parse(preferences);
+
+    if (groupByCategory) {
+      const groupByCategoryInput = document.querySelector('[name=group-expenses-by-category]');
+      groupByCategoryInput.checked = true;
+    }
+
+    const sortByInput = document.querySelector(`[name=sort-expenses-by][value=${sortBy}]`);
+    const orderInput = document.querySelector(`[name=expenses-sort-order][value=${order}]`);
+    sortByInput.checked = true;
+    orderInput.checked = true;
+
+    const descendingLabel = document.querySelector('[data-expenses-descending-label]');
+    const ascendingLabel = document.querySelector('[data-expenses-ascending-label]');
+    if (sortBy === 'amount') {
+      descendingLabel.innerHTML = 'Largest to Smallest';
+      ascendingLabel.innerHTML = 'Smallest to Largest';
+    } else {
+      descendingLabel.innerHTML = 'Newest to Oldest';
+      ascendingLabel.innerHTML = 'Oldest to Newest';
+    }
+  })();
 
   document.addEventListener('change', (event) => {
     if (event.target.matches('[name=brightness-mode]')) {
@@ -57,6 +151,39 @@ layout: layouts/simple-layout.njk
       } else {
         localStorage.removeItem('brightness-mode');
       }
+    }
+
+    if (event.target.matches('[name=sort-expenses-by]')) {
+      const descendingLabel = document.querySelector('[data-expenses-descending-label]');
+      const ascendingLabel = document.querySelector('[data-expenses-ascending-label]');
+      if (event.target.value === 'amount') {
+        descendingLabel.innerHTML = 'Largest to Smallest';
+        ascendingLabel.innerHTML = 'Smallest to Largest';
+      } else {
+        descendingLabel.innerHTML = 'Newest to Oldest';
+        ascendingLabel.innerHTML = 'Oldest to Newest';
+      }
+    }
+
+    if (event.target.matches('[data-expenses-preferences-form] *')) {
+      const savePreferencesButton = document.querySelector('[data-save-expense-preferences]');
+      savePreferencesButton.innerHTML = 'Save Preferences';
+    }
+  });
+
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (event.target.matches('[data-expenses-preferences-form]')) {
+      const { elements } = event.target;
+      const preferences = {
+        groupByCategory: elements['group-expenses-by-category'].checked,
+        sortBy: elements['sort-expenses-by'].value,
+        order: elements['expenses-sort-order'].value,
+      };
+
+      localStorage.setItem('expenses-preferences', JSON.stringify(preferences));
+      const savePreferencesButton = document.querySelector('[data-save-expense-preferences]');
+      savePreferencesButton.innerHTML = 'Saved!';
     }
   });
 </script>
