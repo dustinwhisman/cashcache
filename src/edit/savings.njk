@@ -1,32 +1,32 @@
 ---
-title: Edit Expense
+title: Edit Savings
 layout: layouts/simple-layout.njk
 ---
 
 <h1>
-  Edit Expense
+  Edit Savings
 </h1>
 
 {% include "components/back-link.njk" %}
 
 <div>
   <button type="button" data-delete data-key="">
-    Delete this Expense
+    Delete these Savings
   </button>
 </div>
 
 <form class="stack">
-  {% include "inputs/date-inputs.njk" %}
+  {% include "inputs/year-month-inputs.njk" %}
   {% include "inputs/category-inputs.njk" %}
   <div>
-    <label for="expense-description">
+    <label for="savings-description">
       Description
     </label>
-    <input id="expense-description" type="text" name="expense-description" required>
+    <input id="savings-description" type="text" name="savings-description" required>
   </div>
   <div>
     <label for="amount">
-      Amount
+      Balance
     </label>
     <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
   </div>
@@ -49,23 +49,22 @@ layout: layouts/simple-layout.njk
     event.preventDefault();
 
     const { elements } = event.target;
-    const expense = {
+    const savings = {
       key: elements['key'].value || null,
       year: Number(elements['year'].value),
       month: Number(elements['month'].value) - 1,
-      day: Number(elements['day'].value),
       category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
-      description: elements['expense-description'].value,
+      description: elements['savings-description'].value,
       amount: sanitize(elements['amount'].value),
     };
 
-    addToDb('expenses', expense);
+    addToDb('savings', savings);
   });
 
   {% include "scripts/item-added-listener.njk" %}
 
   (async () => {
-    await getCategories('expenses');
+    await getCategories('savings');
     const params = new URLSearchParams(window.location.search);
     let key;
 
@@ -76,17 +75,16 @@ layout: layouts/simple-layout.njk
     const deleteButton = document.querySelector('[data-delete]');
     deleteButton.dataset.key = key;
 
-    const expense = await getFromDb('expenses', key);
+    const savings = await getFromDb('savings', key);
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = key;
-    elements['year'].value = `${expense.year}`;
-    elements['month'].value = `${expense.month + 1}`;
-    elements['day'].value = `${expense.day}`;
-    elements['expense-description'].value = `${expense.description}`;
-    elements['amount'].value = `${formatCurrency(expense.amount)}`;
+    elements['year'].value = `${savings.year}`;
+    elements['month'].value = `${savings.month + 1}`;
+    elements['savings-description'].value = `${savings.description}`;
+    elements['amount'].value = `${formatCurrency(savings.amount)}`;
 
-    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+    const categoryInput = document.querySelector(`[name=category][value="${savings.category}"]`);
     if (categoryInput) {
       categoryInput.checked = true;
     }
@@ -95,8 +93,8 @@ layout: layouts/simple-layout.njk
   document.addEventListener('click', (event) => {
     if (event.target.matches('[data-delete]')) {
       console.log(event.target.dataset.key);
-      if (window.confirm('Are you sure you want to delete this expense?')) {
-        deleteFromDb('expenses', event.target.dataset.key);
+      if (window.confirm('Are you sure you want to delete these savings?')) {
+        deleteFromDb('savings', event.target.dataset.key);
       }
     }
   });
