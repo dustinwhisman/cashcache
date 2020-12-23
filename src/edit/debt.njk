@@ -1,0 +1,125 @@
+---
+title: Edit Debt
+layout: layouts/simple-layout.njk
+---
+
+<h1>
+  Edit Debt
+</h1>
+
+{% include "components/back-link.njk" %}
+
+<div>
+  <button type="button" data-delete data-key="">
+    Delete this Debt
+  </button>
+</div>
+
+<form class="stack">
+  {% include "inputs/year-month-inputs.njk" %}
+  {% include "inputs/category-inputs.njk" %}
+  <div>
+    <label for="debt-description">
+      Description
+    </label>
+    <input id="debt-description" type="text" name="debt-description" required>
+  </div>
+  <div>
+    <label for="amount">
+      Balance
+    </label>
+    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <label for="minimum-payment">
+      Minimum Payment
+    </label>
+    <input id="minimum-payment" type="text" name="minimum-payment" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <div>
+    <label for="interest-rate">
+      Interest Rate
+    </label>
+    <input id="interest-rate" type="text" name="interest-rate" inputmode="numeric" pattern="^(\s{1,})?\d{1,2}(\.\d+)?(%)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <input type="hidden" name="key" value="">
+  <div>
+    <button type="submit">
+      Save Changes
+    </button>
+  </div>
+</form>
+
+{% include "scripts/sanitize.njk" %}
+{% include "scripts/format-currency.njk" %}
+<script type="module">
+  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+
+  {% include "scripts/get-categories.njk" %}
+
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const { elements } = event.target;
+    const debt = {
+      key: elements['key'].value || null,
+      year: Number(elements['year'].value),
+      month: Number(elements['month'].value) - 1,
+      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+      description: elements['debt-description'].value,
+      amount: sanitize(elements['amount'].value),
+      minimumPayment: sanitize(elements['minimum-payment'].value),
+      interestRate: sanitize(elements['interest-rate'].value),
+    };
+
+    addToDb('debt', debt);
+  });
+
+  {% include "scripts/item-added-listener.njk" %}
+
+  (async () => {
+    await getCategories('debt');
+    const params = new URLSearchParams(window.location.search);
+    let key;
+
+    if (params?.has('key')) {
+      key = params.get('key');
+    }
+
+    const deleteButton = document.querySelector('[data-delete]');
+    deleteButton.dataset.key = key;
+
+    const debt = await getFromDb('debt', key);
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = key;
+    elements['year'].value = `${debt.year}`;
+    elements['month'].value = `${debt.month + 1}`;
+    elements['debt-description'].value = `${debt.description}`;
+    elements['amount'].value = `${formatCurrency(debt.amount)}`;
+    elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
+    elements['interest-rate'].value = `${debt.interestRate}%`;
+
+    const categoryInput = document.querySelector(`[name=category][value="${debt.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+  })();
+
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('[data-delete]')) {
+      console.log(event.target.dataset.key);
+      if (window.confirm('Are you sure you want to delete this debt?')) {
+        deleteFromDb('debt', event.target.dataset.key);
+      }
+    }
+  });
+
+  document.addEventListener('item-deleted', () => {
+    if (document.referrer) {
+      window.location.href = document.referrer;
+    } else {
+      window.location.href = `/overview`;
+    }
+  });
+</script>
