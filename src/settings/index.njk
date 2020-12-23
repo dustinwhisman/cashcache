@@ -168,6 +168,47 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
+<h2>
+  Sorting Preferences: Savings
+</h2>
+<form class="stack" data-savings-preferences-form>
+  <label class="custom-checkbox">
+    <input type="checkbox" name="group-savings-by-category">
+    {% include "svgs/checkbox-svg.njk" %}
+    <span>
+      Group By Category
+    </span>
+  </label>
+
+  <fieldset>
+    <legend>
+      Sort Order
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="savings-sort-order" value="descending">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Largest to Smallest
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="savings-sort-order" value="ascending">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Smallest to Largest
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div>
+    <button type="submit" data-save-savings-preferences>
+      Save Preferences
+    </button>
+  </div>
+</form>
+
 <script>
   if (brightnessMode) {
     const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
@@ -232,6 +273,22 @@ layout: layouts/simple-layout.njk
     }
   })();
 
+  (() => {
+    const preferences = localStorage.getItem('savings-preferences') || '{}';
+    const {
+      groupByCategory = true,
+      order = 'descending'
+    } = JSON.parse(preferences);
+
+    if (groupByCategory) {
+      const groupByCategoryInput = document.querySelector('[name=group-savings-by-category]');
+      groupByCategoryInput.checked = true;
+    }
+
+    const orderInput = document.querySelector(`[name=savings-sort-order][value=${order}]`);
+    orderInput.checked = true;
+  })();
+
   document.addEventListener('change', (event) => {
     if (event.target.matches('[name=brightness-mode]')) {
       const rootElement = document.documentElement;
@@ -278,6 +335,11 @@ layout: layouts/simple-layout.njk
       const savePreferencesButton = document.querySelector('[data-save-income-preferences]');
       savePreferencesButton.innerHTML = 'Save Preferences';
     }
+
+    if (event.target.matches('[data-savings-preferences-form] *')) {
+      const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
+      savePreferencesButton.innerHTML = 'Save Preferences';
+    }
   });
 
   document.addEventListener('submit', (event) => {
@@ -305,6 +367,18 @@ layout: layouts/simple-layout.njk
 
       localStorage.setItem('income-preferences', JSON.stringify(preferences));
       const savePreferencesButton = document.querySelector('[data-save-income-preferences]');
+      savePreferencesButton.innerHTML = 'Saved!';
+    }
+
+    if (event.target.matches('[data-savings-preferences-form]')) {
+      const { elements } = event.target;
+      const preferences = {
+        groupByCategory: elements['group-savings-by-category'].checked,
+        order: elements['savings-sort-order'].value,
+      };
+
+      localStorage.setItem('savings-preferences', JSON.stringify(preferences));
+      const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
       savePreferencesButton.innerHTML = 'Saved!';
     }
   });
