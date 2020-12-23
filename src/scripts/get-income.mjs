@@ -42,12 +42,12 @@ export const getIncome = async (year, month) => {
     const categoryTotal = category.income.reduce((a, b) => a + b.amount, 0);
     return `
       <div>
-        <div class="cluster">
-          <div class="justify-content:space-between">
-            <h3 class="h5">
+        <div class="cluster heading">
+          <div class="justify-content:space-between" style="align-items: flex-end">
+            <h3 class="h6" style="max-width: 50%">
               ${category.name}
             </h3>
-            <p class="h5">
+            <p class="h6" style="margin-inline-start: auto">
               ${formatCurrency(categoryTotal)}
             </p>
           </div>
@@ -72,7 +72,7 @@ export const getIncome = async (year, month) => {
                     ${formatDate(income.year, income.month, income.day)}
                   </p>
                   <div class="cluster small">
-                    <div class="justify-content:space-between" style="align-items: center">
+                    <div class="justify-content:space-between" style="align-items: flex-end">
                       <a href="/edit/income?key=${income.key}" style="max-width: 50%">
                         ${income.description}
                       </a>

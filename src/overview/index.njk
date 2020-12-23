@@ -41,8 +41,18 @@ layout: layouts/app-layout.njk
     text-align: center;
   }
 
-  [data-section-heading] {
+  [data-section-heading],
+  .cluster.heading {
     border-block-end: 0.125em solid var(--text-color);
+  }
+
+  .cluster.heading {
+    margin-block-end: 0.5em;
+  }
+
+  [data-section-heading] p,
+  .cluster.heading p {
+    font-weight: var(--heading-font-weight);
   }
 
   [data-section-body] {
@@ -137,8 +147,8 @@ layout: layouts/app-layout.njk
           </p>
         </div>
       </div>
-      <div class="stack padding:halfem" data-section-body>
-        <div>
+      <div class="stack padding:halfem" data-savings data-section-body>
+        <div data-no-savings hidden>
           <p>
             You haven't tracked any savings yet.
           </p>
@@ -193,6 +203,7 @@ layout: layouts/app-layout.njk
 <script type="module">
   import { getExpenses } from '/scripts/get-expenses.mjs';
   import { getIncome } from '/scripts/get-income.mjs';
+  import { getSavings } from '/scripts/get-savings.mjs';
 
   (async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
@@ -218,5 +229,18 @@ layout: layouts/app-layout.njk
     }
 
     incomeBody.innerHTML = incomeBlock;
+  })();
+
+  (async () => {
+    const savingsBody = document.querySelector('[data-savings][data-section-body]');
+    const savingsBlock = await getSavings(year, month);
+
+    if (savingsBlock == null) {
+      const noSavingsMessage = document.querySelector('[data-no-savings]');
+      noSavingsMessage.removeAttribute('hidden');
+      return;
+    }
+
+    savingsBody.innerHTML = savingsBlock;
   })();
 </script>

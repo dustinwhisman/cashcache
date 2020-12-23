@@ -1,22 +1,22 @@
 import { getAllFromIndex } from './db.mjs';
 
-export const getExpenses = async (year, month) => {
-  const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
-  if (!expenses?.length) {
+export const getSavings = async (year, month) => {
+  const savings = await getAllFromIndex('savings', 'year-month', year, month);
+  if (!savings?.length) {
     return null;
   }
 
-  const total = expenses.reduce((a, b) => a + b.amount, 0);
-  const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
+  const total = savings.reduce((a, b) => a + b.amount, 0);
+  const totalExpensesIndicator = document.querySelector('[data-total-savings]');
   totalExpensesIndicator.innerHTML = formatCurrency(total);
 
-  let categories = expenses.reduce((acc, expense) => {
-    if (acc[expense.category]) {
-      acc[expense.category].expenses.push(expense);
+  let categories = savings.reduce((acc, fund) => {
+    if (acc[fund.category]) {
+      acc[fund.category].savings.push(fund);
     } else {
-      acc[expense.category] = {
-        name: expense.category,
-        expenses: [expense],
+      acc[fund.category] = {
+        name: fund.category,
+        savings: [fund],
       };
     }
 
@@ -25,8 +25,8 @@ export const getExpenses = async (year, month) => {
 
   return Object.keys(categories)
     .sort((a, b) => {
-      const aTotal = categories[a].expenses.reduce((a, b) => a + b.amount, 0);
-      const bTotal = categories[b].expenses.reduce((a, b) => a + b.amount, 0);
+      const aTotal = categories[a].savings.reduce((a, b) => a + b.amount, 0);
+      const bTotal = categories[b].savings.reduce((a, b) => a + b.amount, 0);
       if (aTotal < bTotal) {
         return 1;
       }
@@ -39,7 +39,7 @@ export const getExpenses = async (year, month) => {
     })
   .map((key) => {
     const category = categories[key];
-    const categoryTotal = category.expenses.reduce((a, b) => a + b.amount, 0);
+    const categoryTotal = category.savings.reduce((a, b) => a + b.amount, 0);
     return `
       <div>
         <div class="cluster heading">
@@ -53,7 +53,7 @@ export const getExpenses = async (year, month) => {
           </div>
         </div>
         <div class="stack" style="--stack-space: 0.75em">
-          ${category.expenses
+          ${category.savings
             .sort((a, b) => {
               if (a.amount < b.amount) {
                 return 1;
@@ -65,19 +65,16 @@ export const getExpenses = async (year, month) => {
 
               return 0;
             })
-            .map((expense) => {
+            .map((fund) => {
               return `
                 <div>
-                  <p class="tiny font-style:italic">
-                    ${formatDate(expense.year, expense.month, expense.day)}
-                  </p>
                   <div class="cluster small">
                     <div class="justify-content:space-between" style="align-items: flex-end">
-                      <a href="/edit/expense?key=${expense.key}" style="max-width: 50%">
-                        ${expense.description}
+                      <a href="/edit/savings?key=${fund.key}" style="max-width: 50%">
+                        ${fund.description}
                       </a>
                       <p style="margin-inline-start: auto">
-                        ${formatCurrency(expense.amount)}
+                        ${formatCurrency(fund.amount)}
                       </p>
                     </div>
                   </div>
