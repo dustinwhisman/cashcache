@@ -24,6 +24,7 @@ layout: layouts/simple-layout.njk
     </label>
     <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
   </div>
+  <input type="hidden" name="key" value="">
   <div>
     <button type="submit">
       Save Income
@@ -31,8 +32,30 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
-<script>
+{% include "scripts/sanitize.njk" %}
+<script type="module">
+  import { getAllCategories, addToDb } from '/scripts/db.mjs';
+
+  {% include "scripts/get-categories.njk" %}
+
   document.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    const { elements } = event.target;
+    const income = {
+      key: elements['key'].value || null,
+      year: Number(elements['year'].value),
+      month: Number(elements['month'].value) - 1,
+      day: Number(elements['day'].value),
+      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+      description: elements['income-description'].value,
+      amount: sanitize(elements['amount'].value),
+    };
+
+    addToDb('income', income);
   });
+
+  {% include "scripts/item-added-listener.njk" %}
+
+  getCategories('income');
 </script>
