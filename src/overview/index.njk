@@ -171,10 +171,18 @@ layout: layouts/app-layout.njk
           </p>
         </div>
       </div>
-      <div class="stack padding:halfem" data-section-body>
-        <div>
+      <div class="stack padding:halfem" data-debt data-section-body>
+        <div data-no-debt hidden>
           <p>
             You haven't tracked any debt yet.
+          </p>
+        </div>
+        <div data-avalanche-hint hidden>
+          <p>
+            The best way to pay off debt is to pay the minimum on all balances,
+            then throw as much money as you can at the loan with the highest
+            interest rate. In your case, that's your
+            <span data-priority-debt></span>.
           </p>
         </div>
       </div>
@@ -204,6 +212,7 @@ layout: layouts/app-layout.njk
   import { getExpenses } from '/scripts/get-expenses.mjs';
   import { getIncome } from '/scripts/get-income.mjs';
   import { getSavings } from '/scripts/get-savings.mjs';
+  import { getDebt } from '/scripts/get-debt.mjs';
 
   (async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
@@ -242,5 +251,18 @@ layout: layouts/app-layout.njk
     }
 
     savingsBody.innerHTML = savingsBlock;
+  })();
+
+  (async () => {
+    const debtBody = document.querySelector('[data-debt][data-section-body]');
+    const debtBlock = await getDebt(year, month);
+
+    if (debtBlock == null) {
+      const noDebtMessage = document.querySelector('[data-no-debt]');
+      noDebtMessage.removeAttribute('hidden');
+      return;
+    }
+
+    debtBody.innerHTML = debtBlock;
   })();
 </script>

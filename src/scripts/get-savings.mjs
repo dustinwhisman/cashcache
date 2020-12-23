@@ -7,8 +7,8 @@ export const getSavings = async (year, month) => {
   }
 
   const total = savings.reduce((a, b) => a + b.amount, 0);
-  const totalExpensesIndicator = document.querySelector('[data-total-savings]');
-  totalExpensesIndicator.innerHTML = formatCurrency(total);
+  const totalSavingsIndicator = document.querySelector('[data-total-savings]');
+  totalSavingsIndicator.innerHTML = formatCurrency(total);
 
   let categories = savings.reduce((acc, fund) => {
     if (acc[fund.category]) {
