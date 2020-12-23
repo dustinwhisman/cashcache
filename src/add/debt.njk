@@ -36,6 +36,7 @@ layout: layouts/simple-layout.njk
     </label>
     <input id="interest-rate" type="text" name="interest-rate" inputmode="numeric" pattern="^(\s{1,})?\d{1,2}(\.\d+)?(%)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
   </div>
+  <input type="hidden" name="key" value="">
   <div>
     <button type="submit">
       Save Debt
@@ -43,8 +44,31 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
-<script>
+{% include "scripts/sanitize.njk" %}
+<script type="module">
+  import { getAllCategories, addToDb } from '/scripts/db.mjs';
+
+  {% include "scripts/get-categories.njk" %}
+
   document.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    const { elements } = event.target;
+    const debt = {
+      key: elements['key'].value || null,
+      year: Number(elements['year'].value),
+      month: Number(elements['month'].value) - 1,
+      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+      description: elements['debt-description'].value,
+      amount: sanitize(elements['amount'].value),
+      minimumPayment: sanitize(elements['minimum-payment'].value),
+      interestRate: sanitize(elements['interest-rate'].value),
+    };
+
+    addToDb('debt', debt);
   });
+
+  {% include "scripts/item-added-listener.njk" %}
+
+  getCategories('debt');
 </script>
