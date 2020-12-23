@@ -10,82 +10,119 @@ export const getExpenses = async (year, month) => {
   const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
   totalExpensesIndicator.innerHTML = formatCurrency(total);
 
-  let categories = expenses.reduce((acc, expense) => {
-    if (acc[expense.category]) {
-      acc[expense.category].expenses.push(expense);
-    } else {
-      acc[expense.category] = {
-        name: expense.category,
-        expenses: [expense],
-      };
+  const preferences = localStorage.getItem('expenses-preferences') || '{}';
+  const {
+    groupByCategory = true,
+    sortBy = 'amount',
+    order = 'descending'
+  } = JSON.parse(preferences);
+
+  const sortingFunction = (a, b) => {
+    if (a[sortBy] < b[sortBy]) {
+      return order === 'descending' ? 1 : -1;
     }
 
-    return acc;
-  }, {});
+    if (a[sortBy] > b[sortBy]) {
+      return order === 'descending' ? -1 : 1;
+    }
 
-  return Object.keys(categories)
-    .sort((a, b) => {
-      const aTotal = categories[a].expenses.reduce((a, b) => a + b.amount, 0);
-      const bTotal = categories[b].expenses.reduce((a, b) => a + b.amount, 0);
-      if (aTotal < bTotal) {
-        return 1;
+    return 0;
+  };
+
+  if (groupByCategory) {
+    let categories = expenses.reduce((acc, expense) => {
+      if (acc[expense.category]) {
+        acc[expense.category].expenses.push(expense);
+      } else {
+        acc[expense.category] = {
+          name: expense.category,
+          expenses: [expense],
+        };
       }
 
-      if (aTotal > bTotal) {
-        return -1;
-      }
+      return acc;
+    }, {});
 
-      return 0;
-    })
-  .map((key) => {
-    const category = categories[key];
-    const categoryTotal = category.expenses.reduce((a, b) => a + b.amount, 0);
-    return `
-      <div>
-        <div class="cluster heading">
-          <div class="justify-content:space-between" style="align-items: flex-end">
-            <h3 class="h6" style="max-width: 50%">
-              ${category.name}
-            </h3>
-            <p class="h6" style="margin-inline-start: auto">
-              ${formatCurrency(categoryTotal)}
-            </p>
+    return Object.keys(categories)
+      .sort((a, b) => {
+        const aTotal = categories[a].expenses.reduce((a, b) => a + b.amount, 0);
+        const bTotal = categories[b].expenses.reduce((a, b) => a + b.amount, 0);
+        if (aTotal < bTotal) {
+          return 1;
+        }
+
+        if (aTotal > bTotal) {
+          return -1;
+        }
+
+        return 0;
+      })
+    .map((key) => {
+      const category = categories[key];
+      const categoryTotal = category.expenses.reduce((a, b) => a + b.amount, 0);
+      return `
+        <div>
+          <div class="cluster heading">
+            <div class="justify-content:space-between" style="align-items: flex-end">
+              <h3 class="h6" style="max-width: 50%">
+                ${category.name}
+              </h3>
+              <p class="h6" style="margin-inline-start: auto">
+                ${formatCurrency(categoryTotal)}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="stack" style="--stack-space: 0.75em">
-          ${category.expenses
-            .sort((a, b) => {
-              if (a.amount < b.amount) {
-                return 1;
-              }
-
-              if (a.amount > b.amount) {
-                return -1;
-              }
-
-              return 0;
-            })
-            .map((expense) => {
-              return `
-                <div>
-                  <p class="tiny font-style:italic">
-                    ${formatDate(expense.year, expense.month, expense.day)}
-                  </p>
-                  <div class="cluster small">
-                    <div class="justify-content:space-between" style="align-items: flex-end">
-                      <a href="/edit/expense?key=${expense.key}" style="max-width: 50%">
-                        ${expense.description}
-                      </a>
-                      <p style="margin-inline-start: auto">
-                        ${formatCurrency(expense.amount)}
-                      </p>
+          <div class="stack" style="--stack-space: 0.75em">
+            ${category.expenses
+              .sort(sortingFunction)
+              .map((expense) => {
+                return `
+                  <div>
+                    <p class="tiny font-style:italic">
+                      ${formatDate(expense.year, expense.month, expense.day)}
+                    </p>
+                    <div class="cluster small">
+                      <div class="justify-content:space-between" style="align-items: flex-end">
+                        <a href="/edit/expense?key=${expense.key}" style="max-width: 50%">
+                          ${expense.description}
+                        </a>
+                        <p style="margin-inline-start: auto">
+                          ${formatCurrency(expense.amount)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              `;
-            }).join('')}
+                `;
+              }).join('')}
+          </div>
         </div>
+      `;
+    }).join('');
+  } else {
+    return `
+      <div class="stack" style="--stack-space: 0.75em">
+        ${expenses
+          .sort(sortingFunction)
+          .map((expense) => {
+            return `
+              <div>
+                <p class="tiny font-style:italic">
+                  ${formatDate(expense.year, expense.month, expense.day)}
+                </p>
+                <div class="cluster small">
+                  <div class="justify-content:space-between" style="align-items: flex-end">
+                    <a href="/edit/expense?key=${expense.key}" style="max-width: 50%">
+                      ${expense.description}
+                    </a>
+                    <p style="margin-inline-start: auto">
+                      ${formatCurrency(expense.amount)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
       </div>
-    `;
-  }).join('');
+      `;
+  }
 };

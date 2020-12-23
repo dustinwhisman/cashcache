@@ -122,7 +122,7 @@ export const getIncome = async (year, month) => {
               </div>
             `;
           }).join('')}
-        </div>
-      `;
+      </div>
+    `;
   }
 };
