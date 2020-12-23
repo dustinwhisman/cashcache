@@ -1,7 +1,50 @@
+import { addToDb } from './db.mjs';
+
+const importData = async (data) => {
+  const importProgressIndicator = document.querySelector('[data-import-progress]');
+  const {
+    expenses = [],
+    income = [],
+    savings = [],
+    debt = []
+  } = data;
+
+  importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
+  expenses.forEach(async (e) => {
+    await addToDb('expenses', e);
+  });
+
+  importProgressIndicator.innerHTML = '<p>Importing income...</p>';
+  income.forEach(async (i) => {
+    await addToDb('income', i);
+  });
+
+  importProgressIndicator.innerHTML = '<p>Importing savings...</p>';
+  savings.forEach(async (s) => {
+    await addToDb('savings', s);
+  });
+
+  importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
+  debt.forEach(async (d) => {
+    await addToDb('debt', d);
+  });
+
+  importProgressIndicator.innerHTML = `
+    <p>
+      All done! You should see all your data on the
+      <a href="/overview">overview page</a> now.
+    </p>
+  `;
+};
+
 if (brightnessMode) {
   const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
   brightnessInput.checked = true;
 }
+
+const currentDateSpan = document.querySelector('[data-current-date]');
+const today = new Date();
+currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
 (() => {
   const preferences = localStorage.getItem('expenses-preferences') || '{}';
@@ -142,6 +185,29 @@ document.addEventListener('change', (event) => {
   if (event.target.matches('[data-debt-preferences-form] *')) {
     const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
     savePreferencesButton.innerHTML = 'Save Preferences';
+  }
+
+  if (event.target.matches('[data-import-data]')) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const importProgressIndicator = document.querySelector('[data-import-progress]');
+      importProgressIndicator.innerHTML = '<p>Loading file...</p>';
+      try {
+        const importedData = JSON.parse(e.target.result);
+        importData(importedData);
+      } catch (error) {
+        importProgressIndicator.innerHTML = `
+          <p>
+            There was a problem importing data from that file. Please double
+            check the file or try exporting a new one from your other device or
+            browser. If you continue to have problems, contact us at
+            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+          </p>
+        `;
+      }
+    };
+    reader.readAsText(file);
   }
 });
 

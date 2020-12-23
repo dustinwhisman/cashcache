@@ -260,4 +260,28 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
-<script src="/scripts/settings.js"></script>
+<h2>
+  Manage Data
+</h2>
+<p>
+  If you use this site for free, your data is completely private. However, that
+  means it isn't backed up in the cloud. If you want to access your data from
+  multiple devices or keep backups, you'll need to export or import data from
+  here.
+</p>
+
+<h3>
+  Import Data
+</h3>
+<p>
+  If you've exported data from another device or browser, you can import it
+  here. It should have a name similar to
+  "cash-cache.<span data-current-date></span>.json".
+</p>
+<div>
+  <label for="importFile" class="button">Choose a File</label>
+  <input id="importFile" type="file" name="import-file" class="visually-hidden" data-import-data>
+</div>
+<div data-import-progress aria-live="polite"></div>
+
+<script src="/scripts/settings.mjs" type="module"></script>

@@ -28,7 +28,8 @@ button[type="submit"] {
   box-shadow: var(--box-shadow-width) var(--box-shadow-width) var(--box-shadow-spread) var(--box-shadow-spread) var(--box-shadow-color);
 }
 
-button[data-delete] {
+button[data-delete],
+.button {
   background-color: transparent;
   color: var(--text-color);
   border: 0.125em solid var(--text-color);
