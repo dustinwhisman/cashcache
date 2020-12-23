@@ -113,8 +113,8 @@ layout: layouts/app-layout.njk
           </p>
         </div>
       </div>
-      <div class="stack padding:halfem" data-section-body>
-        <div>
+      <div class="stack padding:halfem" data-income data-section-body>
+        <div data-no-income hidden>
           <p>
             You haven't tracked any income yet.
           </p>
@@ -192,6 +192,7 @@ layout: layouts/app-layout.njk
 {% include "scripts/format-date.njk" %}
 <script type="module">
   import { getExpenses } from '/scripts/get-expenses.mjs';
+  import { getIncome } from '/scripts/get-income.mjs';
 
   (async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
@@ -204,5 +205,18 @@ layout: layouts/app-layout.njk
     }
 
     expensesBody.innerHTML = expensesBlock;
+  })();
+
+  (async () => {
+    const incomeBody = document.querySelector('[data-income][data-section-body]');
+    const incomeBlock = await getIncome(year, month);
+
+    if (incomeBlock == null) {
+      const noIncomeMessage = document.querySelector('[data-no-income]');
+      noIncomeMessage.removeAttribute('hidden');
+      return;
+    }
+
+    incomeBody.innerHTML = incomeBlock;
   })();
 </script>
