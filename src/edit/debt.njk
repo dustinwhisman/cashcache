@@ -17,7 +17,6 @@ layout: layouts/simple-layout.njk
 
 <form class="stack">
   {% include "inputs/year-month-inputs.njk" %}
-  {% include "inputs/category-inputs.njk" %}
   <div>
     <label for="debt-description">
       Description
@@ -53,9 +52,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
-
-  {% include "scripts/get-categories.njk" %}
+  import { getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -65,7 +62,6 @@ layout: layouts/simple-layout.njk
       key: elements['key'].value || null,
       year: Number(elements['year'].value),
       month: Number(elements['month'].value) - 1,
-      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
       description: elements['debt-description'].value,
       amount: sanitize(elements['amount'].value),
       minimumPayment: sanitize(elements['minimum-payment'].value),
@@ -78,7 +74,6 @@ layout: layouts/simple-layout.njk
   {% include "scripts/item-added-listener.njk" %}
 
   (async () => {
-    await getCategories('debt');
     const params = new URLSearchParams(window.location.search);
     let key;
 
@@ -99,11 +94,6 @@ layout: layouts/simple-layout.njk
     elements['amount'].value = `${formatCurrency(debt.amount)}`;
     elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
     elements['interest-rate'].value = `${debt.interestRate}%`;
-
-    const categoryInput = document.querySelector(`[name=category][value="${debt.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
-    }
   })();
 
   document.addEventListener('click', (event) => {

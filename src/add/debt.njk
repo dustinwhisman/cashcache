@@ -11,7 +11,6 @@ layout: layouts/simple-layout.njk
 
 <form class="stack">
   {% include "inputs/year-month-inputs.njk" %}
-  {% include "inputs/category-inputs.njk" %}
   <div>
     <label for="debt-description">
       Description
@@ -46,9 +45,7 @@ layout: layouts/simple-layout.njk
 
 {% include "scripts/sanitize.njk" %}
 <script type="module">
-  import { getAllCategories, addToDb } from '/scripts/db.mjs';
-
-  {% include "scripts/get-categories.njk" %}
+  import { addToDb } from '/scripts/db.mjs';
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -58,7 +55,6 @@ layout: layouts/simple-layout.njk
       key: elements['key'].value || null,
       year: Number(elements['year'].value),
       month: Number(elements['month'].value) - 1,
-      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
       description: elements['debt-description'].value,
       amount: sanitize(elements['amount'].value),
       minimumPayment: sanitize(elements['minimum-payment'].value),
@@ -69,6 +65,4 @@ layout: layouts/simple-layout.njk
   });
 
   {% include "scripts/item-added-listener.njk" %}
-
-  getCategories('debt');
 </script>
