@@ -1,0 +1,5 @@
+<script>
+  const formatDate = (year, month, day, locale = 'en-US') => new Intl
+  .DateTimeFormat(locale, { year: '2-digit', month: 'numeric', day: 'numeric' })
+  .format(new Date(year, month, day));
+</script>

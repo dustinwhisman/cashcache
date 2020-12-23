@@ -39,6 +39,7 @@ layout: layouts/simple-layout.njk
 </form>
 
 {% include "scripts/sanitize.njk" %}
+{% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
@@ -83,7 +84,7 @@ layout: layouts/simple-layout.njk
     elements['month'].value = `${expense.month + 1}`;
     elements['day'].value = `${expense.day}`;
     elements['expense-description'].value = `${expense.description}`;
-    elements['amount'].value = `${expense.amount}`;
+    elements['amount'].value = `${formatCurrency(expense.amount)}`;
 
     const categoryInput = document.querySelector(`[name=category][value=${expense.category}]`);
     if (categoryInput) {

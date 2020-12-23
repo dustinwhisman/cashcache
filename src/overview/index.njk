@@ -188,16 +188,8 @@ layout: layouts/app-layout.njk
   addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
   addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
 </script>
-<script>
-  const formatCurrency = (value, locale = 'en-US', currency = 'USD') => new Intl
-  .NumberFormat(locale, { style: 'currency', currency })
-  .format(value);
-</script>
-<script>
-  const formatDate = (year, month, day, locale = 'en-US') => new Intl
-  .DateTimeFormat(locale, { year: '2-digit', month: 'numeric', day: 'numeric' })
-  .format(new Date(year, month, day));
-</script>
+{% include "scripts/format-currency.njk" %}
+{% include "scripts/format-date.njk" %}
 <script type="module">
   import { getExpenses } from '/scripts/get-expenses.mjs';
 
