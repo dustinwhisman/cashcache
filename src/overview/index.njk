@@ -196,6 +196,13 @@ layout: layouts/app-layout.njk
   (async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
     const expensesBlock = await getExpenses(year, month);
+
+    if (expensesBlock == null) {
+      const noExpensesMessage = document.querySelector('[data-no-expenses]');
+      noExpensesMessage.removeAttribute('hidden');
+      return;
+    }
+
     expensesBody.innerHTML = expensesBlock;
   })();
 </script>

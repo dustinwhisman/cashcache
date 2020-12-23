@@ -3,9 +3,7 @@ import { getAllFromIndex } from './db.mjs';
 export const getExpenses = async (year, month) => {
   const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
   if (!expenses?.length) {
-    const noExpensesMessage = document.querySelector('[data-no-expenses]');
-    noExpensesMessage.removeAttribute('hidden');
-    return;
+    return null;
   }
 
   const total = expenses.reduce((a, b) => a + b.amount, 0);
