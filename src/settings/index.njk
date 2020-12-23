@@ -209,6 +209,57 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
+<h2>
+  Sorting Preferences: Debt
+</h2>
+
+<p class="small">
+  There are two popular methods for paying off debt. The mathematically best
+  method is called the Avalanche method, and it has you pay the minimum amount
+  for all debts, then throw as much money as possible at the one with the
+  highest interest rate. This method saves you the most money over time, as it
+  minimizes the amount of interest you have to pay.
+</p>
+
+<p class="small">
+  The other method is called the Snowball method. Similar to the Avalanche
+  method, you pay the minimum amount for all debts, but instead of paying off
+  the highest interest, you focus on the debt with the smallest balance. This
+  has the benefit of getting rid of smaller debts quickly, which can help with
+  motivation. However, it allows higher-interest loans to accumulate interest,
+  which can lead to paying more in the long run.
+</p>
+
+<form class="stack" data-debt-preferences-form>
+  <fieldset>
+    <legend>
+      Debt Payment Strategy
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="debt-method" value="avalanche">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Avalanche (Recommended)
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="debt-method" value="snowball">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Snowball
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div>
+    <button type="submit" data-save-debt-preferences>
+      Save Preferences
+    </button>
+  </div>
+</form>
+
 <script>
   if (brightnessMode) {
     const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
@@ -289,6 +340,16 @@ layout: layouts/simple-layout.njk
     orderInput.checked = true;
   })();
 
+  (() => {
+    const preferences = localStorage.getItem('debt-preferences') || '{}';
+    const {
+      method = 'avalanche'
+    } = JSON.parse(preferences);
+
+    const methodInput = document.querySelector(`[name=debt-method][value=${method}]`);
+    methodInput.checked = true;
+  })();
+
   document.addEventListener('change', (event) => {
     if (event.target.matches('[name=brightness-mode]')) {
       const rootElement = document.documentElement;
@@ -340,6 +401,11 @@ layout: layouts/simple-layout.njk
       const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
       savePreferencesButton.innerHTML = 'Save Preferences';
     }
+
+    if (event.target.matches('[data-debt-preferences-form] *')) {
+      const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
+      savePreferencesButton.innerHTML = 'Save Preferences';
+    }
   });
 
   document.addEventListener('submit', (event) => {
@@ -379,6 +445,17 @@ layout: layouts/simple-layout.njk
 
       localStorage.setItem('savings-preferences', JSON.stringify(preferences));
       const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
+      savePreferencesButton.innerHTML = 'Saved!';
+    }
+
+    if (event.target.matches('[data-debt-preferences-form]')) {
+      const { elements } = event.target;
+      const preferences = {
+        method: elements['debt-method'].value,
+      };
+
+      localStorage.setItem('debt-preferences', JSON.stringify(preferences));
+      const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
       savePreferencesButton.innerHTML = 'Saved!';
     }
   });
