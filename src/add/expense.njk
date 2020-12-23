@@ -1,17 +1,17 @@
 ---
 title: Add Expense
-layout: simple-layout.njk
+layout: layouts/simple-layout.njk
 ---
 
 <h1>
   Add Expense
 </h1>
 
-{% include "back-link.njk" %}
+{% include "components/back-link.njk" %}
 
 <form data-add-expense-form class="stack">
-  {% include "date-inputs.njk" %}
-  {% include "category-inputs.njk" %}
+  {% include "inputs/date-inputs.njk" %}
+  {% include "inputs/category-inputs.njk" %}
   <div>
     <label for="expense-description">
       Description
@@ -32,11 +32,11 @@ layout: simple-layout.njk
   </div>
 </form>
 
-{% include "sanitize.njk" %}
+{% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, addToDb } from '/scripts/db.mjs';
 
-  {% include "get-categories.njk" %}
+  {% include "scripts/get-categories.njk" %}
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -55,7 +55,7 @@ layout: simple-layout.njk
     addToDb('expenses', expense);
   });
 
-  {% include "item-added-listener.njk" %}
+  {% include "scripts/item-added-listener.njk" %}
 
   getCategories('expenses');
 </script>

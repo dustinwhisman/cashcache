@@ -5,7 +5,7 @@ const getCategories = async (storeName) => {
     const categoryTemplate = `
       <label class="custom-checkbox">
         <input type="radio" name="category" value="${category}" required>
-        {% include "radio-svg.njk" %}
+        {% include "svgs/radio-svg.njk" %}
         <span>
           ${category}
         </span>

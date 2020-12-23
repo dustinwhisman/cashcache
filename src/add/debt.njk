@@ -1,17 +1,17 @@
 ---
 title: Add Debt
-layout: simple-layout.njk
+layout: layouts/simple-layout.njk
 ---
 
 <h1>
   Add Debt
 </h1>
 
-{% include "back-link.njk" %}
+{% include "components/back-link.njk" %}
 
 <form data-add-debt-form class="stack">
-  {% include "year-month-inputs.njk" %}
-  {% include "category-inputs.njk" %}
+  {% include "inputs/year-month-inputs.njk" %}
+  {% include "inputs/category-inputs.njk" %}
   <div>
     <label for="debt-description">
       Description

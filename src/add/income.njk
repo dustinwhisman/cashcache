@@ -1,17 +1,17 @@
 ---
 title: Add Income
-layout: simple-layout.njk
+layout: layouts/simple-layout.njk
 ---
 
 <h1>
   Add Income
 </h1>
 
-{% include "back-link.njk" %}
+{% include "components/back-link.njk" %}
 
 <form data-add-income-form class="stack">
-  {% include "date-inputs.njk" %}
-  {% include "category-inputs.njk" %}
+  {% include "inputs/date-inputs.njk" %}
+  {% include "inputs/category-inputs.njk" %}
   <div>
     <label for="income-description">
       Description

@@ -1,6 +1,6 @@
 ---
 title: Settings
-layout: simple-layout.njk
+layout: layouts/simple-layout.njk
 ---
 
 <h1>
@@ -18,21 +18,21 @@ layout: simple-layout.njk
   <div class="stack" style="--stack-space: 0.5em">
     <label class="custom-checkbox">
       <input type="radio" name="brightness-mode" value="light-mode">
-      {% include "radio-svg.njk" %}
+      {% include "svgs/radio-svg.njk" %}
       <span>
         Light Mode
       </span>
     </label>
     <label class="custom-checkbox">
       <input type="radio" name="brightness-mode" value="dark-mode">
-      {% include "radio-svg.njk" %}
+      {% include "svgs/radio-svg.njk" %}
       <span>
         Dark Mode
       </span>
     </label>
     <label class="custom-checkbox">
       <input type="radio" name="brightness-mode" value="" checked>
-      {% include "radio-svg.njk" %}
+      {% include "svgs/radio-svg.njk" %}
       <span>
         Use System Settings
       </span>
