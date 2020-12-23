@@ -98,34 +98,38 @@ export const getAllCategories = (storeName) => {
 };
 
 export const addToDb = (storeName, thingToAdd) => {
-  if (thingToAdd.key == null) {
-    thingToAdd.key = uuid();
-  }
+  return new Promise((resolve, reject) => {
+    if (thingToAdd.key == null) {
+      thingToAdd.key = uuid();
+    }
 
-  const request = indexedDB.open(schemaName, schemaVersion);
-  request.onupgradeneeded = updateSchema;
+    const request = indexedDB.open(schemaName, schemaVersion);
+    request.onupgradeneeded = updateSchema;
 
-  request.onerror = (event) => {
-    console.log(`Database error: ${event.target.errorCode}`);
-  };
-
-  request.onsuccess = (event) => {
-    const db = event.target.result;
-    const transaction = db.transaction([storeName], 'readwrite');
-    const objectStore = transaction.objectStore(storeName);
-    const existingThingRequest = objectStore.get(thingToAdd.key);
-    existingThingRequest.onsuccess = (event) => {
-      if (event.target.result && event.target.result.isDeleted) {
-        thingToAdd.isDeleted = true;
-      }
-
-      const result = objectStore.put(thingToAdd);
-      result.onsuccess = () => {
-        const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-        document.dispatchEvent(successEvent);
-      };
+    request.onerror = (event) => {
+      console.log(`Database error: ${event.target.errorCode}`);
+      reject();
     };
-  }
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], 'readwrite');
+      const objectStore = transaction.objectStore(storeName);
+      const existingThingRequest = objectStore.get(thingToAdd.key);
+      existingThingRequest.onsuccess = (event) => {
+        if (event.target.result && event.target.result.isDeleted) {
+          thingToAdd.isDeleted = true;
+        }
+
+        const result = objectStore.put(thingToAdd);
+        result.onsuccess = () => {
+          const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
+          document.dispatchEvent(successEvent);
+          resolve();
+        };
+      };
+    }
+  });
 };
 
 export const deleteFromDb = (storeName, key) => {

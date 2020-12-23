@@ -10,24 +10,28 @@ const importData = async (data) => {
   } = data;
 
   importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
-  expenses.forEach(async (e) => {
+  await Promise.all(expenses.map(async (e) => {
     await addToDb('expenses', e);
-  });
+    return Promise.resolve();
+  }));
 
   importProgressIndicator.innerHTML = '<p>Importing income...</p>';
-  income.forEach(async (i) => {
+  await Promise.all(income.map(async (i) => {
     await addToDb('income', i);
-  });
+    return Promise.resolve();
+  }));
 
   importProgressIndicator.innerHTML = '<p>Importing savings...</p>';
-  savings.forEach(async (s) => {
+  await Promise.all(savings.map(async (s) => {
     await addToDb('savings', s);
-  });
+    return Promise.resolve();
+  }));
 
   importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
-  debt.forEach(async (d) => {
+  await Promise.all(debt.map(async (d) => {
     await addToDb('debt', d);
-  });
+    return Promise.resolve();
+  }));
 
   importProgressIndicator.innerHTML = `
     <p>
