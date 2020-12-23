@@ -10,82 +10,119 @@ export const getIncome = async (year, month) => {
   const totalIncomeIndicator = document.querySelector('[data-total-income]');
   totalIncomeIndicator.innerHTML = formatCurrency(total);
 
-  let categories = income.reduce((acc, income) => {
-    if (acc[income.category]) {
-      acc[income.category].income.push(income);
-    } else {
-      acc[income.category] = {
-        name: income.category,
-        income: [income],
-      };
+  const preferences = localStorage.getItem('income-preferences') || '{}';
+  const {
+    groupByCategory = true,
+    sortBy = 'day',
+    order = 'ascending'
+  } = JSON.parse(preferences);
+
+  const sortingFunction = (a, b) => {
+    if (a[sortBy] < b[sortBy]) {
+      return order === 'descending' ? 1 : -1;
     }
 
-    return acc;
-  }, {});
+    if (a[sortBy] > b[sortBy]) {
+      return order === 'descending' ? -1 : 1;
+    }
 
-  return Object.keys(categories)
-    .sort((a, b) => {
-      const aTotal = categories[a].income.reduce((a, b) => a + b.amount, 0);
-      const bTotal = categories[b].income.reduce((a, b) => a + b.amount, 0);
-      if (aTotal < bTotal) {
-        return 1;
+    return 0;
+  };
+
+  if (groupByCategory) {
+    let categories = income.reduce((acc, income) => {
+      if (acc[income.category]) {
+        acc[income.category].income.push(income);
+      } else {
+        acc[income.category] = {
+          name: income.category,
+          income: [income],
+        };
       }
 
-      if (aTotal > bTotal) {
-        return -1;
-      }
+      return acc;
+    }, {});
 
-      return 0;
-    })
-  .map((key) => {
-    const category = categories[key];
-    const categoryTotal = category.income.reduce((a, b) => a + b.amount, 0);
-    return `
-      <div>
-        <div class="cluster heading">
-          <div class="justify-content:space-between" style="align-items: flex-end">
-            <h3 class="h6" style="max-width: 50%">
-              ${category.name}
-            </h3>
-            <p class="h6" style="margin-inline-start: auto">
-              ${formatCurrency(categoryTotal)}
-            </p>
+    return Object.keys(categories)
+      .sort((a, b) => {
+        const aTotal = categories[a].income.reduce((a, b) => a + b.amount, 0);
+        const bTotal = categories[b].income.reduce((a, b) => a + b.amount, 0);
+        if (aTotal < bTotal) {
+          return 1;
+        }
+
+        if (aTotal > bTotal) {
+          return -1;
+        }
+
+        return 0;
+      })
+    .map((key) => {
+      const category = categories[key];
+      const categoryTotal = category.income.reduce((a, b) => a + b.amount, 0);
+      return `
+        <div>
+          <div class="cluster heading">
+            <div class="justify-content:space-between" style="align-items: flex-end">
+              <h3 class="h6" style="max-width: 50%">
+                ${category.name}
+              </h3>
+              <p class="h6" style="margin-inline-start: auto">
+                ${formatCurrency(categoryTotal)}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="stack" style="--stack-space: 0.75em">
-          ${category.income
-            .sort((a, b) => {
-              if (a.amount < b.amount) {
-                return 1;
-              }
-
-              if (a.amount > b.amount) {
-                return -1;
-              }
-
-              return 0;
-            })
-            .map((income) => {
-              return `
-                <div>
-                  <p class="tiny font-style:italic">
-                    ${formatDate(income.year, income.month, income.day)}
-                  </p>
-                  <div class="cluster small">
-                    <div class="justify-content:space-between" style="align-items: flex-end">
-                      <a href="/edit/income?key=${income.key}" style="max-width: 50%">
-                        ${income.description}
-                      </a>
-                      <p style="margin-inline-start: auto">
-                        ${formatCurrency(income.amount)}
-                      </p>
+          <div class="stack" style="--stack-space: 0.75em">
+            ${category.income
+              .sort(sortingFunction)
+              .map((income) => {
+                return `
+                  <div>
+                    <p class="tiny font-style:italic">
+                      ${formatDate(income.year, income.month, income.day)}
+                    </p>
+                    <div class="cluster small">
+                      <div class="justify-content:space-between" style="align-items: flex-end">
+                        <a href="/edit/income?key=${income.key}" style="max-width: 50%">
+                          ${income.description}
+                        </a>
+                        <p style="margin-inline-start: auto">
+                          ${formatCurrency(income.amount)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              `;
-            }).join('')}
+                `;
+              }).join('')}
+          </div>
         </div>
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('');
+  } else {
+    return `
+      <div class="stack" style="--stack-space: 0.75em">
+        ${income
+          .sort(sortingFunction)
+          .map((income) => {
+            return `
+              <div>
+                <p class="tiny font-style:italic">
+                  ${formatDate(income.year, income.month, income.day)}
+                </p>
+                <div class="cluster small">
+                  <div class="justify-content:space-between" style="align-items: flex-end">
+                    <a href="/edit/income?key=${income.key}" style="max-width: 50%">
+                      ${income.description}
+                    </a>
+                    <p style="margin-inline-start: auto">
+                      ${formatCurrency(income.amount)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+  }
 };
