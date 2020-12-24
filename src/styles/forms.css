@@ -37,6 +37,7 @@ button,
   max-width: 100%;
   font-size: calc(var(--h6));
   box-shadow: var(--box-shadow-width) var(--box-shadow-width) var(--box-shadow-spread) var(--box-shadow-spread) var(--box-shadow-color);
+  text-decoration: none;
 }
 
 .custom-checkbox {
