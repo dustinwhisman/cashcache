@@ -231,7 +231,7 @@ layout: layouts/app-layout.njk
 {% include "scripts/format-currency.njk" %}
 {% include "scripts/format-date.njk" %}
 <script type="module">
-  import { getAllFromIndex, addToDb } from '/scripts/db.mjs';
+  import { getAllFromIndex, getAllFromObjectStore, addToDb } from '/scripts/db.mjs';
   import { getExpenses } from '/scripts/get-expenses.mjs';
   import { getIncome } from '/scripts/get-income.mjs';
   import { getSavings } from '/scripts/get-savings.mjs';
@@ -244,7 +244,7 @@ layout: layouts/app-layout.njk
     lastMonthYear -= 1;
   }
 
-  (async () => {
+  const loadExpenses = async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
     const expensesBlock = await getExpenses(year, month);
 
@@ -262,9 +262,11 @@ layout: layouts/app-layout.njk
     }
 
     expensesBody.innerHTML = expensesBlock;
-  })();
+  };
 
-  (async () => {
+  loadExpenses();
+
+  const loadIncome = async () => {
     const incomeBody = document.querySelector('[data-income][data-section-body]');
     const incomeBlock = await getIncome(year, month);
 
@@ -282,7 +284,9 @@ layout: layouts/app-layout.njk
     }
 
     incomeBody.innerHTML = incomeBlock;
-  })();
+  };
+
+  loadIncome();
 
   const loadSavings = async () => {
     const savingsBody = document.querySelector('[data-savings][data-section-body]');
@@ -324,6 +328,14 @@ layout: layouts/app-layout.njk
 
   loadDebt();
 
+  const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
+    if ((Math.abs(startingMonth - currentMonth) % interval) !== 0) {
+      return false;
+    }
+
+    return true;
+  };
+
   document.addEventListener('click', async (event) => {
     if (event.target.matches('[data-copy-savings] button')) {
       const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth);
@@ -357,6 +369,175 @@ layout: layouts/app-layout.njk
       }));
 
       loadDebt();
+    }
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    if (event.target.matches('[data-copy-expenses] button')) {
+      const recurringExpenses = await getAllFromObjectStore('recurring-expenses');
+      await Promise.all(recurringExpenses.map(async (expense) => {
+        if (expense.isDeleted || !expense.active) {
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '1-month') {
+          const newExpense = {
+            year,
+            month,
+            day: expense.day > daysInMonth ? daysInMonth : expense.day,
+            category: expense.category,
+            description: expense.description,
+            amount: expense.amount,
+            key: null,
+          };
+
+          await addToDb('expenses', newExpense);
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '3-month') {
+          if (!isMonthOnInterval(expense.month, month, 3)) {
+            return Promise.resolve();
+          }
+
+          const newExpense = {
+            year,
+            month,
+            day: expense.day > daysInMonth ? daysInMonth : expense.day,
+            category: expense.category,
+            description: expense.description,
+            amount: expense.amount,
+            key: null,
+          };
+
+          await addToDb('expenses', newExpense);
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '6-month') {
+          if (!isMonthOnInterval(expense.month, month, 6)) {
+            return Promise.resolve();
+          }
+
+          const newExpense = {
+            year,
+            month,
+            day: expense.day > daysInMonth ? daysInMonth : expense.day,
+            category: expense.category,
+            description: expense.description,
+            amount: expense.amount,
+            key: null,
+          };
+
+          await addToDb('expenses', newExpense);
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '1-year') {
+          if (expense.month !== month) {
+            return Promise.resolve();
+          }
+
+          const newExpense = {
+            year,
+            month,
+            day: expense.day > daysInMonth ? daysInMonth : expense.day,
+            category: expense.category,
+            description: expense.description,
+            amount: expense.amount,
+            key: null,
+          };
+
+          await addToDb('expenses', newExpense);
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '1-week') {
+          let expenseDay = new Date(expense.year, expense.month, expense.day);
+          const maximumDay = new Date(year, month + 1, 0);
+          while (true) {
+            if (expenseDay > maximumDay) {
+              break;
+            }
+
+            if (expenseDay.getFullYear() !== year || expenseDay.getMonth() !== month) {
+              expenseDay.setDate(expenseDay.getDate() + 7);
+              continue;
+            }
+
+            const newExpense = {
+              year,
+              month,
+              day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
+              category: expense.category,
+              description: expense.description,
+              amount: expense.amount,
+              key: null,
+            };
+
+            await addToDb('expenses', newExpense);
+            expenseDay.setDate(expenseDay.getDate() + 7);
+          }
+
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === '2-week') {
+          let expenseDay = new Date(expense.year, expense.month, expense.day);
+          const maximumDay = new Date(year, month + 1, 0);
+          while (true) {
+            if (expenseDay > maximumDay) {
+              break;
+            }
+
+            if (expenseDay.getFullYear() !== year || expenseDay.getMonth() !== month) {
+              expenseDay.setDate(expenseDay.getDate() + 14);
+              continue;
+            }
+
+            const newExpense = {
+              year,
+              month,
+              day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
+              category: expense.category,
+              description: expense.description,
+              amount: expense.amount,
+              key: null,
+            };
+
+            await addToDb('expenses', newExpense);
+            expenseDay.setDate(expenseDay.getDate() + 14);
+          }
+
+          return Promise.resolve();
+        }
+
+        if (expense.frequency === 'twice-per-month') {
+          await Promise.all(expense.daysOfMonth.map(async (day) => {
+            const newExpense = {
+              year,
+              month,
+              day: day > daysInMonth ? daysInMonth : day,
+              category: expense.category,
+              description: expense.description,
+              amount: expense.amount,
+              key: null,
+            };
+
+            await addToDb('expenses', newExpense);
+            return Promise.resolve();
+          }));
+
+          return Promise.resolve();
+        }
+
+        return Promise.resolve();
+      }));
+
+      loadExpenses();
+    }
+
+    if (event.target.matches('[data-copy-expenses] button')) {
+      loadIncome();
     }
   });
 </script>
