@@ -536,7 +536,167 @@ layout: layouts/app-layout.njk
       loadExpenses();
     }
 
-    if (event.target.matches('[data-copy-expenses] button')) {
+    if (event.target.matches('[data-copy-income] button')) {
+      const recurringIncome = await getAllFromObjectStore('recurring-income');
+      await Promise.all(recurringIncome.map(async (income) => {
+        if (income.isDeleted || !income.active) {
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '1-month') {
+          const newIncome = {
+            year,
+            month,
+            day: income.day > daysInMonth ? daysInMonth : income.day,
+            category: income.category,
+            description: income.description,
+            amount: income.amount,
+            key: null,
+          };
+
+          await addToDb('income', newIncome);
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '3-month') {
+          if (!isMonthOnInterval(income.month, month, 3)) {
+            return Promise.resolve();
+          }
+
+          const newIncome = {
+            year,
+            month,
+            day: income.day > daysInMonth ? daysInMonth : income.day,
+            category: income.category,
+            description: income.description,
+            amount: income.amount,
+            key: null,
+          };
+
+          await addToDb('income', newIncome);
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '6-month') {
+          if (!isMonthOnInterval(income.month, month, 6)) {
+            return Promise.resolve();
+          }
+
+          const newIncome = {
+            year,
+            month,
+            day: income.day > daysInMonth ? daysInMonth : income.day,
+            category: income.category,
+            description: income.description,
+            amount: income.amount,
+            key: null,
+          };
+
+          await addToDb('income', newIncome);
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '1-year') {
+          if (income.month !== month) {
+            return Promise.resolve();
+          }
+
+          const newIncome = {
+            year,
+            month,
+            day: income.day > daysInMonth ? daysInMonth : income.day,
+            category: income.category,
+            description: income.description,
+            amount: income.amount,
+            key: null,
+          };
+
+          await addToDb('income', newIncome);
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '1-week') {
+          let incomeDay = new Date(income.year, income.month, income.day);
+          const maximumDay = new Date(year, month + 1, 0);
+          while (true) {
+            if (incomeDay > maximumDay) {
+              break;
+            }
+
+            if (incomeDay.getFullYear() !== year || incomeDay.getMonth() !== month) {
+              incomeDay.setDate(incomeDay.getDate() + 7);
+              continue;
+            }
+
+            const newIncome = {
+              year,
+              month,
+              day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
+              category: income.category,
+              description: income.description,
+              amount: income.amount,
+              key: null,
+            };
+
+            await addToDb('income', newIncome);
+            incomeDay.setDate(incomeDay.getDate() + 7);
+          }
+
+          return Promise.resolve();
+        }
+
+        if (income.frequency === '2-week') {
+          let incomeDay = new Date(income.year, income.month, income.day);
+          const maximumDay = new Date(year, month + 1, 0);
+          while (true) {
+            if (incomeDay > maximumDay) {
+              break;
+            }
+
+            if (incomeDay.getFullYear() !== year || incomeDay.getMonth() !== month) {
+              incomeDay.setDate(incomeDay.getDate() + 14);
+              continue;
+            }
+
+            const newIncome = {
+              year,
+              month,
+              day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
+              category: income.category,
+              description: income.description,
+              amount: income.amount,
+              key: null,
+            };
+
+            await addToDb('income', newIncome);
+            incomeDay.setDate(incomeDay.getDate() + 14);
+          }
+
+          return Promise.resolve();
+        }
+
+        if (income.frequency === 'twice-per-month') {
+          await Promise.all(income.daysOfMonth.map(async (day) => {
+            const newIncome = {
+              year,
+              month,
+              day: day > daysInMonth ? daysInMonth : day,
+              category: income.category,
+              description: income.description,
+              amount: income.amount,
+              key: null,
+            };
+
+            await addToDb('income', newIncome);
+            return Promise.resolve();
+          }));
+
+          return Promise.resolve();
+        }
+
+        return Promise.resolve();
+      }));
+
       loadIncome();
     }
   });
