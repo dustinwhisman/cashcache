@@ -26,6 +26,24 @@ export const getIncome = async (year, month) => {
       return order === 'descending' ? -1 : 1;
     }
 
+    if (sortBy === 'amount') {
+      if (a.day < b.day) {
+        return -1;
+      }
+
+      if (a.day > b.day) {
+        return 1;
+      }
+    } else {
+      if (a.amount < b.amount) {
+        return 1;
+      }
+
+      if (a.amount > b.amount) {
+        return -1;
+      }
+    }
+
     return 0;
   };
 
