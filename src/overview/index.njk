@@ -304,7 +304,7 @@ layout: layouts/app-layout.njk
 
   loadSavings();
 
-  (async () => {
+  const loadDebt = async () => {
     const debtBody = document.querySelector('[data-debt][data-section-body]');
     const debtBlock = await getDebt(year, month);
 
@@ -320,7 +320,9 @@ layout: layouts/app-layout.njk
     }
 
     debtBody.innerHTML = debtBlock;
-  })();
+  };
+
+  loadDebt();
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('[data-copy-savings] button')) {
@@ -338,6 +340,23 @@ layout: layouts/app-layout.njk
       }));
 
       loadSavings();
+    }
+
+    if (event.target.matches('[data-copy-debt] button')) {
+      const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth);
+      await Promise.all(lastMonthsDebt.map(async (loan) => {
+        const newLoan = {
+          ...loan,
+          month,
+          year,
+          key: null,
+        };
+
+        await addToDb('debt', newLoan);
+        return Promise.resolve();
+      }));
+
+      loadDebt();
     }
   });
 </script>
