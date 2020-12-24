@@ -1,5 +1,5 @@
 ---
-title: Add Recurring Expense
+title: Edit Recurring Expense
 layout: layouts/simple-layout.njk
 ---
 
@@ -13,10 +13,16 @@ layout: layouts/simple-layout.njk
 </style>
 
 <h1>
-  Add Recurring Expense
+  Edit Recurring Expense
 </h1>
 
 {% include "components/back-link.njk" %}
+
+<div>
+  <button type="button" data-delete data-key="">
+    Delete this Recurring Expense
+  </button>
+</div>
 
 <form class="stack">
   {% include "inputs/category-inputs.njk" %}
@@ -99,14 +105,15 @@ layout: layouts/simple-layout.njk
   <input type="hidden" name="key" value="">
   <div>
     <button type="submit">
-      Save Recurring Expense
+      Save Changes
     </button>
   </div>
 </form>
 
 {% include "scripts/sanitize.njk" %}
+{% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, addToDb } from '/scripts/db.mjs';
+  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
@@ -134,5 +141,67 @@ layout: layouts/simple-layout.njk
     window.location.href = `/recurring-expenses`;
   });
 
-  getCategories('expenses');
+
+  (async () => {
+    await getCategories('expenses');
+    const params = new URLSearchParams(window.location.search);
+    let key;
+
+    if (params?.has('key')) {
+      key = params.get('key');
+    }
+
+    const deleteButton = document.querySelector('[data-delete]');
+    deleteButton.dataset.key = key;
+
+    const expense = await getFromDb('recurring-expenses', key);
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = key;
+    elements['expense-description'].value = `${expense.description}`;
+    elements['amount'].value = `${formatCurrency(expense.amount)}`;
+    elements['year'].value = `${expense.year}`;
+    elements['month'].value = `${expense.month + 1}`;
+    elements['day'].value = `${expense.day}`;
+    elements['frequency'].value = `${expense.frequency}`;
+
+    expense.daysOfMonth.forEach((day) => {
+      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+      dayInput.checked = true;
+    });
+
+    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+
+    if (expense.frequency === 'twice-per-month') {
+      const simpleDatesBlock = document.querySelector('[data-simple-dates]');
+      const complexDatesBlock = document.querySelector('[data-complex-dates]');
+      simpleDatesBlock.setAttribute('hidden', true);
+      complexDatesBlock.removeAttribute('hidden');
+    }
+
+    if (!expense.active) {
+      const activeInput = document.querySelector('[name=active]');
+      activeInput.checked = false;
+    }
+  })();
+
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('[data-delete]')) {
+      console.log(event.target.dataset.key);
+      if (window.confirm('Are you sure you want to delete this recurring expense?')) {
+        deleteFromDb('recurring-expenses', event.target.dataset.key);
+      }
+    }
+  });
+
+  document.addEventListener('item-deleted', () => {
+    if (document.referrer) {
+      window.location.href = document.referrer;
+    } else {
+      window.location.href = `/recurring-expenses`;
+    }
+  });
 </script>

@@ -141,7 +141,8 @@ layout: layouts/simple-layout.njk
 
   (async () => {
     const recurringExpensesBlock = document.querySelector('[data-recurring-expenses]');
-    const recurringExpenses = await getAllFromObjectStore('recurring-expenses');
+    let recurringExpenses = await getAllFromObjectStore('recurring-expenses');
+    recurringExpenses = recurringExpenses.filter(expense => !expense.isDeleted);
 
     if (!recurringExpenses?.length) {
       const noRecurringExpenses = document.querySelector('[data-no-recurring-expenses]');
@@ -199,7 +200,7 @@ layout: layouts/simple-layout.njk
           <div>
             <div class="cluster">
               <div class="justify-content:space-between" style="align-items: flex-end">
-                <a href="/recurring-expense/edit?key=${expense.key}" style="max-width: 50%">
+                <a href="/recurring-expenses/edit?key=${expense.key}" style="max-width: 50%">
                   ${expense.description}
                 </a>
                 <p style="margin-inline-start: auto">
