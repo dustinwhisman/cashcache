@@ -124,6 +124,7 @@ layout: layouts/simple-layout.njk
       day: Number(elements['day'].value),
       frequency: elements['frequency'].value,
       daysOfMonth: Array.from(elements['days-of-month']).filter(checkbox => checkbox.checked).map(checkbox => Number(checkbox.value)),
+      active: elements['active'].checked,
     };
 
     addToDb('recurring-expenses', expense);
