@@ -97,7 +97,13 @@ export const getIncome = async (year, month) => {
           </div>
         </div>
       `;
-    }).join('');
+    }).join('') + `
+    <div style="padding-block-end: 1rem">
+      <a href="/recurring-income" class="small">
+        View Recurring Income
+      </a>
+    </div>
+  `;
   } else {
     return `
       <div class="stack" style="--stack-space: 0.75em">
@@ -122,6 +128,11 @@ export const getIncome = async (year, month) => {
               </div>
             `;
           }).join('')}
+        <div style="padding-block-end: 1rem">
+          <a href="/recurring-income" class="small">
+            View Recurring Income
+          </a>
+        </div>
       </div>
     `;
   }
