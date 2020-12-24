@@ -6,7 +6,9 @@ const importData = async (data) => {
     expenses = [],
     income = [],
     savings = [],
-    debt = []
+    debt = [],
+    recurringExpenses = [],
+    recurringIncome = []
   } = data;
 
   importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
@@ -30,6 +32,18 @@ const importData = async (data) => {
   importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
   await Promise.all(debt.map(async (d) => {
     await addToDb('debt', d);
+    return Promise.resolve();
+  }));
+
+  importProgressIndicator.innerHTML = '<p>Importing recurring expenses...</p>';
+  await Promise.all(recurringExpenses.map(async (r) => {
+    await addToDb('recurring-expenses', r);
+    return Promise.resolve();
+  }));
+
+  importProgressIndicator.innerHTML = '<p>Importing recurring income...</p>';
+  await Promise.all(recurringIncome.map(async (r) => {
+    await addToDb('recurring-income', r);
     return Promise.resolve();
   }));
 
@@ -274,6 +288,8 @@ document.addEventListener('click', async (event) => {
       income: await getAllFromObjectStore('income'),
       savings: await getAllFromObjectStore('savings'),
       debt: await getAllFromObjectStore('debt'),
+      recurringExpenses: await getAllFromObjectStore('recurring-expenses'),
+      recurringIncome: await getAllFromObjectStore('recurring-income'),
     };
 
     const today = new Date();
