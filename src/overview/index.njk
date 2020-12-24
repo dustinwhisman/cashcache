@@ -231,7 +231,7 @@ layout: layouts/app-layout.njk
 {% include "scripts/format-currency.njk" %}
 {% include "scripts/format-date.njk" %}
 <script type="module">
-  import { getAllFromIndex } from '/scripts/db.mjs';
+  import { getAllFromIndex, addToDb } from '/scripts/db.mjs';
   import { getExpenses } from '/scripts/get-expenses.mjs';
   import { getIncome } from '/scripts/get-income.mjs';
   import { getSavings } from '/scripts/get-savings.mjs';
@@ -284,7 +284,7 @@ layout: layouts/app-layout.njk
     incomeBody.innerHTML = incomeBlock;
   })();
 
-  (async () => {
+  const loadSavings = async () => {
     const savingsBody = document.querySelector('[data-savings][data-section-body]');
     const savingsBlock = await getSavings(year, month);
 
@@ -300,7 +300,9 @@ layout: layouts/app-layout.njk
     }
 
     savingsBody.innerHTML = savingsBlock;
-  })();
+  };
+
+  loadSavings();
 
   (async () => {
     const debtBody = document.querySelector('[data-debt][data-section-body]');
@@ -319,4 +321,23 @@ layout: layouts/app-layout.njk
 
     debtBody.innerHTML = debtBlock;
   })();
+
+  document.addEventListener('click', async (event) => {
+    if (event.target.matches('[data-copy-savings] button')) {
+      const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth);
+      await Promise.all(lastMonthsSavings.map(async (fund) => {
+        const newFund = {
+          ...fund,
+          month,
+          year,
+          key: null,
+        };
+
+        await addToDb('savings', newFund);
+        return Promise.resolve();
+      }));
+
+      loadSavings();
+    }
+  });
 </script>
