@@ -1,0 +1,207 @@
+---
+title: Edit Recurring Income
+layout: layouts/simple-layout.njk
+---
+
+<style>
+  .dates-grid {
+    display: grid;
+    grid-gap: 0.75em;
+    grid-template-columns: repeat(7, max-content);
+    font-size: calc(var(--h6));
+  }
+</style>
+
+<h1>
+  Edit Recurring Income
+</h1>
+
+{% include "components/back-link.njk" %}
+
+<div>
+  <button type="button" data-delete data-key="">
+    Delete this Recurring Income
+  </button>
+</div>
+
+<form class="stack">
+  {% include "inputs/category-inputs.njk" %}
+  <div>
+    <label for="income-description">
+      Description
+    </label>
+    <input id="income-description" type="text" name="income-description" required>
+  </div>
+  <div>
+    <label for="amount">
+      Amount
+    </label>
+    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+  </div>
+  <fieldset>
+    <legend>
+      Frequency
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="1-month" checked>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every Month
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="3-month">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every 3 Months
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="6-month">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every 6 Months
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="1-year">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every Year
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="1-week">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every Week
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="2-week">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Every 2 Weeks
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="frequency" value="twice-per-month">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Twice per Month
+        </span>
+      </label>
+    </div>
+  </fieldset>
+  {% include "inputs/complex-dates.njk" %}
+  <label class="custom-checkbox">
+    <input type="checkbox" name="active" checked>
+    {% include "svgs/checkbox-svg.njk" %}
+    <span>
+      This recurring income is currently active
+    </span>
+  </label>
+  <input type="hidden" name="key" value="">
+  <div>
+    <button type="submit">
+      Save Changes
+    </button>
+  </div>
+</form>
+
+{% include "scripts/sanitize.njk" %}
+{% include "scripts/format-currency.njk" %}
+<script type="module">
+  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+
+  {% include "scripts/get-categories.njk" %}
+
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const { elements } = event.target;
+    const income = {
+      key: elements['key'].value || null,
+      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+      description: elements['income-description'].value,
+      amount: sanitize(elements['amount'].value),
+      year: Number(elements['year'].value),
+      month: Number(elements['month'].value) - 1,
+      day: Number(elements['day'].value),
+      frequency: elements['frequency'].value,
+      daysOfMonth: Array.from(elements['days-of-month']).filter(checkbox => checkbox.checked).map(checkbox => Number(checkbox.value)),
+      active: elements['active'].checked,
+    };
+
+    addToDb('recurring-income', income);
+  });
+
+  document.addEventListener('item-added', () => {
+    window.location.href = `/recurring-income`;
+  });
+
+
+  (async () => {
+    await getCategories('income');
+    const params = new URLSearchParams(window.location.search);
+    let key;
+
+    if (params?.has('key')) {
+      key = params.get('key');
+    }
+
+    const deleteButton = document.querySelector('[data-delete]');
+    deleteButton.dataset.key = key;
+
+    const income = await getFromDb('recurring-income', key);
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = key;
+    elements['income-description'].value = `${income.description}`;
+    elements['amount'].value = `${formatCurrency(income.amount)}`;
+    elements['year'].value = `${income.year}`;
+    elements['month'].value = `${income.month + 1}`;
+    elements['day'].value = `${income.day}`;
+    elements['frequency'].value = `${income.frequency}`;
+
+    income.daysOfMonth.forEach((day) => {
+      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+      dayInput.checked = true;
+    });
+
+    const categoryInput = document.querySelector(`[name=category][value="${income.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+
+    if (income.frequency === 'twice-per-month') {
+      const simpleDatesBlock = document.querySelector('[data-simple-dates]');
+      const complexDatesBlock = document.querySelector('[data-complex-dates]');
+      simpleDatesBlock.setAttribute('hidden', true);
+      complexDatesBlock.removeAttribute('hidden');
+    }
+
+    if (!income.active) {
+      const activeInput = document.querySelector('[name=active]');
+      activeInput.checked = false;
+    }
+  })();
+
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('[data-delete]')) {
+      console.log(event.target.dataset.key);
+      if (window.confirm('Are you sure you want to delete this recurring income?')) {
+        deleteFromDb('recurring-income', event.target.dataset.key);
+      }
+    }
+  });
+
+  document.addEventListener('item-deleted', () => {
+    if (document.referrer) {
+      window.location.href = document.referrer;
+    } else {
+      window.location.href = `/recurring-income`;
+    }
+  });
+</script>
