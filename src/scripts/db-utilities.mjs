@@ -27,6 +27,16 @@ export const updateSchema = (event) => {
   }
   const debt = upgradeDb.createObjectStore('debt', { keyPath: 'key' });
   debt.createIndex('year-month', ['year', 'month']);
+
+  if (upgradeDb.objectStoreNames.contains('recurring-expenses')) {
+    upgradeDb.deleteObjectStore('recurring-expenses');
+  }
+  upgradeDb.createObjectStore('recurring-expenses', { keyPath: 'key' });
+
+  if (upgradeDb.objectStoreNames.contains('recurring-income')) {
+    upgradeDb.deleteObjectStore('recurring-income');
+  }
+  upgradeDb.createObjectStore('recurring-income', { keyPath: 'key' });
 };
 
 // tiny uuidv4 generator
