@@ -105,6 +105,16 @@ layout: layouts/app-layout.njk
             You haven't tracked any expenses yet.
           </p>
         </div>
+        <div data-manage-recurring-expenses hidden>
+          <div data-copy-expenses hidden>
+            <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+              Copy Recurring Expenses
+            </button>
+          </div>
+          <a href="/recurring-expenses" class="small">
+            View Recurring Expenses
+          </a>
+        </div>
       </div>
       <div>
         <a href="/add/expense" class="full-width-button" data-add-expense-link>
@@ -128,6 +138,16 @@ layout: layouts/app-layout.njk
           <p>
             You haven't tracked any income yet.
           </p>
+        </div>
+        <div data-manage-recurring-income hidden>
+          <div data-copy-income hidden>
+            <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+              Copy Recurring Income
+            </button>
+          </div>
+          <a href="/recurring-income" class="small">
+            View Recurring Income
+          </a>
         </div>
       </div>
       <div>
@@ -153,6 +173,11 @@ layout: layouts/app-layout.njk
             You haven't tracked any savings yet.
           </p>
         </div>
+        <div data-copy-savings hidden>
+          <button type="button" style="width: 100%">
+            Copy Last Month's Savings
+          </button>
+        </div>
       </div>
       <div>
         <a href="/add/savings" class="full-width-button" data-add-savings-link>
@@ -176,6 +201,11 @@ layout: layouts/app-layout.njk
           <p>
             You haven't tracked any debt yet.
           </p>
+        </div>
+        <div data-copy-debt hidden>
+          <button type="button" style="width: 100%">
+            Copy Last Month's Debt
+          </button>
         </div>
       </div>
       <div>
@@ -201,16 +231,31 @@ layout: layouts/app-layout.njk
 {% include "scripts/format-currency.njk" %}
 {% include "scripts/format-date.njk" %}
 <script type="module">
+  import { getAllFromIndex } from '/scripts/db.mjs';
   import { getExpenses } from '/scripts/get-expenses.mjs';
   import { getIncome } from '/scripts/get-income.mjs';
   import { getSavings } from '/scripts/get-savings.mjs';
   import { getDebt } from '/scripts/get-debt.mjs';
+
+  let lastMonth = month - 1;
+  let lastMonthYear = year;
+  if (lastMonth < 0) {
+    lastMonth = 11;
+    lastMonthYear -= 1;
+  }
 
   (async () => {
     const expensesBody = document.querySelector('[data-expenses][data-section-body]');
     const expensesBlock = await getExpenses(year, month);
 
     if (expensesBlock == null) {
+      const manageRecurringExpensesDiv = document.querySelector('[data-manage-recurring-expenses]');
+      manageRecurringExpensesDiv.removeAttribute('hidden');
+      const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth);
+      if (lastMonthsExpenses.length) {
+        const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
+        copyExpensesDiv.removeAttribute('hidden');
+      }
       const noExpensesMessage = document.querySelector('[data-no-expenses]');
       noExpensesMessage.removeAttribute('hidden');
       return;
@@ -224,6 +269,13 @@ layout: layouts/app-layout.njk
     const incomeBlock = await getIncome(year, month);
 
     if (incomeBlock == null) {
+      const manageRecurringIncomeDiv = document.querySelector('[data-manage-recurring-income]');
+      manageRecurringIncomeDiv.removeAttribute('hidden');
+      const lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth);
+      if (lastMonthsIncome.length) {
+        const copyIncomeDiv = document.querySelector('[data-copy-income]');
+        copyIncomeDiv.removeAttribute('hidden');
+      }
       const noIncomeMessage = document.querySelector('[data-no-income]');
       noIncomeMessage.removeAttribute('hidden');
       return;
@@ -237,6 +289,11 @@ layout: layouts/app-layout.njk
     const savingsBlock = await getSavings(year, month);
 
     if (savingsBlock == null) {
+      const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth);
+      if (lastMonthsSavings.length) {
+        const copySavingsDiv = document.querySelector('[data-copy-savings]');
+        copySavingsDiv.removeAttribute('hidden');
+      }
       const noSavingsMessage = document.querySelector('[data-no-savings]');
       noSavingsMessage.removeAttribute('hidden');
       return;
@@ -250,6 +307,11 @@ layout: layouts/app-layout.njk
     const debtBlock = await getDebt(year, month);
 
     if (debtBlock == null) {
+      const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth);
+      if (lastMonthsDebt.length) {
+        const copyDebtDiv = document.querySelector('[data-copy-debt]');
+        copyDebtDiv.removeAttribute('hidden');
+      }
       const noDebtMessage = document.querySelector('[data-no-debt]');
       noDebtMessage.removeAttribute('hidden');
       return;
