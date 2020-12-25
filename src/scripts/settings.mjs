@@ -396,6 +396,52 @@ document.addEventListener('change', (event) => {
     };
     reader.readAsText(file);
   }
+
+  if (event.target.matches('[data-import-debt-data]')) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const importProgressIndicator = document.querySelector('[data-import-debt-progress]');
+      importProgressIndicator.innerHTML = '<p>Loading file...</p>';
+      try {
+        const debtData = csvStringToArray(e.target.result);
+        importProgressIndicator.innerHTML = '<p>Uploading Debt...</p>';
+
+        await Promise.all(debtData.map(async (debt) => {
+          const date = new Date(debt['Date']);
+          const newDebt = {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            description: debt['Description'],
+            amount: sanitize(debt['Balance']),
+            minimumPayment: sanitize(debt['Minimum Payment']),
+            interestRate: sanitize(debt['Interest Rate']),
+            key: null,
+          };
+
+          await addToDb('debt', newDebt);
+          Promise.resolve();
+        }));
+
+        importProgressIndicator.innerHTML = `
+          <p>
+            All done! You should see all your data on the
+            <a href="/overview">overview page</a> now.
+          </p>
+        `;
+      } catch (error) {
+        importProgressIndicator.innerHTML = `
+          <p>
+            There was a problem importing data from that file. Please double
+            check the file and try again. If you continue to have problems,
+            contact us at
+            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+          </p>
+        `;
+      }
+    };
+    reader.readAsText(file);
+  }
 });
 
 document.addEventListener('submit', (event) => {
