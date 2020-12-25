@@ -61,3 +61,114 @@ layout: layouts/simple-layout.njk
     averages over different time scales.
   </p>
 </div>
+
+<script type="module">
+  import { getAllFromObjectStore } from '/scripts/db.mjs';
+
+  const formatMonthString = (year, month) => new Date(year, month, 1)
+    .toLocaleString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
+  const today = new Date();
+  const currentMonth = `${formatMonthString(today.getFullYear(), today.getMonth())}`;
+  const sortingFunction = (a, b) => {
+    if (a.year < b.year) {
+      return -1;
+    }
+
+    if (a.year > b.year) {
+      return 1;
+    }
+
+    if (a.month < b.month) {
+      return -1;
+    }
+
+    if (a.month > b.month) {
+      return 1;
+    }
+
+    return 0;
+  };
+
+  (async () => {
+    const allExpenses = await getAllFromObjectStore('expenses');
+    const expensesByMonth = allExpenses.reduce((acc, expense) => {
+      if (`${formatMonthString(expense.year, expense.month)}` === currentMonth) {
+        return acc;
+      }
+
+      if (acc[`${formatMonthString(expense.year, expense.month)}`]) {
+        acc[`${formatMonthString(expense.year, expense.month)}`].push(expense);
+      } else {
+        acc[`${formatMonthString(expense.year, expense.month)}`] = [expense];
+      }
+
+      return acc;
+    }, {});
+
+    const totalExpensesByMonth = Object.keys(expensesByMonth)
+      .map((key) => ({
+        year: expensesByMonth[key][0].year,
+        month: expensesByMonth[key][0].month,
+        label: key,
+        total: expensesByMonth[key].reduce((acc, expense) => (acc + expense.amount), 0),
+      }))
+      .sort(sortingFunction);
+
+    const allIncome = await getAllFromObjectStore('income');
+    const incomeByMonth = allIncome.reduce((acc, income) => {
+      if (`${formatMonthString(income.year, income.month)}` === currentMonth) {
+        return acc;
+      }
+
+      if (acc[`${formatMonthString(income.year, income.month)}`]) {
+        acc[`${formatMonthString(income.year, income.month)}`].push(income);
+      } else {
+        acc[`${formatMonthString(income.year, income.month)}`] = [income];
+      }
+
+      return acc;
+    }, {});
+
+    const totalIncomeByMonth = Object.keys(incomeByMonth)
+      .map((key) => ({
+        year: incomeByMonth[key][0].year,
+        month: incomeByMonth[key][0].month,
+        label: key,
+        total: incomeByMonth[key].reduce((acc, income) => (acc + income.amount), 0),
+      }))
+      .sort(sortingFunction);
+
+    const allSavings = await getAllFromObjectStore('savings');
+    const savingsByMonth = allSavings.reduce((acc, savings) => {
+      if (`${formatMonthString(savings.year, savings.month)}` === currentMonth) {
+        return acc;
+      }
+
+      if (acc[`${formatMonthString(savings.year, savings.month)}`]) {
+        acc[`${formatMonthString(savings.year, savings.month)}`].push(savings);
+      } else {
+        acc[`${formatMonthString(savings.year, savings.month)}`] = [savings];
+      }
+
+      return acc;
+    }, {});
+
+    const totalSavingsByMonth = Object.keys(savingsByMonth)
+      .map((key) => ({
+        year: savingsByMonth[key][0].year,
+        month: savingsByMonth[key][0].month,
+        label: key,
+        total: savingsByMonth[key].reduce((acc, savings) => (acc + savings.amount), 0),
+      }))
+      .sort(sortingFunction);
+
+    console.log({
+      totalExpensesByMonth,
+      totalIncomeByMonth,
+      totalSavingsByMonth,
+    });
+  })();
+</script>
