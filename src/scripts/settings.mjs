@@ -305,6 +305,52 @@ document.addEventListener('change', (event) => {
     };
     reader.readAsText(file);
   }
+
+  if (event.target.matches('[data-import-income-data]')) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const importProgressIndicator = document.querySelector('[data-import-income-progress]');
+      importProgressIndicator.innerHTML = '<p>Loading file...</p>';
+      try {
+        const incomeData = csvStringToArray(e.target.result);
+        importProgressIndicator.innerHTML = '<p>Uploading Expenses...</p>';
+
+        await Promise.all(incomeData.map(async (income) => {
+          const date = new Date(income['Date']);
+          const newIncome = {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            category: income['Category'],
+            description: income['Description'],
+            amount: sanitize(income['Amount']),
+            key: null,
+          };
+
+          await addToDb('income', newIncome);
+          Promise.resolve();
+        }));
+
+        importProgressIndicator.innerHTML = `
+          <p>
+            All done! You should see all your data on the
+            <a href="/overview">overview page</a> now.
+          </p>
+        `;
+      } catch (error) {
+        importProgressIndicator.innerHTML = `
+          <p>
+            There was a problem importing data from that file. Please double
+            check the file and try again. If you continue to have problems,
+            contact us at
+            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+          </p>
+        `;
+      }
+    };
+    reader.readAsText(file);
+  }
 });
 
 document.addEventListener('submit', (event) => {
