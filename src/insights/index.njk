@@ -70,8 +70,6 @@ layout: layouts/simple-layout.njk
       month: 'short',
       year: 'numeric',
     });
-  const today = new Date();
-  const currentMonth = `${formatMonthString(today.getFullYear(), today.getMonth())}`;
   const sortingFunction = (a, b) => {
     if (a.year < b.year) {
       return -1;
@@ -92,13 +90,79 @@ layout: layouts/simple-layout.njk
     return 0;
   };
 
+  const runwayDescription = (numberOfMonths, recentMonthsCount) => {
+    const years = Math.floor(numberOfMonths / 12);
+    const months = numberOfMonths % 12;
+
+    let yearPhrase = '';
+    if (years === 1) {
+      yearPhrase = '1 year';
+    } else if (years > 1) {
+      yearPhrase = `${years} years`;
+    }
+
+    let monthPhrase = '';
+    if (months === 1) {
+      monthPhrase = '1 month';
+    } else if (months > 1) {
+      monthPhrase = `${months} months`;
+    }
+
+    return `
+      <p>
+        Based on your current savings and your average expenses from the past
+        ${recentMonthsCount === 1 ? 'month' : `${recentMonthsCount} months`},
+        we estimate that your runway is
+        <b>
+          ${yearPhrase}${yearPhrase && monthPhrase ? ' and ' : ''}${monthPhrase}.
+        </b>
+      </p>
+    `;
+  };
+
+  const calculateRunway = (totalExpensesByMonth, totalSavingsByMonth) => {
+    const runwayBlock = document.querySelector('[data-runway]');
+    const recentExpenses = totalExpensesByMonth.slice(-13, -1);
+    if (!recentExpenses.length) {
+      runwayBlock.innerHTML += `
+        <p>
+          We don't have enough expenses data to calculate what your runway might
+          be. As a rule, we don't factor in the current month for this
+          calculation since the in-progress total would make the calculation
+          less accurate.
+        </p>
+        <p>
+          You can come back next month, or you can add some historical data for
+          past months. You can also bulk upload data via CSV files from the
+          <a href="/settings">settings</a> page, which may speed things up.
+        </p>
+      `;
+      runwayBlock.removeAttribute('hidden');
+    } else {
+      const currentSavings = totalSavingsByMonth[totalSavingsByMonth.length - 1]?.total;
+      if (!currentSavings) {
+        runwayBlock.innerHTML += `
+          <p>
+            We don't have enough savings data to calculate what your runway
+            might be. All we need is one month of savings, so if you track
+            what's currently in your savings or retirement accounts (or even
+            cash), we'll be able to calculate your runway.
+          </p>
+        `;
+        runwayBlock.removeAttribute('hidden');
+      } else {
+        const averageRecentExpenses = recentExpenses.reduce((acc, e) => (acc + e.total), 0) / recentExpenses.length;
+        const runwayInMonths = Math.floor(currentSavings / averageRecentExpenses);
+
+        runwayBlock.innerHTML += runwayDescription(runwayInMonths, recentExpenses.length);
+        runwayBlock.removeAttribute('hidden');
+      }
+    }
+  };
+
   (async () => {
     const allExpenses = await getAllFromObjectStore('expenses');
     const expensesByMonth = allExpenses.reduce((acc, expense) => {
-      if (`${formatMonthString(expense.year, expense.month)}` === currentMonth) {
-        return acc;
-      }
-
       if (acc[`${formatMonthString(expense.year, expense.month)}`]) {
         acc[`${formatMonthString(expense.year, expense.month)}`].push(expense);
       } else {
@@ -119,10 +183,6 @@ layout: layouts/simple-layout.njk
 
     const allIncome = await getAllFromObjectStore('income');
     const incomeByMonth = allIncome.reduce((acc, income) => {
-      if (`${formatMonthString(income.year, income.month)}` === currentMonth) {
-        return acc;
-      }
-
       if (acc[`${formatMonthString(income.year, income.month)}`]) {
         acc[`${formatMonthString(income.year, income.month)}`].push(income);
       } else {
@@ -143,10 +203,6 @@ layout: layouts/simple-layout.njk
 
     const allSavings = await getAllFromObjectStore('savings');
     const savingsByMonth = allSavings.reduce((acc, savings) => {
-      if (`${formatMonthString(savings.year, savings.month)}` === currentMonth) {
-        return acc;
-      }
-
       if (acc[`${formatMonthString(savings.year, savings.month)}`]) {
         acc[`${formatMonthString(savings.year, savings.month)}`].push(savings);
       } else {
@@ -165,10 +221,6 @@ layout: layouts/simple-layout.njk
       }))
       .sort(sortingFunction);
 
-    console.log({
-      totalExpensesByMonth,
-      totalIncomeByMonth,
-      totalSavingsByMonth,
-    });
+    calculateRunway(totalExpensesByMonth, totalSavingsByMonth);
   })();
 </script>
