@@ -27,6 +27,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/manifest.json');
   eleventyConfig.addPassthroughCopy('src/icons/*');
   eleventyConfig.addPassthroughCopy('src/scripts/*');
+  eleventyConfig.addPassthroughCopy('src/static/*');
 
   return {
     dir: {

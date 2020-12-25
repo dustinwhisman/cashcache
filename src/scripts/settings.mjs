@@ -55,6 +55,38 @@ const importData = async (data) => {
   `;
 };
 
+// utility function for converting CSVs to array of objects
+// https://gist.github.com/plbowers/7560ae793613ee839151624182133159
+const csvStringToArray = (strData, header = true) => {
+  const objPattern = new RegExp(("(\\,|\\r?\\n|\\r|^)(?:\"((?:\\\\.|\"\"|[^\\\\\"])*)\"|([^\\,\"\\r\\n]*))"),"gi");
+  let arrMatches = null;
+  let arrData = [[]];
+  while (arrMatches = objPattern.exec(strData)) {
+    if (arrMatches[1].length && arrMatches[1] !== ",") {
+      arrData.push([]);
+    }
+
+    arrData[arrData.length - 1].push(arrMatches[2]
+      ? arrMatches[2].replace(new RegExp( "[\\\\\"](.)", "g" ), '$1')
+      : arrMatches[3]);
+  }
+
+  if (header) {
+    let hData = arrData.shift();
+    let hashData = arrData.map(row => {
+      let i = 0;
+      return hData.reduce((acc, key) => {
+        acc[key] = row[i++];
+        return acc;
+      }, {});
+    });
+
+    return hashData;
+  }
+
+  return arrData;
+};
+
 if (brightnessMode) {
   const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
   brightnessInput.checked = true;
@@ -220,6 +252,52 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file or try exporting a new one from your other device or
             browser. If you continue to have problems, contact us at
+            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+          </p>
+        `;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  if (event.target.matches('[data-import-expenses-data]')) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const importProgressIndicator = document.querySelector('[data-import-expenses-progress]');
+      importProgressIndicator.innerHTML = '<p>Loading file...</p>';
+      try {
+        const expensesData = csvStringToArray(e.target.result);
+        importProgressIndicator.innerHTML = '<p>Uploading Expenses...</p>';
+
+        await Promise.all(expensesData.map(async (expense) => {
+          const date = new Date(expense['Date']);
+          const newExpense = {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            category: expense['Category'],
+            description: expense['Description'],
+            amount: sanitize(expense['Amount']),
+            key: null,
+          };
+
+          await addToDb('expenses', newExpense);
+          Promise.resolve();
+        }));
+
+        importProgressIndicator.innerHTML = `
+          <p>
+            All done! You should see all your data on the
+            <a href="/overview">overview page</a> now.
+          </p>
+        `;
+      } catch (error) {
+        importProgressIndicator.innerHTML = `
+          <p>
+            There was a problem importing data from that file. Please double
+            check the file and try again. If you continue to have problems,
+            contact us at
             <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
           </p>
         `;
