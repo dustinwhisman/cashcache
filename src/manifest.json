@@ -2,7 +2,7 @@
   "short_name": "Cash Cache",
   "name": "Cash Cache",
   "description": "A streamlined way to keep track of your money.",
-  "start_url": "/",
+  "start_url": "/overview",
   "background_color": "#202020",
   "display": "standalone",
   "scope": "/",
