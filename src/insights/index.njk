@@ -1,0 +1,63 @@
+---
+title: Insights
+layout: layouts/simple-layout.njk
+---
+
+<h1>
+  Insights
+</h1>
+
+<p>
+  Here are the key takeaways from your entire backlog of data. Keep in mind that
+  this is not financial advice, and assumptions factor heavily into the
+  calculations that drive these estimates.
+</p>
+
+{% include "components/back-link.njk" %}
+
+<div data-progress-chart class="stack" hidden>
+  <h2>
+    Progress Chart
+  </h2>
+  <p>
+    This is your progress chart. It shows your expenses and income along with
+    the amount that you could safely withdraw each month (assuming you spend no
+    more than 4% of your total savings per year and your savings are invested).
+  </p>
+  <p>
+    Once the safe withdrawal amount is consistently higher than expenses, you
+    have "enough" and could consider retirement.
+  </p>
+</div>
+
+<div data-runway class="stack" hidden>
+  <h2>
+    Runway
+  </h2>
+  <p>
+    Your runway is how long you could survive off of savings with no income.
+    This is a simplified number that doesn't consider taxes, insurance, or other
+    real-world things that would happen during unemployment, but it's meant to
+    give a rough idea of how well-prepared you are to go without income for
+    whatever reason.
+  </p>
+</div>
+
+<div data-retirement-amount class="stack" hidden>
+  <h2>
+    Retirement
+  </h2>
+  <div data-retirement-amount></div>
+  <div data-retirement-years></div>
+</div>
+
+<div data-rolling-savings-rate class="stack" hidden>
+  <h2>
+    Savings Rate
+  </h2>
+  <p>
+    Your savings rate is an indicator of how much money you saved compared to
+    your total income. This chart breaks it down by month and shows rolling
+    averages over different time scales.
+  </p>
+</div>
