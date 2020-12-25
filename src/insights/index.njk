@@ -19,15 +19,22 @@ layout: layouts/simple-layout.njk
   <h2>
     Progress Chart
   </h2>
-  <p>
-    This is your progress chart. It shows your expenses and income along with
-    the amount that you could safely withdraw each month (assuming you spend no
-    more than 4% of your total savings per year and your savings are invested).
-  </p>
-  <p>
-    Once the safe withdrawal amount is consistently higher than expenses, you
-    have "enough" and could consider retirement.
-  </p>
+  <details>
+    <summary>
+      Details
+    </summary>
+    <div class="stack">
+      <p>
+        This is your progress chart. It shows your expenses and income along with
+        the amount that you could safely withdraw each month (assuming you spend no
+        more than 4% of your total savings per year and your savings are invested).
+      </p>
+      <p>
+        Once the safe withdrawal amount is consistently higher than expenses, you
+        have "enough" and could consider retirement.
+      </p>
+    </div>
+  </details>
 </div>
 
 <div data-runway class="stack" hidden>
@@ -48,11 +55,18 @@ layout: layouts/simple-layout.njk
   <h2>
     Savings Rate
   </h2>
-  <p>
-    Your savings rate is an indicator of how much money you saved compared to
-    your total income. This chart breaks it down by month and shows rolling
-    averages over different time scales.
-  </p>
+  <details>
+    <summary>
+      Details
+    </summary>
+    <div class="stack">
+      <p>
+        Your savings rate is an indicator of how much money you saved compared to
+        your total income. This chart breaks it down by month and shows rolling
+        averages over different time scales.
+      </p>
+    </div>
+  </details>
 </div>
 
 {% include "scripts/format-currency.njk" %}
@@ -64,6 +78,7 @@ layout: layouts/simple-layout.njk
       month: 'short',
       year: 'numeric',
     });
+
   const sortingFunction = (a, b) => {
     if (a.year < b.year) {
       return -1;
