@@ -43,12 +43,12 @@ layout: layouts/simple-layout.njk
   </p>
 </div>
 
-<div data-retirement-amount class="stack" hidden>
+<div data-retirement class="stack" hidden>
   <h2>
     Retirement
   </h2>
-  <div data-retirement-amount></div>
-  <div data-retirement-years></div>
+  <div data-retirement-amount class="stack"></div>
+  <div data-retirement-years class="stack"></div>
 </div>
 
 <div data-rolling-savings-rate class="stack" hidden>
@@ -62,6 +62,7 @@ layout: layouts/simple-layout.njk
   </p>
 </div>
 
+{% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllFromObjectStore } from '/scripts/db.mjs';
 
@@ -128,7 +129,7 @@ layout: layouts/simple-layout.njk
         <p>
           We don't have enough expenses data to calculate what your runway might
           be. As a rule, we don't factor in the current month for this
-          calculation since the in-progress total would make the calculation
+          calculation, since the in-progress total would make the calculation
           less accurate.
         </p>
         <p>
@@ -138,26 +139,165 @@ layout: layouts/simple-layout.njk
         </p>
       `;
       runwayBlock.removeAttribute('hidden');
-    } else {
-      const currentSavings = totalSavingsByMonth[totalSavingsByMonth.length - 1]?.total;
-      if (!currentSavings) {
-        runwayBlock.innerHTML += `
-          <p>
-            We don't have enough savings data to calculate what your runway
-            might be. All we need is one month of savings, so if you track
-            what's currently in your savings or retirement accounts (or even
-            cash), we'll be able to calculate your runway.
-          </p>
-        `;
-        runwayBlock.removeAttribute('hidden');
-      } else {
-        const averageRecentExpenses = recentExpenses.reduce((acc, e) => (acc + e.total), 0) / recentExpenses.length;
-        const runwayInMonths = Math.floor(currentSavings / averageRecentExpenses);
+      return;
+    }
 
-        runwayBlock.innerHTML += runwayDescription(runwayInMonths, recentExpenses.length);
-        runwayBlock.removeAttribute('hidden');
+    const currentSavings = totalSavingsByMonth[totalSavingsByMonth.length - 1]?.total;
+    if (!currentSavings) {
+      runwayBlock.innerHTML += `
+        <p>
+          We don't have enough savings data to calculate what your runway might
+          be. All we need is one month of savings, so if you track what's
+          currently in your savings or retirement accounts (or even cash), we'll
+          be able to calculate your runway.
+        </p>
+      `;
+      runwayBlock.removeAttribute('hidden');
+      return;
+    }
+
+    const averageRecentExpenses = recentExpenses.reduce((acc, e) => (acc + e.total), 0) / recentExpenses.length;
+    const runwayInMonths = Math.floor(currentSavings / averageRecentExpenses);
+
+    runwayBlock.innerHTML += runwayDescription(runwayInMonths, recentExpenses.length);
+    runwayBlock.removeAttribute('hidden');
+  };
+
+  const yearsToRetirement = (assets, yearlySavings, amountNeeded, interest = 0.07) => {
+    let count = 0;
+    while (amountNeeded > assets) {
+      assets = (assets + yearlySavings) * (1 + interest);
+      count += 1;
+      if (count > 99) {
+        break;
       }
     }
+
+    return count;
+  };
+
+  const calculateRetirementEstimates = (totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth) => {
+    const retirementBlock = document.querySelector('[data-retirement]');
+    const retirementAmountBlock = document.querySelector('[data-retirement-amount]');
+    const retirementYearsBlock = document.querySelector('[data-retirement-years]');
+
+    const recentExpenses = totalExpensesByMonth.slice(-13, -1);
+    if (!recentExpenses.length) {
+      retirementAmountBlock.innerHTML = `
+        <p>
+          We don't have enough expenses data to calculate how much you might
+          need to retire. As a rule, we don't factor in the current month for
+          this calculation, since the in-progress total would make the
+          calculation less accurate.
+        </p>
+        <p>
+          You can come back next month, or you can add some historical data for
+          past months. You can also bulk upload data via CSV files from the
+          <a href="/settings">settings</a> page, which may speed things up.
+        </p>
+      `;
+
+      retirementBlock.removeAttribute('hidden');
+      return;
+    }
+
+    const averageRecentExpenses = recentExpenses.reduce((acc, e) => (acc + e.total), 0) / recentExpenses.length;
+    const estimatedYearlyExpenses = averageRecentExpenses * 12;
+    const estimatedRetirementAmount = estimatedYearlyExpenses * 25;
+
+    const recentIncome = totalIncomeByMonth.slice(-13, -1);
+    if (!recentIncome.length) {
+      retirementYearsBlock.innerHTML = `
+        <p>
+          We don't have enough income data to calculate how long it might take
+          to retire. As a rule, we don't factor in the current month for this
+          calculation, since the in-progress total would make the calculation
+          less accurate.
+        </p>
+        <p>
+          You can come back next month, or you can add some historical data for
+          past months. You can also bulk upload data via CSV files from the
+          <a href="/settings">settings</a> page, which may speed things up.
+        </p>
+      `;
+      retirementBlock.removeAttribute('hidden');
+      return;
+    }
+
+    const currentSavings = totalSavingsByMonth[totalSavingsByMonth.length - 1]?.total;
+    if (!currentSavings) {
+      retirementYearsBlock.innerHTML += `
+        <p>
+          We don't have enough savings data to calculate how long it might take
+          to retire. All we need is one month of savings, so if you track what's
+          currently in your savings or retirement accounts (or even cash), we'll
+          be able to calculate how long you might have until retirement.
+        </p>
+      `;
+      retirementBlock.removeAttribute('hidden');
+      return;
+    }
+
+    const averageRecentIncome = recentIncome.reduce((acc, i) => (acc + i.total), 0) / recentIncome.length;
+    const estimatedYearlyIncome = averageRecentIncome * 12;
+    const estimatedAnnualSavings = estimatedYearlyIncome - estimatedYearlyExpenses;
+
+    const estimatedYearsToRetirement = yearsToRetirement(currentSavings, estimatedAnnualSavings, estimatedRetirementAmount);
+
+    retirementAmountBlock.innerHTML = `
+      <p>
+        Based on your average expenses over the past
+        ${recentExpenses.length === 1 ? 'month' : `${recentExpenses.length} months`},
+        we estimate that you will need at least
+        <b>${formatCurrency(estimatedRetirementAmount)}</b>
+        to retire safely.
+      </p>
+    `;
+
+    retirementYearsBlock.innerHTML = `
+      ${estimatedYearsToRetirement > 99
+        ? `
+          <p>
+            Based on your current savings and expenses, it is highly unlikely
+            that you will be able to save enough money to retire. This means
+            that you're either spending more money than you make, or it means
+            that you aren't saving enough to meaningfully grow your retirement
+            savings.
+          </p>
+          <p>
+            You might want to consider finding a financial advisor, but make
+            sure you ask them if they are a fiduciary and whether they get paid
+            through a fee-only model. If they answer no to either question, find
+            somebody else to help.
+          </p>
+        `
+        : `
+          <p>
+            Based on how much you save per year (income minus expenses), we
+            estimate that it will take about
+            <b>
+              ${estimatedYearsToRetirement === 1 ? '1 year' : `${estimatedYearsToRetirement} years`}
+            </b>
+            for you to have enough saved to retire.
+          </p>
+        `}
+      <p>
+        If those numbers seem impossibly large, the best way to make them
+        smaller is to reduce your average expenses. We recommend that instead of
+        focusing on minor luxury expenses (the so-called "latte factor"), you
+        start with your largest expenses and see what you can do to make them
+        smaller.
+      </p>
+      <p>
+        Making more money also helps, but there's no actionable advice for doing
+        that. Changes such as shopping around for better insurance, finding
+        cheaper housing, and using public transportation, bikes, or cheap used
+        cars instead of driving new, rapidly depreciating cars are more within
+        reach.
+      </p>
+    `;
+
+    retirementBlock.removeAttribute('hidden');
   };
 
   (async () => {
@@ -222,5 +362,6 @@ layout: layouts/simple-layout.njk
       .sort(sortingFunction);
 
     calculateRunway(totalExpensesByMonth, totalSavingsByMonth);
+    calculateRetirementEstimates(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
   })();
 </script>
