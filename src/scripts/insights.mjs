@@ -1,4 +1,4 @@
-import { getAllFromObjectStore } from '/scripts/db.mjs';
+import { getAllFromObjectStore } from './db.mjs';
 
 const formatMonthString = (year, month) => new Date(year, month, 1)
   .toLocaleString('en-US', {
@@ -442,44 +442,49 @@ const drawProgressChart = (totalExpensesByMonth, totalIncomeByMonth, totalSaving
         <polyline points="${safeAmountPoints}" fill="none" stroke="var(--yellow)" stroke-width="2"></polyline>
       </g>
     </svg>
-    <table class="visually-hidden">
-      <thead>
-        <tr>
-          <th>
-            Month
-          </th>
-          <th class="text-align:right">
-            Expenses
-          </th>
-          <th class="text-align:right">
-            Income
-          </th>
-          <th class="text-align:right">
-            Safe Withdrawal Amount
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        ${progress.map((month) => {
-          return `
-            <tr>
-              <th>
-                ${month.label}
-              </th>
-              <td class="text-align:right">
-                ${formatCurrency(month.expenses)}
-              </td>
-              <td class="text-align:right">
-                ${formatCurrency(month.income)}
-              </td>
-              <td class="text-align:right">
-                ${formatCurrency(month.safeAmount)}
-              </td>
-            </tr>
-          `;
-        }).join('')}
-      </tbody>
-    </table>
+    <details>
+      <summary>
+        See the numbers
+      </summary>
+      <table class="small">
+        <thead>
+          <tr>
+            <th>
+              Month
+            </th>
+            <th class="text-align:right">
+              Expenses
+            </th>
+            <th class="text-align:right">
+              Income
+            </th>
+            <th class="text-align:right">
+              Safe Withdrawal Amount
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${progress.map((month) => {
+            return `
+              <tr>
+                <th>
+                  ${month.label}
+                </th>
+                <td class="text-align:right">
+                  ${formatCurrency(month.expenses)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(month.income)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(month.safeAmount)}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </details>
   `;
 
   const progressChartBlock = document.querySelector('[data-progress-chart]');
@@ -641,38 +646,43 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
         <polyline points="${avgRatePoints}" fill="none" stroke="var(--blue)" stroke-width="2"></polyline>
       </g>
     </svg>
-    <table class="visually-hidden">
-      <thead>
-        <tr>
-          <th>
-            Month
-          </th>
-          <th class="text-align:right">
-            Savings Rate
-          </th>
-          <th class="text-align:right">
-            Avg Savings Rate (12 months)
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        ${savingsRates.map((month) => {
-          return `
-            <tr>
-              <th>
-                ${month.label}
-              </th>
-              <td class="text-align:right">
-                ${(month.currentSavingsRate * 100).toFixed(2)}%
-              </td>
-              <td class="text-align:right">
-                ${(month.avgSavingsRate * 100).toFixed(2)}%
-              </td>
-            </tr>
-          `;
-        }).join('')}
-      </tbody>
-    </table>
+    <details>
+      <summary>
+        See the numbers
+      </summary>
+      <table class="small">
+        <thead>
+          <tr>
+            <th>
+              Month
+            </th>
+            <th class="text-align:right">
+              Savings Rate
+            </th>
+            <th class="text-align:right">
+              Avg Savings Rate (12 months)
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${savingsRates.map((month) => {
+            return `
+              <tr>
+                <th>
+                  ${month.label}
+                </th>
+                <td class="text-align:right">
+                  ${(month.currentSavingsRate * 100).toFixed(2)}%
+                </td>
+                <td class="text-align:right">
+                  ${(month.avgSavingsRate * 100).toFixed(2)}%
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </details>
   `;
 
   const savingsRateBlock = document.querySelector('[data-savings-rate]');
