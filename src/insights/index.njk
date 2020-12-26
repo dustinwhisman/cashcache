@@ -355,6 +355,101 @@ layout: layouts/simple-layout.njk
     retirementBlock.removeAttribute('hidden');
   };
 
+  const drawProgressChart = (totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth) => {
+    const monthlyProgress = {};
+    totalExpensesByMonth.forEach((month) => {
+      if (monthlyProgress[formatMonthString(month.year, month.month)]) {
+        monthlyProgress[formatMonthString(month.year, month.month)].expenses = month.total;
+      } else {
+        monthlyProgress[formatMonthString(month.year, month.month)] = {
+          expenses: month.total,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    totalIncomeByMonth.forEach((month) => {
+      if (monthlyProgress[formatMonthString(month.year, month.month)]) {
+        monthlyProgress[formatMonthString(month.year, month.month)].income = month.total;
+      } else {
+        monthlyProgress[formatMonthString(month.year, month.month)] = {
+          income: month.total,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    totalSavingsByMonth.forEach((month) => {
+      if (monthlyProgress[formatMonthString(month.year, month.month)]) {
+        monthlyProgress[formatMonthString(month.year, month.month)].safeAmount = month.total / 25 / 12;
+      } else {
+        monthlyProgress[formatMonthString(month.year, month.month)] = {
+          safeAmount: month.total / 25 / 12,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    const progress = Object.keys(monthlyProgress)
+      .map((key) => ({
+        ...monthlyProgress[key],
+        label: key,
+      }))
+      .sort(sortingFunction);
+
+    const highestDollarAmount = Math.ceil(
+      Math.max(...[
+        ...totalExpensesByMonth.map(e => e.total),
+        ...totalIncomeByMonth.map(i => i.total),
+        ...totalSavingsByMonth.map(s => s.total / 25)
+      ]) / 1000
+    ) * 1000;
+
+    const yAxisLabels = [];
+    const yAxisInterval = Math.ceil(highestDollarAmount / 10000);
+    for (let i = 0; i <= highestDollarAmount / 1000; i += 1) {
+      if (i % Math.ceil(yAxisInterval) === 0) {
+        yAxisLabels.push(`
+          <text x="180" y="${1110 - (i * 100)}" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)">
+            ${formatCurrency(i * 1000).replace('.00', '')}
+          </text>
+        `);
+      }
+    }
+
+    const xAxisLabels = [];
+    const xAxisInterval = Math.ceil(progress.length / 12);
+    for (let i = 0; i < progress.length; i += 1) {
+      if (i % Math.ceil(xAxisInterval) === 0) {
+        xAxisLabels.push(`
+          <text x="${240 + (i * 1000 / progress.length)}" y="1120" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)" transform="rotate(-45, ${240 + (i * 1000 / progress.length)}, 1160)">
+            ${progress[i].label}
+          </text>
+        `);
+      }
+    }
+
+    const svgTemplate = `
+      <svg viewbox="0 0 1300 1300" aria-hidden="true" focusable="false">
+        <g>
+          <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)" />
+          ${yAxisLabels.join('')}
+        </g>
+        <g>
+          <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)" />
+          ${xAxisLabels}
+        </g>
+      </svg>
+    `;
+
+    const progressChartBlock = document.querySelector('[data-progress-chart]');
+    progressChartBlock.innerHTML += svgTemplate;
+    progressChartBlock.removeAttribute('hidden');
+  };
+
   (async () => {
     const allExpenses = await getAllFromObjectStore('expenses');
     const expensesByMonth = allExpenses.reduce((acc, expense) => {
@@ -418,5 +513,6 @@ layout: layouts/simple-layout.njk
 
     calculateRunway(totalExpensesByMonth, totalSavingsByMonth);
     calculateRetirementEstimates(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
+    drawProgressChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
   })();
 </script>
