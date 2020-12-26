@@ -456,6 +456,20 @@ layout: layouts/simple-layout.njk
     const svgTemplate = `
       <svg viewbox="0 0 1300 1300" aria-hidden="true" focusable="false">
         <g>
+          <circle cx="200" cy="40" r="10" fill="var(--red)"></circle>
+          <text x="220" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+            Expenses
+          </text>
+          <rect x="407" y="32" width="16" height="16" fill="var(--blue)"></rect>
+          <text x="435" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+            Income
+          </text>
+          <polygon points="590 48, 600 28, 610 48" fill="var(--yellow)"></polygon>
+          <text x="620" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+            Safe Withdrawal Amount
+          </text>
+        </g>
+        <g>
           <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)"></line>
           ${yAxisLabels.join('')}
         </g>
