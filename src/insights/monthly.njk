@@ -258,6 +258,129 @@ layout: layouts/simple-layout.njk
     monthToMonthBlock.removeAttribute('hidden');
   };
 
+  const compareToLastYear = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
+    const yearToYearBlock = document.querySelector('[data-year-comparison]');
+
+    const lastYearsExpenses = await getAllFromIndex('expenses', 'year-month', year - 1, month);
+    const lastYearsTotalExpenses = lastYearsExpenses.reduce((acc, expense) => (acc + expense.amount), 0);
+
+    if (lastYearsTotalExpenses > totalExpenses) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          You spent ${formatCurrency(lastYearsTotalExpenses - totalExpenses)}
+          less this month than you did this month last year.
+        </p>
+      `;
+    } else if (lastYearsTotalExpenses < totalExpenses) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          You spent ${formatCurrency(totalExpenses - lastYearsTotalExpenses)}
+          more this month than you did this month last year.
+        </p>
+      `;
+    } else {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Wow! You spent exactly the same amount
+          (${formatCurrency(totalExpenses)}) this month as you did this month
+          last year. What are the odds?
+        </p>
+      `;
+    }
+
+    const lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month);
+    const lastYearsTotalIncome = lastYearsIncome.reduce((acc, income) => (acc + income.amount), 0);
+
+    if (lastYearsIncome > totalIncome) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          You earned ${formatCurrency(lastYearsTotalIncome - totalIncome)} less
+          this month than you did this month last year.
+        </p>
+      `;
+    } else if (lastYearsTotalIncome < totalIncome) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          You earned ${formatCurrency(totalIncome - lastYearsTotalIncome)} more
+          this month than you did this month last year.
+        </p>
+      `;
+    } else {
+      yearToYearBlock.innerHTML += `
+        <p>
+          You earned exactly the same amount (${formatCurrency(totalIncome)})
+          this month as you did this month last year.
+        </p>
+      `;
+    }
+
+    const lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month);
+    const lastYearsTotalSavings = lastYearsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
+
+    if (lastYearsSavings > totalSavings) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Your total savings went down by
+          ${formatCurrency(lastYearsTotalSavings - totalSavings)} since last
+          year.
+        </p>
+      `;
+    } else if (lastYearsTotalSavings < totalSavings) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Your total savings went up by
+          ${formatCurrency(totalSavings - lastYearsTotalSavings)} since last
+          year.
+        </p>
+      `;
+    } else {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Wow! Your savings stayed exactly the same
+          (${formatCurrency(totalSavings)}). What are the odds?
+        </p>
+      `;
+    }
+
+    const lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month);
+    const lastYearsTotalDebt = lastYearsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
+
+    if (lastYearsDebt > totalDebt) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Your total debt went down by
+          ${formatCurrency(lastYearsTotalDebt - totalDebt)} since last
+          year.
+        </p>
+      `;
+    } else if (lastYearsTotalDebt < totalDebt) {
+      yearToYearBlock.innerHTML += `
+        <p>
+          Your total debt went up by
+          ${formatCurrency(totalDebt - lastYearsTotalDebt)} since last
+          year.
+        </p>
+      `;
+    } else {
+      if (totalDebt === 0) {
+        yearToYearBlock.innerHTML += `
+          <p>
+            You remain debt-free. Nice work!
+          </p>
+        `;
+      } else {
+        yearToYearBlock.innerHTML += `
+          <p>
+            Wow! Your debt stayed exactly the same
+            (${formatCurrency(totalDebt)}). What are the odds?
+          </p>
+        `;
+      }
+    }
+
+    yearToYearBlock.removeAttribute('hidden');
+  };
+
   (async () => {
     const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
     const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
@@ -273,5 +396,6 @@ layout: layouts/simple-layout.njk
 
     generateDateGrid(expenses, income, totalExpenses, totalIncome);
     compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
+    compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
   })();
 </script>
