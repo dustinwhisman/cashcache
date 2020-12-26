@@ -758,8 +758,19 @@ layout: layouts/simple-layout.njk
   };
 
   (async () => {
+    const today = new Date();
+    const thisYear = today.getFullYear();
+    const thisMonth = today.getMonth();
     const allExpenses = await getAllFromObjectStore('expenses');
     const expensesByMonth = allExpenses.reduce((acc, expense) => {
+      if (expense.year > thisYear) {
+        return acc;
+      }
+
+      if (expense.year === thisYear && expense.month > thisMonth) {
+        return acc;
+      }
+
       if (acc[`${formatMonthString(expense.year, expense.month)}`]) {
         acc[`${formatMonthString(expense.year, expense.month)}`].push(expense);
       } else {
@@ -780,6 +791,14 @@ layout: layouts/simple-layout.njk
 
     const allIncome = await getAllFromObjectStore('income');
     const incomeByMonth = allIncome.reduce((acc, income) => {
+      if (income.year > thisYear) {
+        return acc;
+      }
+
+      if (income.year === thisYear && income.month > thisMonth) {
+        return acc;
+      }
+
       if (acc[`${formatMonthString(income.year, income.month)}`]) {
         acc[`${formatMonthString(income.year, income.month)}`].push(income);
       } else {
@@ -800,6 +819,14 @@ layout: layouts/simple-layout.njk
 
     const allSavings = await getAllFromObjectStore('savings');
     const savingsByMonth = allSavings.reduce((acc, savings) => {
+      if (savings.year > thisYear) {
+        return acc;
+      }
+
+      if (savings.year === thisYear && savings.month > thisMonth) {
+        return acc;
+      }
+
       if (acc[`${formatMonthString(savings.year, savings.month)}`]) {
         acc[`${formatMonthString(savings.year, savings.month)}`].push(savings);
       } else {
