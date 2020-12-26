@@ -389,6 +389,10 @@ layout: layouts/simple-layout.njk
 
   const showSavingsRate = (totalExpenses, totalIncome) => {
     const savingsRate = ((totalIncome - totalExpenses) / totalIncome) * 100;
+    if (isNaN(savingsRate)) {
+      return;
+    }
+    
     const savingsRateBlock = document.querySelector('[data-savings-rate]');
 
     savingsRateBlock.innerHTML += `
