@@ -61,6 +61,12 @@ layout: layouts/simple-layout.njk
   </div>
 </div>
 
+<div class="stack" data-savings-rate hidden>
+  <h3>
+    Savings Rate
+  </h3>
+</div>
+
 <div class="stack" data-month-comparison hidden>
   <h3>
     Month to Month Comparisons
@@ -381,6 +387,19 @@ layout: layouts/simple-layout.njk
     yearToYearBlock.removeAttribute('hidden');
   };
 
+  const showSavingsRate = (totalExpenses, totalIncome) => {
+    const savingsRate = ((totalIncome - totalExpenses) / totalIncome) * 100;
+    const savingsRateBlock = document.querySelector('[data-savings-rate]');
+
+    savingsRateBlock.innerHTML += `
+      <p>
+        Your savings rate this month was ${savingsRate.toFixed(2)}%.
+      </p>
+    `;
+
+    savingsRateBlock.removeAttribute('hidden');
+  };
+
   (async () => {
     const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
     const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
@@ -397,5 +416,6 @@ layout: layouts/simple-layout.njk
     generateDateGrid(expenses, income, totalExpenses, totalIncome);
     compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
     compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
+    showSavingsRate(totalExpenses, totalIncome);
   })();
 </script>
