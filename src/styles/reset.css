@@ -76,3 +76,7 @@ style {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+table * {
+  padding-inline: 0.5em;
+}

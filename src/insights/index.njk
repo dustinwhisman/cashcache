@@ -497,6 +497,44 @@ layout: layouts/simple-layout.njk
           <polyline points="${safeAmountPoints}" fill="none" stroke="var(--yellow)" stroke-width="2"></polyline>
         </g>
       </svg>
+      <table class="visually-hidden">
+        <thead>
+          <tr>
+            <th>
+              Month
+            </th>
+            <th class="text-align:right">
+              Expenses
+            </th>
+            <th class="text-align:right">
+              Income
+            </th>
+            <th class="text-align:right">
+              Safe Withdrawal Amount
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${progress.map((month) => {
+            return `
+              <tr>
+                <th>
+                  ${month.label}
+                </th>
+                <td class="text-align:right">
+                  ${formatCurrency(month.expenses)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(month.income)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(month.safeAmount)}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
     `;
 
     const progressChartBlock = document.querySelector('[data-progress-chart]');
