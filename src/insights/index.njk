@@ -432,14 +432,35 @@ layout: layouts/simple-layout.njk
       }
     }
 
+    const expensesPoints = progress.map((month, index) => {
+      const x = 200 + (index * 1000 / progress.length);
+      const y = 1100 - (month.expenses / (highestDollarAmount / 1000));
+
+      return `${x},${y}`;
+    }).join(' ');
+
+    const incomePoints = progress.map((month, index) => {
+      const x = 200 + (index * 1000 / progress.length);
+      const y = 1100 - (month.income / (highestDollarAmount / 1000));
+
+      return `${x},${y}`;
+    }).join(' ');
+
+    const safeAmountPoints = progress.map((month, index) => {
+      const x = 200 + (index * 1000 / progress.length);
+      const y = 1100 - (month.safeAmount / (highestDollarAmount / 1000));
+
+      return `${x},${y}`;
+    }).join(' ');
+
     const svgTemplate = `
       <svg viewbox="0 0 1300 1300" aria-hidden="true" focusable="false">
         <g>
-          <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)" />
+          <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)"></line>
           ${yAxisLabels.join('')}
         </g>
         <g>
-          <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)" />
+          <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)"></line>
           ${xAxisLabels.join('')}
         </g>
         <g>
@@ -455,6 +476,11 @@ layout: layouts/simple-layout.njk
               <polygon points="${x - 5} ${safeAmountY + 4}, ${x} ${safeAmountY - 6}, ${x + 5} ${safeAmountY + 4}" fill="var(--text-color)"></polygon>
             `;
           }).join('')}
+        </g>
+        <g>
+          <polyline points="${expensesPoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
+          <polyline points="${incomePoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
+          <polyline points="${safeAmountPoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
         </g>
       </svg>
     `;
