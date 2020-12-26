@@ -471,16 +471,16 @@ layout: layouts/simple-layout.njk
             const safeAmountY = 1100 - (month.safeAmount / (highestDollarAmount / 1000));
 
             return `
-              <circle cx="${x}" cy="${expenseY}" r="5" fill="var(--text-color)"></circle>
-              <rect x="${x - 4}" y="${incomeY - 4}" width="8" height="8" fill="var(--text-color)"></rect>
-              <polygon points="${x - 5} ${safeAmountY + 4}, ${x} ${safeAmountY - 6}, ${x + 5} ${safeAmountY + 4}" fill="var(--text-color)"></polygon>
+              <circle cx="${x}" cy="${expenseY}" r="5" fill="var(--red)"></circle>
+              <rect x="${x - 4}" y="${incomeY - 4}" width="8" height="8" fill="var(--blue)"></rect>
+              <polygon points="${x - 5} ${safeAmountY + 4}, ${x} ${safeAmountY - 6}, ${x + 5} ${safeAmountY + 4}" fill="var(--yellow)"></polygon>
             `;
           }).join('')}
         </g>
         <g>
-          <polyline points="${expensesPoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
-          <polyline points="${incomePoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
-          <polyline points="${safeAmountPoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
+          <polyline points="${expensesPoints}" fill="none" stroke="var(--red)" stroke-width="2"></polyline>
+          <polyline points="${incomePoints}" fill="none" stroke="var(--blue)" stroke-width="2"></polyline>
+          <polyline points="${safeAmountPoints}" fill="none" stroke="var(--yellow)" stroke-width="2"></polyline>
         </g>
       </svg>
     `;
