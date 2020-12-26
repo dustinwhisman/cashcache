@@ -357,7 +357,7 @@ layout: layouts/simple-layout.njk
 
   const drawProgressChart = (totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth) => {
     const monthlyProgress = {};
-    totalExpensesByMonth.forEach((month) => {
+    totalExpensesByMonth.slice(0, -1).forEach((month) => {
       if (monthlyProgress[formatMonthString(month.year, month.month)]) {
         monthlyProgress[formatMonthString(month.year, month.month)].expenses = month.total;
       } else {
@@ -369,7 +369,7 @@ layout: layouts/simple-layout.njk
       }
     });
 
-    totalIncomeByMonth.forEach((month) => {
+    totalIncomeByMonth.slice(0, -1).forEach((month) => {
       if (monthlyProgress[formatMonthString(month.year, month.month)]) {
         monthlyProgress[formatMonthString(month.year, month.month)].income = month.total;
       } else {
@@ -381,7 +381,7 @@ layout: layouts/simple-layout.njk
       }
     });
 
-    totalSavingsByMonth.forEach((month) => {
+    totalSavingsByMonth.slice(0, -1).forEach((month) => {
       if (monthlyProgress[formatMonthString(month.year, month.month)]) {
         monthlyProgress[formatMonthString(month.year, month.month)].safeAmount = month.total / 25 / 12;
       } else {
@@ -440,7 +440,21 @@ layout: layouts/simple-layout.njk
         </g>
         <g>
           <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)" />
-          ${xAxisLabels}
+          ${xAxisLabels.join('')}
+        </g>
+        <g>
+          ${progress.map((month, index) => {
+            const x = 200 + (index * 1000 / progress.length);
+            const expenseY = 1100 - (month.expenses / (highestDollarAmount / 1000));
+            const incomeY = 1100 - (month.income / (highestDollarAmount / 1000));
+            const safeAmountY = 1100 - (month.safeAmount / (highestDollarAmount / 1000));
+
+            return `
+              <circle cx="${x}" cy="${expenseY}" r="5" fill="var(--text-color)"></circle>
+              <rect x="${x - 4}" y="${incomeY - 4}" width="8" height="8" fill="var(--text-color)"></rect>
+              <polygon points="${x - 5} ${safeAmountY + 4}, ${x} ${safeAmountY - 6}, ${x + 5} ${safeAmountY + 4}" fill="var(--text-color)"></polygon>
+            `;
+          }).join('')}
         </g>
       </svg>
     `;
