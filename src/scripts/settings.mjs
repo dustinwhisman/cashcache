@@ -1,4 +1,4 @@
-import { addToDb, getAllFromObjectStore } from './db.mjs';
+import { addToDb, getAllFromObjectStore, deleteAllRecords } from './db.mjs';
 
 const importData = async (data) => {
   const importProgressIndicator = document.querySelector('[data-import-progress]');
@@ -515,5 +515,25 @@ document.addEventListener('click', async (event) => {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+  }
+
+  if (event.target.matches('[data-delete-data]')) {
+    if (window.confirm('Are you sure you want to delete all of your data? This action is irreversible.')) {
+      const deleteDataProgressBlock = document.querySelector('[data-delete-progress]');
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all records...</p>';
+      await deleteAllRecords('expenses');
+      await deleteAllRecords('income');
+      await deleteAllRecords('savings');
+      await deleteAllRecords('debt');
+      await deleteAllRecords('recurring-expenses');
+      await deleteAllRecords('recurring-income');
+
+      deleteDataProgressBlock.innerHTML = `
+        <p>
+          All done. You should have a clean slate on the
+          <a href="/overview">overview page</a> now.
+        </p>
+      `;
+    }
   }
 });

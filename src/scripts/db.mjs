@@ -160,3 +160,27 @@ export const deleteFromDb = (storeName, key) => {
     }
   });
 }
+
+export const deleteAllRecords = (storeName) => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(schemaName, schemaVersion);
+    request.onupgradeneeded = updateSchema;
+
+    request.onerror = (event) => {
+      console.log(`Database error: ${event.target.errorCode}`);
+      reject();
+    };
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], 'readwrite');
+      const objectStore = transaction.objectStore(storeName);
+      const result = objectStore.clear();
+      result.onsuccess = () => {
+        const successEvent = new CustomEvent('all-items-deleted');
+        document.dispatchEvent(successEvent);
+        resolve();
+      };
+    };
+  });
+};
