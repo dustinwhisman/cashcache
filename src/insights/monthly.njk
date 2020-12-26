@@ -168,7 +168,7 @@ layout: layouts/simple-layout.njk
     const lastMonthsIncome = await getAllFromIndex('income', 'year-month', prevYear, prevMonth);
     const lastMonthsTotalIncome = lastMonthsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
-    if (lastMonthsIncome > totalIncome) {
+    if (lastMonthsTotalIncome > totalIncome) {
       monthToMonthBlock.innerHTML += `
         <p>
           You earned ${formatCurrency(lastMonthsTotalIncome - totalIncome)} less
@@ -194,7 +194,7 @@ layout: layouts/simple-layout.njk
     const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', prevYear, prevMonth);
     const lastMonthsTotalSavings = lastMonthsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
-    if (lastMonthsSavings > totalSavings) {
+    if (lastMonthsTotalSavings > totalSavings) {
       monthToMonthBlock.innerHTML += `
         <p>
           Your total savings went down by
@@ -222,7 +222,7 @@ layout: layouts/simple-layout.njk
     const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', prevYear, prevMonth);
     const lastMonthsTotalDebt = lastMonthsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
-    if (lastMonthsDebt > totalDebt) {
+    if (lastMonthsTotalDebt > totalDebt) {
       monthToMonthBlock.innerHTML += `
         <p>
           Your total debt went down by
@@ -291,7 +291,7 @@ layout: layouts/simple-layout.njk
     const lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month);
     const lastYearsTotalIncome = lastYearsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
-    if (lastYearsIncome > totalIncome) {
+    if (lastYearsTotalIncome > totalIncome) {
       yearToYearBlock.innerHTML += `
         <p>
           You earned ${formatCurrency(lastYearsTotalIncome - totalIncome)} less
@@ -317,7 +317,7 @@ layout: layouts/simple-layout.njk
     const lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month);
     const lastYearsTotalSavings = lastYearsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
-    if (lastYearsSavings > totalSavings) {
+    if (lastYearsTotalSavings > totalSavings) {
       yearToYearBlock.innerHTML += `
         <p>
           Your total savings went down by
@@ -345,7 +345,7 @@ layout: layouts/simple-layout.njk
     const lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month);
     const lastYearsTotalDebt = lastYearsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
-    if (lastYearsDebt > totalDebt) {
+    if (lastYearsTotalDebt > totalDebt) {
       yearToYearBlock.innerHTML += `
         <p>
           Your total debt went down by
