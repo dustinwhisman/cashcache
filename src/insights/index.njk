@@ -51,7 +51,7 @@ layout: layouts/simple-layout.njk
   <div data-retirement-details class="stack"></div>
 </div>
 
-<div data-rolling-savings-rate class="stack" hidden>
+<div data-savings-rate class="stack" hidden>
   <h2>
     Savings Rate
   </h2>
@@ -61,9 +61,13 @@ layout: layouts/simple-layout.njk
     </summary>
     <div class="stack">
       <p>
-        Your savings rate is an indicator of how much money you saved compared to
-        your total income. This chart breaks it down by month and shows rolling
-        averages over different time scales.
+        Your savings rate is an indicator of how much money you saved compared
+        to your total income. The closer you are to 100%, the better. If you
+        have a negative percentage, that means you spent more than you earned.
+      </p>
+      <p>
+        This chart breaks your savings rate down by month and shows a 12 month
+        rolling average.
       </p>
     </div>
   </details>
@@ -542,6 +546,181 @@ layout: layouts/simple-layout.njk
     progressChartBlock.removeAttribute('hidden');
   };
 
+  const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth) => {
+    const monthlyData = {};
+    totalExpensesByMonth.slice(0, -1).forEach((month) => {
+      if (monthlyData[formatMonthString(month.year, month.month)]) {
+        monthlyData[formatMonthString(month.year, month.month)].expenses = month.total;
+      } else {
+        monthlyData[formatMonthString(month.year, month.month)] = {
+          expenses: month.total,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    totalIncomeByMonth.slice(0, -1).forEach((month) => {
+      if (monthlyData[formatMonthString(month.year, month.month)]) {
+        monthlyData[formatMonthString(month.year, month.month)].income = month.total;
+      } else {
+        monthlyData[formatMonthString(month.year, month.month)] = {
+          income: month.total,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    totalSavingsByMonth.slice(0, -1).forEach((month) => {
+      if (monthlyData[formatMonthString(month.year, month.month)]) {
+        monthlyData[formatMonthString(month.year, month.month)].safeAmount = month.total / 25 / 12;
+      } else {
+        monthlyData[formatMonthString(month.year, month.month)] = {
+          safeAmount: month.total / 25 / 12,
+          year: month.year,
+          month: month.month,
+        };
+      }
+    });
+
+    const progress = Object.keys(monthlyData)
+      .map((key) => ({
+        ...monthlyData[key],
+        label: key,
+      }))
+      .sort(sortingFunction);
+
+    const savingsRates = progress.map((month, index) => {
+      let longTermIncome = 0;
+      let longTermExpenses = 0;
+      for (let i = index - 11; i <= index; i += 1) {
+        const prevMonth = progress[i];
+        if (progress[i]) {
+          longTermIncome += prevMonth.income;
+          longTermExpenses += prevMonth.expenses;
+        }
+      }
+      const avgSavingsRate = (longTermIncome - longTermExpenses) / longTermIncome;
+      const currentSavingsRate = (month.income - month.expenses) / month.income;
+
+      return {
+        label: month.label,
+        avgSavingsRate,
+        currentSavingsRate,
+      };
+    });
+
+    const yAxisLabels = [];
+    for (let i = -10; i <= 10; i += 2) {
+      yAxisLabels.push(`
+        <text x="180" y="${610 - (i * 50)}" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)">
+          ${i * 10}%
+        </text>
+      `);
+    }
+
+    const xAxisLabels = [];
+    const xAxisInterval = Math.ceil(savingsRates.length / 12);
+    for (let i = 0; i < savingsRates.length; i += 1) {
+      if (i % Math.ceil(xAxisInterval) === 0) {
+        xAxisLabels.push(`
+          <text x="${240 + (i * 1000 / savingsRates.length)}" y="1120" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)" transform="rotate(-45, ${240 + (i * 1000 / savingsRates.length)}, 1160)">
+            ${savingsRates[i].label}
+          </text>
+        `);
+      }
+    }
+
+    const currentRatePoints = savingsRates.map((month, index) => {
+      const x = 200 + (index * 1000 / savingsRates.length);
+      const y = 600 - (month.currentSavingsRate * 500);
+
+      return `${x},${y}`;
+    }).join(' ');
+
+    const avgRatePoints = savingsRates.map((month, index) => {
+      const x = 200 + (index * 1000 / savingsRates.length);
+      const y = 600 - (month.avgSavingsRate * 500);
+
+      return `${x},${y}`;
+    }).join(' ');
+
+    const svgTemplate = `
+      <svg viewbox="0 0 1300 1300" aria-hidden="true" focusable="false">
+        <g>
+          <circle cx="200" cy="40" r="10" fill="var(--text-color)"></circle>
+          <text x="220" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+            Monthly Savings Rate
+          </text>
+          <polygon points="590 48, 600 28, 610 48" fill="var(--blue)"></polygon>
+          <text x="620" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+            Average Savings Rate (12 months)
+          </text>
+        </g>
+        <g>
+          <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)"></line>
+          <line x1="200" x2="1200" y1="600" y2="600" stroke-width="2" stroke="var(--text-color)"></line>
+          <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)"></line>
+          ${yAxisLabels.join('')}
+          ${xAxisLabels.join('')}
+        </g>
+        <g>
+          ${savingsRates.map((month, index) => {
+            const x = 200 + (index * 1000 / savingsRates.length);
+            const currentRateY = 600 - (month.currentSavingsRate * 500);
+            const avgRateY = 600 - (month.avgSavingsRate * 500);
+
+            return `
+              <circle cx="${x}" cy="${currentRateY}" r="5" fill="var(--text-color)"></circle>
+              <polygon points="${x - 5} ${avgRateY + 4}, ${x} ${avgRateY - 6}, ${x + 5} ${avgRateY + 4}" fill="var(--blue)"></polygon>
+            `;
+          }).join('')}
+        </g>
+        <g>
+          <polyline points="${currentRatePoints}" fill="none" stroke="var(--text-color)" stroke-width="2"></polyline>
+          <polyline points="${avgRatePoints}" fill="none" stroke="var(--blue)" stroke-width="2"></polyline>
+        </g>
+      </svg>
+      <table class="visually-hidden">
+        <thead>
+          <tr>
+            <th>
+              Month
+            </th>
+            <th class="text-align:right">
+              Savings Rate
+            </th>
+            <th class="text-align:right">
+              Avg Savings Rate (12 months)
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${savingsRates.map((month) => {
+            return `
+              <tr>
+                <th>
+                  ${month.label}
+                </th>
+                <td class="text-align:right">
+                  ${(month.currentSavingsRate * 100).toFixed(2)}%
+                </td>
+                <td class="text-align:right">
+                  ${(month.avgSavingsRate * 100).toFixed(2)}%
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+
+    const savingsRateBlock = document.querySelector('[data-savings-rate]');
+    savingsRateBlock.innerHTML += svgTemplate;
+    savingsRateBlock.removeAttribute('hidden');
+  };
+
   (async () => {
     const allExpenses = await getAllFromObjectStore('expenses');
     const expensesByMonth = allExpenses.reduce((acc, expense) => {
@@ -606,5 +785,6 @@ layout: layouts/simple-layout.njk
     calculateRunway(totalExpensesByMonth, totalSavingsByMonth);
     calculateRetirementEstimates(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
     drawProgressChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
+    drawRollingSavingsChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
   })();
 </script>
