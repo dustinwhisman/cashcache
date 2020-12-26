@@ -397,6 +397,24 @@ layout: layouts/simple-layout.njk
       }
     });
 
+    if (!Object.keys(monthlyProgress).length) {
+      const progressChartBlock = document.querySelector('[data-progress-chart]');
+      progressChartBlock.innerHTML += `
+        <p>
+          We don't have enough data to chart your progress right now. Once you
+          have expenses, income, and savings data for one month (other than the
+          current one), we'll be able to start plotting some points.
+        </p>
+        <p>
+          You can come back next month, or you can add some historical data for
+          past months. You can also bulk upload data via CSV files from the
+          <a href="/settings">settings</a> page, which may speed things up.
+        </p>
+      `;
+      progressChartBlock.removeAttribute('hidden');
+      return;
+    }
+
     const progress = Object.keys(monthlyProgress)
       .map((key) => ({
         ...monthlyProgress[key],
@@ -583,6 +601,24 @@ layout: layouts/simple-layout.njk
         };
       }
     });
+
+    if (!Object.keys(monthlyData).length) {
+      const savingsRateBlock = document.querySelector('[data-savings-rate]');
+      savingsRateBlock.innerHTML += `
+        <p>
+          We don't have enough data to chart your savings rate right now.
+          Once you have expenses, and income data for one month (other than the
+          current one), we'll be able to start plotting some points.
+        </p>
+        <p>
+          You can come back next month, or you can add some historical data for
+          past months. You can also bulk upload data via CSV files from the
+          <a href="/settings">settings</a> page, which may speed things up.
+        </p>
+      `;
+      savingsRateBlock.removeAttribute('hidden');
+      return;
+    }
 
     const progress = Object.keys(monthlyData)
       .map((key) => ({
