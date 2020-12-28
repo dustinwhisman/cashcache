@@ -14,19 +14,33 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
+  const loginLink = document.querySelector('[data-login-link]');
+  const accountLink = document.querySelector('[data-account-link]');
   let appUser;
+  let appUserData = localStorage.getItem('user');
+  if (appUserData) {
+    appUser = JSON.parse(appUserData);
+    loginLink.setAttribute('hidden', true);
+    accountLink.removeAttribute('hidden');
+  } else {
+    loginLink.removeAttribute('hidden');
+    accountLink.setAttribute('hidden', true);
+  }
+
   firebase.auth().onAuthStateChanged((user) => {
-    const loginLink = document.querySelector('[data-login-link]');
-    const accountLink = document.querySelector('[data-account-link]');
     if (user) {
       appUser = user;
       loginLink.setAttribute('hidden', true);
       accountLink.removeAttribute('hidden');
       const loggedInEvent = new CustomEvent('user-logged-in', { detail: user });
       document.dispatchEvent(loggedInEvent);
+      localStorage.setItem('user', JSON.stringify(user));
     } else {
       loginLink.removeAttribute('hidden');
       accountLink.setAttribute('hidden', true);
+      const notLoggedInEvent = new CustomEvent('not-logged-in');
+      document.dispatchEvent(notLoggedInEvent);
+      localStorage.removeItem('user');
     }
   });
 </script>

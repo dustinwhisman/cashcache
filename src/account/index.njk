@@ -47,6 +47,7 @@ layout: layouts/simple-layout.njk
     if (event.target.matches('[data-log-out]')) {
       firebase.auth().signOut()
         .then(() => {
+          localStorage.removeItem('user');
           window.location.href = '/';
         })
         .catch(console.error);
