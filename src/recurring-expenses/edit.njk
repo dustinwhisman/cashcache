@@ -218,20 +218,20 @@ layout: layouts/simple-layout.njk
     }
   })();
 
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', async (event) => {
     if (event.target.matches('[data-delete]')) {
-      console.log(event.target.dataset.key);
       if (window.confirm('Are you sure you want to delete this recurring expense?')) {
-        deleteFromDb('recurring-expenses', event.target.dataset.key);
+        try {
+          await deleteFromDb('recurring-expenses', event.target.dataset.key, appUser?.uid);
+          if (document.referrer) {
+            window.location.href = document.referrer;
+          } else {
+            window.location.href = `/overview`;
+          }
+        } catch (error) {
+          window.alert(error.message);
+        }
       }
-    }
-  });
-
-  document.addEventListener('item-deleted', () => {
-    if (document.referrer) {
-      window.location.href = document.referrer;
-    } else {
-      window.location.href = `/recurring-expenses`;
     }
   });
 </script>

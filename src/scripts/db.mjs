@@ -136,7 +136,7 @@ export const addToDb = (storeName, thingToAdd) => {
   });
 };
 
-export const deleteFromDb = (storeName, key) => {
+export const deleteFromDb = (storeName, key, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -153,6 +153,11 @@ export const deleteFromDb = (storeName, key) => {
       const result = objectStore.get(key);
       result.onsuccess = (event) => {
         const data = event.target.result;
+        if (data.uid != uid) {
+          reject('You do not have permission to delete this record.');
+          return;
+        }
+
         data.isDeleted = true;
         const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
