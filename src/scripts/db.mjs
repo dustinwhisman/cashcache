@@ -1,6 +1,6 @@
 import { schemaVersion, schemaName, updateSchema, uuid } from './db-utilities.mjs';
 
-export const getFromDb = (storeName, key) => {
+export const getFromDb = (storeName, key, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -16,6 +16,10 @@ export const getFromDb = (storeName, key) => {
       const objectStore = transaction.objectStore(storeName);
       const result = objectStore.get(key);
       result.onsuccess = (event) => {
+        if (event.target.result.uid != uid) {
+          reject('Access to this record is denied.');
+        }
+
         resolve(event.target.result);
       }
     }

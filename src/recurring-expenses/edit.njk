@@ -18,97 +18,111 @@ layout: layouts/simple-layout.njk
 
 {% include "components/back-link.njk" %}
 
-<div>
-  <button type="button" data-delete data-key="">
-    Delete this Recurring Expense
-  </button>
+<div class="stack" data-access-denied hidden>
+  <p>You don't have access to this record.</p>
+  <p data-belongs-to-user hidden>
+    It belongs to a user that isn't you. You may need to log in to see it or
+    change accounts if you are already logged in.
+  </p>
+  <p data-belongs-to-nobody hidden>
+    It is not associated with a user, which means that it should only be seen by
+    somebody who is not logged in.
+  </p>
 </div>
 
-<form class="stack">
-  {% include "inputs/category-inputs.njk" %}
+<div class="stack" data-typical-state>
   <div>
-    <label for="expense-description">
-      Description
-    </label>
-    <input id="expense-description" type="text" name="expense-description" required>
-  </div>
-  <div>
-    <label for="amount">
-      Amount
-    </label>
-    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
-  </div>
-  <fieldset>
-    <legend>
-      Frequency
-    </legend>
-    <div class="stack" style="--stack-space: 0.5em">
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-month" checked>
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Month
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="3-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 3 Months
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="6-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 6 Months
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-year">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Year
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-week">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Week
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="2-week">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 2 Weeks
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="twice-per-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Twice per Month
-        </span>
-      </label>
-    </div>
-  </fieldset>
-  {% include "inputs/complex-dates.njk" %}
-  <label class="custom-checkbox">
-    <input type="checkbox" name="active" checked>
-    {% include "svgs/checkbox-svg.njk" %}
-    <span>
-      This recurring expense is currently active
-    </span>
-  </label>
-  <input type="hidden" name="key" value="">
-  <div>
-    <button type="submit">
-      Save Changes
+    <button type="button" data-delete data-key="">
+      Delete this Recurring Expense
     </button>
   </div>
-</form>
+
+  <form class="stack">
+    {% include "inputs/category-inputs.njk" %}
+    <div>
+      <label for="expense-description">
+        Description
+      </label>
+      <input id="expense-description" type="text" name="expense-description" required>
+    </div>
+    <div>
+      <label for="amount">
+        Amount
+      </label>
+      <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+    </div>
+    <fieldset>
+      <legend>
+        Frequency
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="1-month" checked>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every Month
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="3-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 3 Months
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="6-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 6 Months
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="1-year">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every Year
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="1-week">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every Week
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="2-week">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 2 Weeks
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="twice-per-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Twice per Month
+          </span>
+        </label>
+      </div>
+    </fieldset>
+    {% include "inputs/complex-dates.njk" %}
+    <label class="custom-checkbox">
+      <input type="checkbox" name="active" checked>
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        This recurring expense is currently active
+      </span>
+    </label>
+    <input type="hidden" name="key" value="">
+    <div>
+      <button type="submit">
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
@@ -155,37 +169,52 @@ layout: layouts/simple-layout.njk
     const deleteButton = document.querySelector('[data-delete]');
     deleteButton.dataset.key = key;
 
-    const expense = await getFromDb('recurring-expenses', key);
-    const form = document.querySelector('form');
-    const { elements } = form;
-    elements['key'].value = key;
-    elements['expense-description'].value = `${expense.description}`;
-    elements['amount'].value = `${formatCurrency(expense.amount)}`;
-    elements['year'].value = `${expense.year}`;
-    elements['month'].value = `${expense.month + 1}`;
-    elements['day'].value = `${expense.day}`;
-    elements['frequency'].value = `${expense.frequency}`;
+    try {
+      const expense = await getFromDb('recurring-expenses', key, appUser?.uid);
+      const form = document.querySelector('form');
+      const { elements } = form;
+      elements['key'].value = key;
+      elements['expense-description'].value = `${expense.description}`;
+      elements['amount'].value = `${formatCurrency(expense.amount)}`;
+      elements['year'].value = `${expense.year}`;
+      elements['month'].value = `${expense.month + 1}`;
+      elements['day'].value = `${expense.day}`;
+      elements['frequency'].value = `${expense.frequency}`;
 
-    expense.daysOfMonth.forEach((day) => {
-      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
-      dayInput.checked = true;
-    });
+      expense.daysOfMonth.forEach((day) => {
+        const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+        dayInput.checked = true;
+      });
 
-    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
-    }
+      const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+      if (categoryInput) {
+        categoryInput.checked = true;
+      }
 
-    if (expense.frequency === 'twice-per-month') {
-      const simpleDatesBlock = document.querySelector('[data-simple-dates]');
-      const complexDatesBlock = document.querySelector('[data-complex-dates]');
-      simpleDatesBlock.setAttribute('hidden', true);
-      complexDatesBlock.removeAttribute('hidden');
-    }
+      if (expense.frequency === 'twice-per-month') {
+        const simpleDatesBlock = document.querySelector('[data-simple-dates]');
+        const complexDatesBlock = document.querySelector('[data-complex-dates]');
+        simpleDatesBlock.setAttribute('hidden', true);
+        complexDatesBlock.removeAttribute('hidden');
+      }
 
-    if (!expense.active) {
-      const activeInput = document.querySelector('[name=active]');
-      activeInput.checked = false;
+      if (!expense.active) {
+        const activeInput = document.querySelector('[name=active]');
+        activeInput.checked = false;
+      }
+    } catch (error) {
+      const typicalState = document.querySelector('[data-typical-state]');
+      const accessDenied = document.querySelector('[data-access-denied]');
+      if (appUser) {
+        const belongsToNobody = document.querySelector('[data-belongs-to-nobody]');
+        belongsToNobody.removeAttribute('hidden');
+      } else {
+        const belongsToUser = document.querySelector('[data-belongs-to-user]');
+        belongsToUser.removeAttribute('hidden');
+      }
+
+      typicalState.setAttribute('hidden', true);
+      accessDenied.removeAttribute('hidden');
     }
   })();
 
