@@ -6,9 +6,13 @@ layout: layouts/simple-layout.njk
 <h1>
   Confirm Login
 </h1>
-<p>
-  Hang on a moment while we confirm your login.
-</p>
+
+<div data-status-update aria-live="polite">
+  <p>
+    Hang on a moment while we confirm your login.
+  </p>
+</div>
+
 <div class="stack" data-different-device hidden>
   <p>
     It appears you opened this link on a different device than the one you
@@ -30,6 +34,7 @@ layout: layouts/simple-layout.njk
     </div>
   </form>
 </div>
+
 <div data-login-error hidden>
   <p>
     We were unable to log you in. Either your email was invalid or the login
@@ -38,8 +43,61 @@ layout: layouts/simple-layout.njk
 </div>
 
 {% include "scripts/firebase.njk" %}
-<script>
-  (() => {
+<script type="module">
+  import { getAllFromObjectStore, addToDb } from '/scripts/db.mjs';
+
+  const associateRecords = async (storeName, records) => {
+    await Promise.all(records.map(async (record) => {
+      try {
+        await addToDb(storeName, {
+          ...record,
+          uid: appUser?.uid,
+        });
+        return Promise.resolve();
+      } catch (error) {
+        console.error(error);
+        return Promise.reject();
+      }
+    }));
+  };
+
+  const associateDataToAccount = async () => {
+    const statusUpdate = document.querySelector('[data-status-update]');
+
+    statusUpdate.innerHTML = '<p>Associating existing expenses to your account...</p>';
+    const expensesRecords = await getAllFromObjectStore('expenses');
+    await associateRecords('expenses', expensesRecords);
+
+    statusUpdate.innerHTML = '<p>Associating existing income.. to your account.</p>';
+    const incomeRecords = await getAllFromObjectStore('income');
+    await associateRecords('income', incomeRecords);
+
+    statusUpdate.innerHTML = '<p>Associating existing savings. to your account..</p>';
+    const savingsRecords = await getAllFromObjectStore('savings');
+    await associateRecords('savings', savingsRecords);
+
+    statusUpdate.innerHTML = '<p>Associating existing debt...< to your account/p>';
+    const debtRecords = await getAllFromObjectStore('debt');
+    await associateRecords('debt', debtRecords);
+
+    statusUpdate.innerHTML = '<p>Associating existing recurrin to your accountg expenses...</p>';
+    const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses');
+    await associateRecords('recurring-expenses', recurringExpensesRecords);
+
+    statusUpdate.innerHTML = '<p>Associating existing recurrin to your accountg income...</p>';
+    const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
+    await associateRecords('recurring-income', recurringIncomeRecords);
+
+    statusUpdate.innerHTML = `
+      <p>
+        All done! Redirecting you to the <a href="/overview">overview page</a>
+        now.
+      </p>
+    `;
+    window.location.href = '/overview';
+  };
+
+  (async () => {
     if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
       const email = localStorage.getItem('emailForSignIn');
       if (!email) {
@@ -49,9 +107,9 @@ layout: layouts/simple-layout.njk
       }
 
       firebase.auth().signInWithEmailLink(email, window.location.href)
-        .then((result) => {
+        .then(async (result) => {
           localStorage.removeItem('emailForSignIn');
-          window.location.href = '/overview';
+          await associateDataToAccount();
         })
         .catch((error) => {
           const errorMessage = document.querySelector('[data-login-error]');
@@ -66,8 +124,8 @@ layout: layouts/simple-layout.njk
       const email = event.target.elements.email.value;
 
       firebase.auth().signInWithEmailLink(email, window.location.href)
-        .then((result) => {
-          window.location.href = '/overview';
+        .then(async (result) => {
+          await associateDataToAccount();
         })
         .catch((error) => {
           const errorMessage = document.querySelector('[data-login-error]');
