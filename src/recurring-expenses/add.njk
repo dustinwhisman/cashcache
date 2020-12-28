@@ -104,6 +104,7 @@ layout: layouts/simple-layout.njk
   </div>
 </form>
 
+{% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, addToDb } from '/scripts/db.mjs';

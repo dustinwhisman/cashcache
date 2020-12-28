@@ -79,6 +79,7 @@ layout: layouts/simple-layout.njk
   </h3>
 </div>
 
+{% include "scripts/firebase.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllFromIndex } from '/scripts/db.mjs';
@@ -392,7 +393,7 @@ layout: layouts/simple-layout.njk
     if (isNaN(savingsRate)) {
       return;
     }
-    
+
     const savingsRateBlock = document.querySelector('[data-savings-rate]');
 
     savingsRateBlock.innerHTML += `

@@ -29,6 +29,7 @@ layout: layouts/simple-layout.njk
   </a>
 </div>
 
+{% include "scripts/firebase.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllFromObjectStore } from '/scripts/db.mjs';

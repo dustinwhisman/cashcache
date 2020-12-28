@@ -13,4 +13,18 @@
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+
+  let appUser;
+  firebase.auth().onAuthStateChanged((user) => {
+    const loginLink = document.querySelector('[data-login-link]');
+    const accountLink = document.querySelector('[data-account-link]');
+    if (user) {
+      appUser = user;
+      loginLink.setAttribute('hidden', true);
+      accountLink.removeAttribute('hidden');
+    } else {
+      loginLink.removeAttribute('hidden');
+      accountLink.setAttribute('hidden', true);
+    }
+  });
 </script>
