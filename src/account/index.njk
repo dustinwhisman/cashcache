@@ -24,6 +24,38 @@ layout: layouts/simple-layout.njk
       Log Out
     </button>
   </div>
+
+  <h2>
+    Change Email Address
+  </h2>
+  <form class="stack" data-update-email-form>
+    <div>
+      <label for="new-email">
+        New Email
+      </label>
+      <input id="new-email" type="email" name="new-email" style="width: 50ch">
+    </div>
+    <div>
+      <button type="submit" data-update-email-button>
+        Save Changes
+      </button>
+    </div>
+  </form>
+
+  <h2>
+    Delete Account
+  </h2>
+  <p>
+    Deleting your account will cancel all future payments and delete all data
+    disassociated with your account from the cloud. All of your data will still be
+    saved in your browser, so you can still access it as a free user.
+  </p>
+  <div>
+    <button type="button" data-delete-account>
+      Delete Account
+    </button>
+  </div>
+  <div data-status-update aria-live="polite"></div>
 </div>
 
 <script>
@@ -42,8 +74,60 @@ layout: layouts/simple-layout.njk
   });
 </script>
 {% include "scripts/firebase.njk" %}
-<script>
-  document.addEventListener('click', (event) => {
+<script type="module">
+  import { getAllFromObjectStore, addToDb } from '/scripts/db.mjs';
+
+  const disassociateRecords = async (storeName, records) => {
+    await Promise.all(records.map(async (record) => {
+      try {
+        await addToDb(storeName, {
+          ...record,
+          uid: null,
+        });
+        return Promise.resolve();
+      } catch (error) {
+        console.error(error);
+        return Promise.reject();
+      }
+    }));
+  };
+
+  const disassociateDataFromAccount = async (uid) => {
+    const statusUpdate = document.querySelector('[data-status-update]');
+
+    statusUpdate.innerHTML = '<p>Removing expenses associations from your account...</p>';
+    const expensesRecords = await getAllFromObjectStore('expenses', uid);
+    await disassociateRecords('expenses', expensesRecords);
+
+    statusUpdate.innerHTML = '<p>Removing income associations from your account...</p>';
+    const incomeRecords = await getAllFromObjectStore('income', uid);
+    await disassociateRecords('income', incomeRecords);
+
+    statusUpdate.innerHTML = '<p>Removing savings associations from your account...</p>';
+    const savingsRecords = await getAllFromObjectStore('savings', uid);
+    await disassociateRecords('savings', savingsRecords);
+
+    statusUpdate.innerHTML = '<p>Removing debt associations from your account...</p>';
+    const debtRecords = await getAllFromObjectStore('debt', uid);
+    await disassociateRecords('debt', debtRecords);
+
+    statusUpdate.innerHTML = '<p>Removing recurring expenses associations from your account...</p>';
+    const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses', uid);
+    await disassociateRecords('recurring-expenses', recurringExpensesRecords);
+
+    statusUpdate.innerHTML = '<p>Removing recurring income associations from your account...</p>';
+    const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', uid);
+    await disassociateRecords('recurring-income', recurringIncomeRecords);
+
+    statusUpdate.innerHTML = `
+      <p>
+        All done. Your account has been deleted.
+      </p>
+    `;
+    window.location.href = '/';
+  };
+
+  document.addEventListener('click', async (event) => {
     if (event.target.matches('[data-log-out]')) {
       firebase.auth().signOut()
         .then(() => {
@@ -51,6 +135,30 @@ layout: layouts/simple-layout.njk
           window.location.href = '/';
         })
         .catch(console.error);
+    }
+
+    if (event.target.matches('[data-delete-account]')) {
+      if (window.confirm('Are you sure you want to delete your account? This action is irreversible.')) {
+        const uid = appUser.uid;
+        appUser.delete().then(async () => {
+          await disassociateDataFromAccount(uid);
+        })
+        .catch(() => {
+          alert(`Since this action is sensitive, we'll need you to log in again real quick before trying again.`);
+        });
+      }
+    }
+  });
+
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (event.target.matches('[data-update-email-form]')) {
+      appUser.updateEmail(event.target.elements['new-email'].value).then(() => {
+        window.location.reload(true);
+      })
+      .catch(() => {
+        alert(`Since this action is sensitive, we'll need you to log in again real quick before trying again.`);
+      });
     }
   });
 </script>

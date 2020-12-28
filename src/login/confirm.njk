@@ -68,23 +68,23 @@ layout: layouts/simple-layout.njk
     const expensesRecords = await getAllFromObjectStore('expenses');
     await associateRecords('expenses', expensesRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing income.. to your account.</p>';
+    statusUpdate.innerHTML = '<p>Associating existing income to your account...</p>';
     const incomeRecords = await getAllFromObjectStore('income');
     await associateRecords('income', incomeRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing savings. to your account..</p>';
+    statusUpdate.innerHTML = '<p>Associating existing savings to your account...</p>';
     const savingsRecords = await getAllFromObjectStore('savings');
     await associateRecords('savings', savingsRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing debt...< to your account/p>';
+    statusUpdate.innerHTML = '<p>Associating existing debt to your account...</p>';
     const debtRecords = await getAllFromObjectStore('debt');
     await associateRecords('debt', debtRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing recurrin to your accountg expenses...</p>';
+    statusUpdate.innerHTML = '<p>Associating existing recurring expenses to your account...</p>';
     const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses');
     await associateRecords('recurring-expenses', recurringExpensesRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing recurrin to your accountg income...</p>';
+    statusUpdate.innerHTML = '<p>Associating existing recurring income to your account...</p>';
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
     await associateRecords('recurring-income', recurringIncomeRecords);
 
