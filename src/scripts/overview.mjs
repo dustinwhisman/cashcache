@@ -18,7 +18,7 @@ const loadExpenses = async () => {
   if (expensesBlock == null) {
     const manageRecurringExpensesDiv = document.querySelector('[data-manage-recurring-expenses]');
     manageRecurringExpensesDiv.removeAttribute('hidden');
-    const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     if (lastMonthsExpenses.length) {
       const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
       copyExpensesDiv.removeAttribute('hidden');
@@ -40,7 +40,7 @@ const loadIncome = async () => {
   if (incomeBlock == null) {
     const manageRecurringIncomeDiv = document.querySelector('[data-manage-recurring-income]');
     manageRecurringIncomeDiv.removeAttribute('hidden');
-    const lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     if (lastMonthsIncome.length) {
       const copyIncomeDiv = document.querySelector('[data-copy-income]');
       copyIncomeDiv.removeAttribute('hidden');
@@ -60,7 +60,7 @@ const loadSavings = async () => {
   const savingsBlock = await getSavings(year, month);
 
   if (savingsBlock == null) {
-    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     if (lastMonthsSavings.length) {
       const copySavingsDiv = document.querySelector('[data-copy-savings]');
       copySavingsDiv.removeAttribute('hidden');
@@ -80,7 +80,7 @@ const loadDebt = async () => {
   const debtBlock = await getDebt(year, month);
 
   if (debtBlock == null) {
-    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     if (lastMonthsDebt.length) {
       const copyDebtDiv = document.querySelector('[data-copy-debt]');
       copyDebtDiv.removeAttribute('hidden');
@@ -105,7 +105,7 @@ const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
 
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-copy-savings] button')) {
-    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     await Promise.all(lastMonthsSavings.map(async (fund) => {
       const newFund = {
         ...fund,
@@ -122,7 +122,7 @@ document.addEventListener('click', async (event) => {
   }
 
   if (event.target.matches('[data-copy-debt] button')) {
-    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth);
+    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     await Promise.all(lastMonthsDebt.map(async (loan) => {
       const newLoan = {
         ...loan,

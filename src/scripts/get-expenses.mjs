@@ -1,7 +1,7 @@
 import { getAllFromIndex } from './db.mjs';
 
 export const getExpenses = async (year, month) => {
-  const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
+  const expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
   if (!expenses?.length) {
     return null;
   }

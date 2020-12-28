@@ -145,7 +145,7 @@ layout: layouts/simple-layout.njk
   const compareToLastMonth = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
     const monthToMonthBlock = document.querySelector('[data-month-comparison]');
 
-    const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', prevYear, prevMonth);
+    const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, appUser?.uid);
     const lastMonthsTotalExpenses = lastMonthsExpenses.reduce((acc, expense) => (acc + expense.amount), 0);
 
     if (lastMonthsTotalExpenses > totalExpenses) {
@@ -172,7 +172,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastMonthsIncome = await getAllFromIndex('income', 'year-month', prevYear, prevMonth);
+    const lastMonthsIncome = await getAllFromIndex('income', 'year-month', prevYear, prevMonth, appUser?.uid);
     const lastMonthsTotalIncome = lastMonthsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
     if (lastMonthsTotalIncome > totalIncome) {
@@ -198,7 +198,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', prevYear, prevMonth);
+    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', prevYear, prevMonth, appUser?.uid);
     const lastMonthsTotalSavings = lastMonthsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
     if (lastMonthsTotalSavings > totalSavings) {
@@ -226,7 +226,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', prevYear, prevMonth);
+    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', prevYear, prevMonth, appUser?.uid);
     const lastMonthsTotalDebt = lastMonthsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
     if (lastMonthsTotalDebt > totalDebt) {
@@ -268,7 +268,7 @@ layout: layouts/simple-layout.njk
   const compareToLastYear = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
     const yearToYearBlock = document.querySelector('[data-year-comparison]');
 
-    const lastYearsExpenses = await getAllFromIndex('expenses', 'year-month', year - 1, month);
+    const lastYearsExpenses = await getAllFromIndex('expenses', 'year-month', year - 1, month, appUser?.uid);
     const lastYearsTotalExpenses = lastYearsExpenses.reduce((acc, expense) => (acc + expense.amount), 0);
 
     if (lastYearsTotalExpenses > totalExpenses) {
@@ -295,7 +295,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month);
+    const lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month, appUser?.uid);
     const lastYearsTotalIncome = lastYearsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
     if (lastYearsTotalIncome > totalIncome) {
@@ -321,7 +321,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month);
+    const lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month, appUser?.uid);
     const lastYearsTotalSavings = lastYearsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
     if (lastYearsTotalSavings > totalSavings) {
@@ -349,7 +349,7 @@ layout: layouts/simple-layout.njk
       `;
     }
 
-    const lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month);
+    const lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month, appUser?.uid);
     const lastYearsTotalDebt = lastYearsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
     if (lastYearsTotalDebt > totalDebt) {
@@ -406,16 +406,16 @@ layout: layouts/simple-layout.njk
   };
 
   (async () => {
-    const expenses = await getAllFromIndex('expenses', 'year-month', year, month);
+    const expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
     const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
 
-    const income = await getAllFromIndex('income', 'year-month', year, month);
+    const income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
     const totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
 
-    const savings = await getAllFromIndex('savings', 'year-month', year, month);
+    const savings = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
     const totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
 
-    const debt = await getAllFromIndex('debt', 'year-month', year, month);
+    const debt = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
     const totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
 
     generateDateGrid(expenses, income, totalExpenses, totalIncome);

@@ -26,7 +26,7 @@ export const getFromDb = (storeName, key, uid = null) => {
   });
 };
 
-export const getAllFromIndex = (storeName, indexName, year, month) => {
+export const getAllFromIndex = (storeName, indexName, year, month, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -43,7 +43,7 @@ export const getAllFromIndex = (storeName, indexName, year, month) => {
       const range = IDBKeyRange.only([year, month]);
       const result = index.getAll(range);
       result.onsuccess = (event) => {
-        resolve(event.target.result.filter(x => !x.isDeleted));
+        resolve(event.target.result.filter(x => x.uid == uid && !x.isDeleted));
       };
     }
   });
