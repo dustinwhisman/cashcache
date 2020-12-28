@@ -74,6 +74,7 @@ layout: layouts/simple-layout.njk
 
     const { elements } = event.target;
     const debt = {
+      uid: appUser?.uid,
       key: elements['key'].value || null,
       year: Number(elements['year'].value),
       month: Number(elements['month'].value) - 1,

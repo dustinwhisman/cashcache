@@ -148,6 +148,7 @@ document.addEventListener('click', async (event) => {
 
       if (expense.frequency === '1-month') {
         const newExpense = {
+          uid: appUser?.uid,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -167,6 +168,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
+          uid: appUser?.uid,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -186,6 +188,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
+          uid: appUser?.uid,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -205,6 +208,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
+          uid: appUser?.uid,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -232,6 +236,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newExpense = {
+            uid: appUser?.uid,
             year,
             month,
             day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
@@ -262,6 +267,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newExpense = {
+            uid: appUser?.uid,
             year,
             month,
             day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
@@ -281,6 +287,7 @@ document.addEventListener('click', async (event) => {
       if (expense.frequency === 'twice-per-month') {
         await Promise.all(expense.daysOfMonth.map(async (day) => {
           const newExpense = {
+            uid: appUser?.uid,
             year,
             month,
             day: day > daysInMonth ? daysInMonth : day,
@@ -312,6 +319,7 @@ document.addEventListener('click', async (event) => {
 
       if (income.frequency === '1-month') {
         const newIncome = {
+          uid: appUser?.uid,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -331,6 +339,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
+          uid: appUser?.uid,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -350,6 +359,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
+          uid: appUser?.uid,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -369,6 +379,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
+          uid: appUser?.uid,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -396,6 +407,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newIncome = {
+            uid: appUser?.uid,
             year,
             month,
             day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
@@ -426,6 +438,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newIncome = {
+            uid: appUser?.uid,
             year,
             month,
             day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
@@ -445,6 +458,7 @@ document.addEventListener('click', async (event) => {
       if (income.frequency === 'twice-per-month') {
         await Promise.all(income.daysOfMonth.map(async (day) => {
           const newIncome = {
+            uid: appUser?.uid,
             year,
             month,
             day: day > daysInMonth ? daysInMonth : day,

@@ -137,6 +137,7 @@ layout: layouts/simple-layout.njk
 
     const { elements } = event.target;
     const income = {
+      uid: appUser?.uid,
       key: elements['key'].value || null,
       category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
       description: elements['income-description'].value,

@@ -13,37 +13,55 @@ const importData = async (data) => {
 
   importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
   await Promise.all(expenses.map(async (e) => {
-    await addToDb('expenses', e);
+    await addToDb('expenses', {
+      ...e,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
   importProgressIndicator.innerHTML = '<p>Importing income...</p>';
   await Promise.all(income.map(async (i) => {
-    await addToDb('income', i);
+    await addToDb('income', {
+      ...i,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
   importProgressIndicator.innerHTML = '<p>Importing savings...</p>';
   await Promise.all(savings.map(async (s) => {
-    await addToDb('savings', s);
+    await addToDb('savings', {
+      ...s,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
   importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
   await Promise.all(debt.map(async (d) => {
-    await addToDb('debt', d);
+    await addToDb('debt', {
+      ...d,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
   importProgressIndicator.innerHTML = '<p>Importing recurring expenses...</p>';
   await Promise.all(recurringExpenses.map(async (r) => {
-    await addToDb('recurring-expenses', r);
+    await addToDb('recurring-expenses', {
+      ...r,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
   importProgressIndicator.innerHTML = '<p>Importing recurring income...</p>';
   await Promise.all(recurringIncome.map(async (r) => {
-    await addToDb('recurring-income', r);
+    await addToDb('recurring-income', {
+      ...r,
+      uid: appUser?.uid,
+    });
     return Promise.resolve();
   }));
 
@@ -273,6 +291,7 @@ document.addEventListener('change', (event) => {
         await Promise.all(expensesData.map(async (expense) => {
           const date = new Date(expense['Date']);
           const newExpense = {
+            uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
             day: date.getDate(),
@@ -319,6 +338,7 @@ document.addEventListener('change', (event) => {
         await Promise.all(incomeData.map(async (income) => {
           const date = new Date(income['Date']);
           const newIncome = {
+            uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
             day: date.getDate(),
@@ -365,6 +385,7 @@ document.addEventListener('change', (event) => {
         await Promise.all(savingsData.map(async (savings) => {
           const date = new Date(savings['Date']);
           const newSavings = {
+            uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
             category: savings['Category'],
@@ -410,6 +431,7 @@ document.addEventListener('change', (event) => {
         await Promise.all(debtData.map(async (debt) => {
           const date = new Date(debt['Date']);
           const newDebt = {
+            uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
             description: debt['Description'],
