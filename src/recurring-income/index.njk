@@ -142,7 +142,7 @@ layout: layouts/simple-layout.njk
 
   (async () => {
     const recurringIncomeBlock = document.querySelector('[data-recurring-income]');
-    let recurringIncome = await getAllFromObjectStore('recurring-income');
+    let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     recurringIncome = recurringIncome.filter(income => !income.isDeleted);
 
     if (!recurringIncome?.length) {

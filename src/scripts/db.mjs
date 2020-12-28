@@ -49,7 +49,7 @@ export const getAllFromIndex = (storeName, indexName, year, month, uid = null) =
   });
 };
 
-export const getAllFromObjectStore = (storeName) => {
+export const getAllFromObjectStore = (storeName, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -65,7 +65,7 @@ export const getAllFromObjectStore = (storeName) => {
       const objectStore = transaction.objectStore(storeName);
       const result = objectStore.getAll();
       result.onsuccess = (event) => {
-        resolve(event.target.result);
+        resolve(event.target.result.filter(x => x.uid == uid));
       };
     }
   });

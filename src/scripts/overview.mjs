@@ -140,7 +140,7 @@ document.addEventListener('click', async (event) => {
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   if (event.target.matches('[data-copy-expenses] button')) {
-    const recurringExpenses = await getAllFromObjectStore('recurring-expenses');
+    const recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
     await Promise.all(recurringExpenses.map(async (expense) => {
       if (expense.isDeleted || !expense.active) {
         return Promise.resolve();
@@ -304,7 +304,7 @@ document.addEventListener('click', async (event) => {
   }
 
   if (event.target.matches('[data-copy-income] button')) {
-    const recurringIncome = await getAllFromObjectStore('recurring-income');
+    const recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     await Promise.all(recurringIncome.map(async (income) => {
       if (income.isDeleted || !income.active) {
         return Promise.resolve();

@@ -142,7 +142,7 @@ layout: layouts/simple-layout.njk
 
   (async () => {
     const recurringExpensesBlock = document.querySelector('[data-recurring-expenses]');
-    let recurringExpenses = await getAllFromObjectStore('recurring-expenses');
+    let recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
     recurringExpenses = recurringExpenses.filter(expense => !expense.isDeleted);
 
     if (!recurringExpenses?.length) {

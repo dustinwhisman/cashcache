@@ -499,12 +499,12 @@ document.addEventListener('submit', (event) => {
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-export-data]')) {
     const data = {
-      expenses: await getAllFromObjectStore('expenses'),
-      income: await getAllFromObjectStore('income'),
-      savings: await getAllFromObjectStore('savings'),
-      debt: await getAllFromObjectStore('debt'),
-      recurringExpenses: await getAllFromObjectStore('recurring-expenses'),
-      recurringIncome: await getAllFromObjectStore('recurring-income'),
+      expenses: await getAllFromObjectStore('expenses', appUser?.uid),
+      income: await getAllFromObjectStore('income', appUser?.uid),
+      savings: await getAllFromObjectStore('savings', appUser?.uid),
+      debt: await getAllFromObjectStore('debt', appUser?.uid),
+      recurringExpenses: await getAllFromObjectStore('recurring-expenses', appUser?.uid),
+      recurringIncome: await getAllFromObjectStore('recurring-income', appUser?.uid),
     };
 
     const today = new Date();

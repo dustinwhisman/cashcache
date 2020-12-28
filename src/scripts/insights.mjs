@@ -694,7 +694,7 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
   const today = new Date();
   const thisYear = today.getFullYear();
   const thisMonth = today.getMonth();
-  const allExpenses = await getAllFromObjectStore('expenses');
+  const allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
   const expensesByMonth = allExpenses.reduce((acc, expense) => {
     if (expense.year > thisYear) {
       return acc;
@@ -722,7 +722,7 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
     }))
     .sort(sortingFunction);
 
-  const allIncome = await getAllFromObjectStore('income');
+  const allIncome = await getAllFromObjectStore('income', appUser?.uid);
   const incomeByMonth = allIncome.reduce((acc, income) => {
     if (income.year > thisYear) {
       return acc;
@@ -750,7 +750,7 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
     }))
     .sort(sortingFunction);
 
-  const allSavings = await getAllFromObjectStore('savings');
+  const allSavings = await getAllFromObjectStore('savings', appUser?.uid);
   const savingsByMonth = allSavings.reduce((acc, savings) => {
     if (savings.year > thisYear) {
       return acc;
