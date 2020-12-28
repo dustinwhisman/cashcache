@@ -520,13 +520,30 @@ document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-delete-data]')) {
     if (window.confirm('Are you sure you want to delete all of your data? This action is irreversible.')) {
       const deleteDataProgressBlock = document.querySelector('[data-delete-progress]');
-      deleteDataProgressBlock.innerHTML = '<p>Deleting all records...</p>';
-      await deleteAllRecords('expenses');
-      await deleteAllRecords('income');
-      await deleteAllRecords('savings');
-      await deleteAllRecords('debt');
-      await deleteAllRecords('recurring-expenses');
-      await deleteAllRecords('recurring-income');
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all expenses...</p>';
+      const expensesRecords = await getAllFromObjectStore('expenses', appUser?.uid);
+      await deleteAllRecords('expenses', expensesRecords);
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all income...</p>';
+      const incomeRecords = await getAllFromObjectStore('income', appUser?.uid);
+      await deleteAllRecords('income', incomeRecords);
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all savings...</p>';
+      const savingsRecords = await getAllFromObjectStore('savings', appUser?.uid);
+      await deleteAllRecords('savings', savingsRecords);
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all debt...</p>';
+      const debtRecords = await getAllFromObjectStore('debt', appUser?.uid);
+      await deleteAllRecords('debt', debtRecords);
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring expenses...</p>';
+      const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+      await deleteAllRecords('recurring-expenses', recurringExpensesRecords);
+
+      deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring income...</p>';
+      const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', appUser?.uid);
+      await deleteAllRecords('recurring-income', recurringIncomeRecords);
 
       deleteDataProgressBlock.innerHTML = `
         <p>

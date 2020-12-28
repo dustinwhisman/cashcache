@@ -170,7 +170,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
   });
 }
 
-export const deleteAllRecords = (storeName) => {
+const hardDeleteFromDb = (storeName, key) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
     request.onupgradeneeded = updateSchema;
@@ -184,12 +184,22 @@ export const deleteAllRecords = (storeName) => {
       const db = event.target.result;
       const transaction = db.transaction([storeName], 'readwrite');
       const objectStore = transaction.objectStore(storeName);
-      const result = objectStore.clear();
+      const result = objectStore.delete(key);
       result.onsuccess = () => {
-        const successEvent = new CustomEvent('all-items-deleted');
-        document.dispatchEvent(successEvent);
         resolve();
       };
-    };
+    }
   });
+}
+
+export const deleteAllRecords = async (storeName, records) => {
+  await Promise.all(records.map(async (record) => {
+    try {
+      await hardDeleteFromDb(storeName, record.key);
+      return Promise.resolve();
+    } catch (error) {
+      console.error(error);
+      return Promise.reject();
+    }
+  }));
 };
