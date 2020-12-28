@@ -1,0 +1,55 @@
+---
+title: Account
+layout: layouts/simple-layout.njk
+---
+
+<h1>
+  Account
+</h1>
+
+<div class="stack" data-not-signed-in>
+  <p>
+    Wait a second while we check if you're signed in.
+  </p>
+  <p>
+    If you are not signed in, you may do so on the
+    <a href="/login">login page</a>.
+  </p>
+</div>
+<div class="stack" data-is-signed-in hidden>
+  <div data-signed-in-as></div>
+
+  <div>
+    <button type="button" data-log-out>
+      Log Out
+    </button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('user-logged-in', ({ detail }) => {
+    const signedInAs = document.querySelector('[data-signed-in-as]');
+    signedInAs.innerHTML = `
+      <p>
+        Signed in as ${detail.email}.
+      </p>
+    `;
+
+    const isSignedInBlock = document.querySelector('[data-is-signed-in]');
+    const notSignedInBlock = document.querySelector('[data-not-signed-in]');
+    isSignedInBlock.removeAttribute('hidden');
+    notSignedInBlock.setAttribute('hidden', true);
+  });
+</script>
+{% include "scripts/firebase.njk" %}
+<script>
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('[data-log-out]')) {
+      firebase.auth().signOut()
+        .then(() => {
+          window.location.href = '/';
+        })
+        .catch(console.error);
+    }
+  });
+</script>

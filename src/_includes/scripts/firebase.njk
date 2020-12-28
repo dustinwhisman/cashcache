@@ -22,6 +22,8 @@
       appUser = user;
       loginLink.setAttribute('hidden', true);
       accountLink.removeAttribute('hidden');
+      const loggedInEvent = new CustomEvent('user-logged-in', { detail: user });
+      document.dispatchEvent(loggedInEvent);
     } else {
       loginLink.removeAttribute('hidden');
       accountLink.setAttribute('hidden', true);
