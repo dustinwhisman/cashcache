@@ -6,3 +6,40 @@ layout: layouts/simple-layout.njk
 <h1>
   Log In or Sign Up
 </h1>
+
+<p>
+  We don't use passwords here. Enter your email, and we will send you a link to
+  confirm your login. If you don't have an account yet, one will be created for
+  you when you click the link in your email.
+</p>
+
+<form class="stack">
+  <div>
+    <label for="email">
+      Email
+    </label>
+    <input id="email" type="email" name="email" style="width: 50ch">
+  </div>
+  <div>
+    <button type="submit">
+      Request Email
+    </button>
+  </div>
+</form>
+
+{% include "scripts/firebase.njk" %}
+<script>
+  document.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = event.target.elements.email.value;
+    firebase.auth().sendSignInLinkToEmail(email, {
+      url: {% if env.environment == 'production' %}'https://cashcache-v2.netlify.app/login/confirm'{% else %}'http://localhost:8080/login/confirm'{% endif %},
+      handleCodeInApp: true,
+    })
+      .then(() => {
+        localStorage.setItem('emailForSignIn', email);
+        window.location.href = '/login/awaiting-login-confirmation';
+      })
+      .catch(console.error);
+  });
+</script>
