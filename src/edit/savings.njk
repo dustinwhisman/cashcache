@@ -56,7 +56,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getAllCategories, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
@@ -79,6 +79,21 @@ layout: layouts/simple-layout.njk
 
   {% include "scripts/item-added-listener.njk" %}
 
+  const populateForm = (savings) => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = savings.key;
+    elements['year'].value = `${savings.year}`;
+    elements['month'].value = `${savings.month + 1}`;
+    elements['savings-description'].value = `${savings.description}`;
+    elements['amount'].value = `${formatCurrency(savings.amount)}`;
+
+    const categoryInput = document.querySelector(`[name=category][value="${savings.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+  };
+
   (async () => {
     await getCategories('savings');
     const params = new URLSearchParams(window.location.search);
@@ -92,18 +107,12 @@ layout: layouts/simple-layout.njk
     deleteButton.dataset.key = key;
 
     try {
-      const savings = await getFromDb('savings', key, appUser?.uid);
-      const form = document.querySelector('form');
-      const { elements } = form;
-      elements['key'].value = key;
-      elements['year'].value = `${savings.year}`;
-      elements['month'].value = `${savings.month + 1}`;
-      elements['savings-description'].value = `${savings.description}`;
-      elements['amount'].value = `${formatCurrency(savings.amount)}`;
+      let savings = await getFromDb('savings', key, appUser?.uid);
+      populateForm(savings);
 
-      const categoryInput = document.querySelector(`[name=category][value="${savings.category}"]`);
-      if (categoryInput) {
-        categoryInput.checked = true;
+      if (appUser?.uid) {
+        savings = await getFromCloudDb('savings', key, appUser?.uid);
+        populateForm(savings);
       }
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');

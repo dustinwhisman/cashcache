@@ -26,6 +26,27 @@ export const getFromDb = (storeName, key, uid = null) => {
   });
 };
 
+export const getFromCloudDb = async (storeName, key, uid) => {
+  try {
+    const request = await fetch('/api/get-from-db', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        key,
+        uid,
+      }),
+    });
+
+    const data = await request.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getAllFromIndex = (storeName, indexName, year, month, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);

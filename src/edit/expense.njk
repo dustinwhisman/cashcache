@@ -56,7 +56,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getAllCategories, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
@@ -80,6 +80,22 @@ layout: layouts/simple-layout.njk
 
   {% include "scripts/item-added-listener.njk" %}
 
+  const populateForm = (expense) => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = expense.key;
+    elements['year'].value = `${expense.year}`;
+    elements['month'].value = `${expense.month + 1}`;
+    elements['day'].value = `${expense.day}`;
+    elements['expense-description'].value = `${expense.description}`;
+    elements['amount'].value = `${formatCurrency(expense.amount)}`;
+
+    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+  };
+
   (async () => {
     await getCategories('expenses');
     const params = new URLSearchParams(window.location.search);
@@ -93,19 +109,12 @@ layout: layouts/simple-layout.njk
     deleteButton.dataset.key = key;
 
     try {
-      const expense = await getFromDb('expenses', key, appUser?.uid);
-      const form = document.querySelector('form');
-      const { elements } = form;
-      elements['key'].value = key;
-      elements['year'].value = `${expense.year}`;
-      elements['month'].value = `${expense.month + 1}`;
-      elements['day'].value = `${expense.day}`;
-      elements['expense-description'].value = `${expense.description}`;
-      elements['amount'].value = `${formatCurrency(expense.amount)}`;
+      let expense = await getFromDb('expenses', key, appUser?.uid);
+      populateForm(expense);
 
-      const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
-      if (categoryInput) {
-        categoryInput.checked = true;
+      if (appUser?.uid) {
+        expense = await getFromCloudDb('expenses', key, appUser?.uid);
+        populateForm(expense);
       }
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');

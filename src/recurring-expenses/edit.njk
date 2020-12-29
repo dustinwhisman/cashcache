@@ -128,7 +128,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getAllCategories, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
@@ -157,6 +157,39 @@ layout: layouts/simple-layout.njk
     window.location.href = `/recurring-expenses`;
   });
 
+  const populateForm = (expense) => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = expense.key;
+    elements['expense-description'].value = `${expense.description}`;
+    elements['amount'].value = `${formatCurrency(expense.amount)}`;
+    elements['year'].value = `${expense.year}`;
+    elements['month'].value = `${expense.month + 1}`;
+    elements['day'].value = `${expense.day}`;
+    elements['frequency'].value = `${expense.frequency}`;
+
+    expense.daysOfMonth.forEach((day) => {
+      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+      dayInput.checked = true;
+    });
+
+    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+
+    if (expense.frequency === 'twice-per-month') {
+      const simpleDatesBlock = document.querySelector('[data-simple-dates]');
+      const complexDatesBlock = document.querySelector('[data-complex-dates]');
+      simpleDatesBlock.setAttribute('hidden', true);
+      complexDatesBlock.removeAttribute('hidden');
+    }
+
+    if (!expense.active) {
+      const activeInput = document.querySelector('[name=active]');
+      activeInput.checked = false;
+    }
+  };
 
   (async () => {
     await getCategories('expenses');
@@ -171,37 +204,12 @@ layout: layouts/simple-layout.njk
     deleteButton.dataset.key = key;
 
     try {
-      const expense = await getFromDb('recurring-expenses', key, appUser?.uid);
-      const form = document.querySelector('form');
-      const { elements } = form;
-      elements['key'].value = key;
-      elements['expense-description'].value = `${expense.description}`;
-      elements['amount'].value = `${formatCurrency(expense.amount)}`;
-      elements['year'].value = `${expense.year}`;
-      elements['month'].value = `${expense.month + 1}`;
-      elements['day'].value = `${expense.day}`;
-      elements['frequency'].value = `${expense.frequency}`;
+      let expense = await getFromDb('recurring-expenses', key, appUser?.uid);
+      populateForm(expense);
 
-      expense.daysOfMonth.forEach((day) => {
-        const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
-        dayInput.checked = true;
-      });
-
-      const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
-      if (categoryInput) {
-        categoryInput.checked = true;
-      }
-
-      if (expense.frequency === 'twice-per-month') {
-        const simpleDatesBlock = document.querySelector('[data-simple-dates]');
-        const complexDatesBlock = document.querySelector('[data-complex-dates]');
-        simpleDatesBlock.setAttribute('hidden', true);
-        complexDatesBlock.removeAttribute('hidden');
-      }
-
-      if (!expense.active) {
-        const activeInput = document.querySelector('[name=active]');
-        activeInput.checked = false;
+      if (appUser?.uid) {
+        expense = await getFromCloudDb('recurring-expenses', key, appUser?.uid);
+        populateForm(expense);
       }
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');

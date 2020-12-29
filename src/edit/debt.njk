@@ -67,7 +67,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -89,6 +89,18 @@ layout: layouts/simple-layout.njk
 
   {% include "scripts/item-added-listener.njk" %}
 
+  const populateForm = (debt) => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = debt.key;
+    elements['year'].value = `${debt.year}`;
+    elements['month'].value = `${debt.month + 1}`;
+    elements['debt-description'].value = `${debt.description}`;
+    elements['amount'].value = `${formatCurrency(debt.amount)}`;
+    elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
+    elements['interest-rate'].value = `${debt.interestRate}%`;
+  };
+
   (async () => {
     const params = new URLSearchParams(window.location.search);
     let key;
@@ -101,17 +113,15 @@ layout: layouts/simple-layout.njk
     deleteButton.dataset.key = key;
 
     try {
-      const debt = await getFromDb('debt', key, appUser?.uid);
-      const form = document.querySelector('form');
-      const { elements } = form;
-      elements['key'].value = key;
-      elements['year'].value = `${debt.year}`;
-      elements['month'].value = `${debt.month + 1}`;
-      elements['debt-description'].value = `${debt.description}`;
-      elements['amount'].value = `${formatCurrency(debt.amount)}`;
-      elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
-      elements['interest-rate'].value = `${debt.interestRate}%`;
+      let debt = await getFromDb('debt', key, appUser?.uid);
+      populateForm(debt);
+
+      if (appUser?.uid) {
+        debt = await getFromCloudDb('debt', key, appUser?.uid);
+        populateForm(debt);
+      }
     } catch (error) {
+      console.error(error);
       const typicalState = document.querySelector('[data-typical-state]');
       const accessDenied = document.querySelector('[data-access-denied]');
       if (appUser) {

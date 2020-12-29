@@ -56,7 +56,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getAllCategories, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
@@ -80,6 +80,22 @@ layout: layouts/simple-layout.njk
 
   {% include "scripts/item-added-listener.njk" %}
 
+  const populateForm = (income) => {
+    const form = document.querySelector('form');
+    const { elements } = form;
+    elements['key'].value = income.key;
+    elements['year'].value = `${income.year}`;
+    elements['month'].value = `${income.month + 1}`;
+    elements['day'].value = `${income.day}`;
+    elements['income-description'].value = `${income.description}`;
+    elements['amount'].value = `${formatCurrency(income.amount)}`;
+
+    const categoryInput = document.querySelector(`[name=category][value="${income.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+    }
+  };
+
   (async () => {
     await getCategories('income');
     const params = new URLSearchParams(window.location.search);
@@ -93,19 +109,12 @@ layout: layouts/simple-layout.njk
     deleteButton.dataset.key = key;
 
     try {
-      const income = await getFromDb('income', key, appUser?.uid);
-      const form = document.querySelector('form');
-      const { elements } = form;
-      elements['key'].value = key;
-      elements['year'].value = `${income.year}`;
-      elements['month'].value = `${income.month + 1}`;
-      elements['day'].value = `${income.day}`;
-      elements['income-description'].value = `${income.description}`;
-      elements['amount'].value = `${formatCurrency(income.amount)}`;
+      let income = await getFromDb('income', key, appUser?.uid);
+      populateForm(income);
 
-      const categoryInput = document.querySelector(`[name=category][value="${income.category}"]`);
-      if (categoryInput) {
-        categoryInput.checked = true;
+      if (appUser?.uid) {
+        income = await getFromCloudDb('income', key, appUser?.uid);
+        populateForm(income);
       }
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');
