@@ -61,12 +61,22 @@ layout: layouts/simple-layout.njk
 <h3>
   Month to Month Comparisons
 </h3>
-<div class="stack" data-month-comparison hidden></div>
+<div class="stack">
+  <div data-monthly-expenses></div>
+  <div data-monthly-income></div>
+  <div data-monthly-savings></div>
+  <div data-monthly-debt></div>
+</div>
 
 <h3>
   Year to Year Comparisons
 </h3>
-<div class="stack" data-year-comparison hidden></div>
+<div class="stack">
+  <div data-yearly-expenses></div>
+  <div data-yearly-income></div>
+  <div data-yearly-savings></div>
+  <div data-yearly-debt></div>
+</div>
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/format-currency.njk" %}
@@ -141,25 +151,26 @@ layout: layouts/simple-layout.njk
     heatMapBlock.removeAttribute('hidden');
   };
 
-  const compareMonthlyExpenses = (monthToMonthBlock, lastMonthsExpenses, totalExpenses) => {
+  const compareMonthlyExpenses = (lastMonthsExpenses, totalExpenses) => {
+    const monthToMonthBlock = document.querySelector('[data-monthly-expenses]');
     const lastMonthsTotalExpenses = lastMonthsExpenses.reduce((acc, expense) => (acc + expense.amount), 0);
 
     if (lastMonthsTotalExpenses > totalExpenses) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           You spent ${formatCurrency(lastMonthsTotalExpenses - totalExpenses)}
           less this month than you did last month.
         </p>
       `;
     } else if (lastMonthsTotalExpenses < totalExpenses) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           You spent ${formatCurrency(totalExpenses - lastMonthsTotalExpenses)}
           more this month than you did last month.
         </p>
       `;
     } else {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Wow! You spent exactly the same amount
           (${formatCurrency(totalExpenses)}) this month as you did last month.
@@ -169,25 +180,26 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareMonthlyIncome = (monthToMonthBlock, lastMonthsIncome, totalIncome) => {
+  const compareMonthlyIncome = (lastMonthsIncome, totalIncome) => {
+    const monthToMonthBlock = document.querySelector('[data-monthly-income]');
     const lastMonthsTotalIncome = lastMonthsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
     if (lastMonthsTotalIncome > totalIncome) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           You earned ${formatCurrency(lastMonthsTotalIncome - totalIncome)} less
           this month than you did last month.
         </p>
       `;
     } else if (lastMonthsTotalIncome < totalIncome) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           You earned ${formatCurrency(totalIncome - lastMonthsTotalIncome)} more
           this month than you did last month.
         </p>
       `;
     } else {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           You earned exactly the same amount (${formatCurrency(totalIncome)})
           this month as you did last month.
@@ -196,11 +208,12 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareMonthlySavings = (monthToMonthBlock, lastMonthsSavings, totalSavings) => {
+  const compareMonthlySavings = (lastMonthsSavings, totalSavings) => {
+    const monthToMonthBlock = document.querySelector('[data-monthly-savings]');
     const lastMonthsTotalSavings = lastMonthsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
     if (lastMonthsTotalSavings > totalSavings) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Your total savings went down by
           ${formatCurrency(lastMonthsTotalSavings - totalSavings)} since last
@@ -208,7 +221,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else if (lastMonthsTotalSavings < totalSavings) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Your total savings went up by
           ${formatCurrency(totalSavings - lastMonthsTotalSavings)} since last
@@ -216,7 +229,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Wow! Your savings stayed exactly the same
           (${formatCurrency(totalSavings)}). What are the odds?
@@ -225,11 +238,12 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareMonthlyDebt = (monthToMonthBlock, lastMonthsDebt, totalDebt) => {
+  const compareMonthlyDebt = (lastMonthsDebt, totalDebt) => {
+    const monthToMonthBlock = document.querySelector('[data-monthly-debt]');
     const lastMonthsTotalDebt = lastMonthsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
     if (lastMonthsTotalDebt > totalDebt) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Your total debt went down by
           ${formatCurrency(lastMonthsTotalDebt - totalDebt)} since last
@@ -237,7 +251,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else if (lastMonthsTotalDebt < totalDebt) {
-      monthToMonthBlock.innerHTML += `
+      monthToMonthBlock.innerHTML = `
         <p>
           Your total debt went up by
           ${formatCurrency(totalDebt - lastMonthsTotalDebt)} since last
@@ -246,13 +260,13 @@ layout: layouts/simple-layout.njk
       `;
     } else {
       if (totalDebt === 0) {
-        monthToMonthBlock.innerHTML += `
+        monthToMonthBlock.innerHTML = `
           <p>
             You remain debt-free. Nice work!
           </p>
         `;
       } else {
-        monthToMonthBlock.innerHTML += `
+        monthToMonthBlock.innerHTML = `
           <p>
             Wow! Your debt stayed exactly the same
             (${formatCurrency(totalDebt)}). What are the odds?
@@ -263,58 +277,49 @@ layout: layouts/simple-layout.njk
   };
 
   const compareToLastMonth = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
-    const monthToMonthBlock = document.querySelector('[data-month-comparison]');
-
     let lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, appUser?.uid);
-    compareMonthlyExpenses(monthToMonthBlock, lastMonthsExpenses, totalExpenses);
-
     let lastMonthsIncome = await getAllFromIndex('income', 'year-month', prevYear, prevMonth, appUser?.uid);
-    compareMonthlyIncome(monthToMonthBlock, lastMonthsIncome, totalIncome);
-
     let lastMonthsSavings = await getAllFromIndex('savings', 'year-month', prevYear, prevMonth, appUser?.uid);
-    compareMonthlySavings(monthToMonthBlock, lastMonthsSavings, totalSavings);
-
     let lastMonthsDebt = await getAllFromIndex('debt', 'year-month', prevYear, prevMonth, appUser?.uid);
-    compareMonthlyDebt(monthToMonthBlock, lastMonthsDebt, totalDebt);
 
-    monthToMonthBlock.removeAttribute('hidden');
+    compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
+    compareMonthlyIncome(lastMonthsIncome, totalIncome);
+    compareMonthlySavings(lastMonthsSavings, totalSavings);
+    compareMonthlyDebt(lastMonthsDebt, totalDebt);
 
     if (appUser?.uid) {
-      monthToMonthBlock.innerHTML = '';
-
       lastMonthsExpenses = await getAllFromCloudIndex('expenses', prevYear, prevMonth, appUser?.uid);
-      compareMonthlyExpenses(monthToMonthBlock, lastMonthsExpenses, totalExpenses);
-
       lastMonthsIncome = await getAllFromCloudIndex('income', prevYear, prevMonth, appUser?.uid);
-      compareMonthlyIncome(monthToMonthBlock, lastMonthsIncome, totalIncome);
-
       lastMonthsSavings = await getAllFromCloudIndex('savings', prevYear, prevMonth, appUser?.uid);
-      compareMonthlySavings(monthToMonthBlock, lastMonthsSavings, totalSavings);
-
       lastMonthsDebt = await getAllFromCloudIndex('debt', prevYear, prevMonth, appUser?.uid);
-      compareMonthlyDebt(monthToMonthBlock, lastMonthsDebt, totalDebt);
+
+      compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
+      compareMonthlyIncome(lastMonthsIncome, totalIncome);
+      compareMonthlySavings(lastMonthsSavings, totalSavings);
+      compareMonthlyDebt(lastMonthsDebt, totalDebt);
     }
   };
 
-  const compareYearlyExpenses = (yearToYearBlock, lastYearsExpenses, totalExpenses) => {
+  const compareYearlyExpenses = (lastYearsExpenses, totalExpenses) => {
+    const yearToYearBlock = document.querySelector('[data-yearly-expenses]');
     const lastYearsTotalExpenses = lastYearsExpenses.reduce((acc, expense) => (acc + expense.amount), 0);
 
     if (lastYearsTotalExpenses > totalExpenses) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           You spent ${formatCurrency(lastYearsTotalExpenses - totalExpenses)}
           less this month than you did this month last year.
         </p>
       `;
     } else if (lastYearsTotalExpenses < totalExpenses) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           You spent ${formatCurrency(totalExpenses - lastYearsTotalExpenses)}
           more this month than you did this month last year.
         </p>
       `;
     } else {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Wow! You spent exactly the same amount
           (${formatCurrency(totalExpenses)}) this month as you did this month
@@ -324,25 +329,26 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareYearlyIncome = (yearToYearBlock, lastYearsIncome, totalIncome) => {
+  const compareYearlyIncome = (lastYearsIncome, totalIncome) => {
+    const yearToYearBlock = document.querySelector('[data-yearly-income]');
     const lastYearsTotalIncome = lastYearsIncome.reduce((acc, income) => (acc + income.amount), 0);
 
     if (lastYearsTotalIncome > totalIncome) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           You earned ${formatCurrency(lastYearsTotalIncome - totalIncome)} less
           this month than you did this month last year.
         </p>
       `;
     } else if (lastYearsTotalIncome < totalIncome) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           You earned ${formatCurrency(totalIncome - lastYearsTotalIncome)} more
           this month than you did this month last year.
         </p>
       `;
     } else {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           You earned exactly the same amount (${formatCurrency(totalIncome)})
           this month as you did this month last year.
@@ -351,11 +357,12 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareYearlySavings = (yearToYearBlock, lastYearsSavings, totalSavings) => {
+  const compareYearlySavings = (lastYearsSavings, totalSavings) => {
+    const yearToYearBlock = document.querySelector('[data-yearly-savings]');
     const lastYearsTotalSavings = lastYearsSavings.reduce((acc, savings) => (acc + savings.amount), 0);
 
     if (lastYearsTotalSavings > totalSavings) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Your total savings went down by
           ${formatCurrency(lastYearsTotalSavings - totalSavings)} since last
@@ -363,7 +370,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else if (lastYearsTotalSavings < totalSavings) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Your total savings went up by
           ${formatCurrency(totalSavings - lastYearsTotalSavings)} since last
@@ -371,7 +378,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Wow! Your savings stayed exactly the same
           (${formatCurrency(totalSavings)}). What are the odds?
@@ -380,11 +387,12 @@ layout: layouts/simple-layout.njk
     }
   };
 
-  const compareYearlyDebt = (yearToYearBlock, lastYearsDebt, totalDebt) => {
+  const compareYearlyDebt = (lastYearsDebt, totalDebt) => {
+    const yearToYearBlock = document.querySelector('[data-yearly-debt]');
     const lastYearsTotalDebt = lastYearsDebt.reduce((acc, debt) => (acc + debt.amount), 0);
 
     if (lastYearsTotalDebt > totalDebt) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Your total debt went down by
           ${formatCurrency(lastYearsTotalDebt - totalDebt)} since last
@@ -392,7 +400,7 @@ layout: layouts/simple-layout.njk
         </p>
       `;
     } else if (lastYearsTotalDebt < totalDebt) {
-      yearToYearBlock.innerHTML += `
+      yearToYearBlock.innerHTML = `
         <p>
           Your total debt went up by
           ${formatCurrency(totalDebt - lastYearsTotalDebt)} since last
@@ -401,13 +409,13 @@ layout: layouts/simple-layout.njk
       `;
     } else {
       if (totalDebt === 0) {
-        yearToYearBlock.innerHTML += `
+        yearToYearBlock.innerHTML = `
           <p>
             You remain debt-free. Nice work!
           </p>
         `;
       } else {
-        yearToYearBlock.innerHTML += `
+        yearToYearBlock.innerHTML = `
           <p>
             Wow! Your debt stayed exactly the same
             (${formatCurrency(totalDebt)}). What are the odds?
@@ -418,36 +426,26 @@ layout: layouts/simple-layout.njk
   };
 
   const compareToLastYear = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
-    const yearToYearBlock = document.querySelector('[data-year-comparison]');
-
     let lastYearsExpenses = await getAllFromIndex('expenses', 'year-month', year - 1, month, appUser?.uid);
-    compareYearlyExpenses(yearToYearBlock, lastYearsExpenses, totalExpenses);
-
     let lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month, appUser?.uid);
-    compareYearlyIncome(yearToYearBlock, lastYearsIncome, totalIncome);
-
     let lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month, appUser?.uid);
-    compareYearlySavings(yearToYearBlock, lastYearsSavings, totalSavings);
-
     let lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month, appUser?.uid);
-    compareYearlyDebt(yearToYearBlock, lastYearsDebt, totalDebt);
 
-    yearToYearBlock.removeAttribute('hidden');
+    compareYearlyExpenses(lastYearsExpenses, totalExpenses);
+    compareYearlyIncome(lastYearsIncome, totalIncome);
+    compareYearlySavings(lastYearsSavings, totalSavings);
+    compareYearlyDebt(lastYearsDebt, totalDebt);
 
     if (appUser?.uid) {
-      yearToYearBlock.innerHTML = '';
-
       lastYearsExpenses = await getAllFromCloudIndex('expenses', year - 1, month, appUser?.uid);
-      compareYearlyExpenses(yearToYearBlock, lastYearsExpenses, totalExpenses);
-
       lastYearsIncome = await getAllFromCloudIndex('income', year - 1, month, appUser?.uid);
-      compareYearlyIncome(yearToYearBlock, lastYearsIncome, totalIncome);
-
       lastYearsSavings = await getAllFromCloudIndex('savings', year - 1, month, appUser?.uid);
-      compareYearlySavings(yearToYearBlock, lastYearsSavings, totalSavings);
-
       lastYearsDebt = await getAllFromCloudIndex('debt', year - 1, month, appUser?.uid);
-      compareYearlyDebt(yearToYearBlock, lastYearsDebt, totalDebt);
+
+      compareYearlyExpenses(lastYearsExpenses, totalExpenses);
+      compareYearlyIncome(lastYearsIncome, totalIncome);
+      compareYearlySavings(lastYearsSavings, totalSavings);
+      compareYearlyDebt(lastYearsDebt, totalDebt);
     }
   };
 
