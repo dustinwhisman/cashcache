@@ -1,14 +1,20 @@
-import { getAllFromIndex } from './db.mjs';
+const initialState = `
+  <div data-no-savings hidden>
+    <p>
+      You haven't tracked any savings yet.
+    </p>
+  </div>
+  <div data-copy-savings hidden>
+    <button type="button" style="width: 100%">
+      Copy Last Month's Savings
+    </button>
+  </div>
+`;
 
-export const getSavings = async (year, month) => {
-  const savings = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
+const generateBodyHtml = (savings) => {
   if (!savings?.length) {
     return null;
   }
-
-  const total = savings.reduce((a, b) => a + b.amount, 0);
-  const totalSavingsIndicator = document.querySelector('[data-total-savings]');
-  totalSavingsIndicator.innerHTML = formatCurrency(total);
 
   const preferences = localStorage.getItem('savings-preferences') || '{}';
   const {
@@ -118,4 +124,29 @@ export const getSavings = async (year, month) => {
       </div>
     `;
   }
+};
+
+export const displaySavings = (savings, lastMonthsSavings) => {
+  const totalSavingsIndicator = document.querySelector('[data-total-savings]');
+  const savingsBody = document.querySelector('[data-savings][data-section-body]');
+  savingsBody.innerHTML = initialState;
+
+  const total = savings.reduce((a, b) => a + b.amount, 0);
+  totalSavingsIndicator.innerHTML = formatCurrency(total);
+
+  if (!savings.length) {
+    if (lastMonthsSavings.length) {
+      const copySavingsDiv = document.querySelector('[data-copy-savings]');
+      copySavingsDiv.removeAttribute('hidden');
+    }
+
+    const noSavingsMessage = document.querySelector('[data-no-savings]');
+    noSavingsMessage.removeAttribute('hidden');
+  }
+
+  const savingsBlock = generateBodyHtml(savings);
+  if (savingsBlock == null) {
+    return;
+  }
+  savingsBody.innerHTML = savingsBlock;
 };

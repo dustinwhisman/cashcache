@@ -1,7 +1,7 @@
 import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
 import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
-import { getSavings } from './get-savings.mjs';
+import { displaySavings } from './get-savings.mjs';
 import { getDebt } from './get-debt.mjs';
 
 let lastMonth = month - 1;
@@ -40,21 +40,15 @@ const loadIncome = async () => {
 loadIncome();
 
 const loadSavings = async () => {
-  const savingsBody = document.querySelector('[data-savings][data-section-body]');
-  const savingsBlock = await getSavings(year, month);
+  let savings = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
+  let lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+  displaySavings(savings, lastMonthsSavings);
 
-  if (savingsBlock == null) {
-    const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-    if (lastMonthsSavings.length) {
-      const copySavingsDiv = document.querySelector('[data-copy-savings]');
-      copySavingsDiv.removeAttribute('hidden');
-    }
-    const noSavingsMessage = document.querySelector('[data-no-savings]');
-    noSavingsMessage.removeAttribute('hidden');
-    return;
+  if (appUser?.uid) {
+    savings = await getAllFromCloudIndex('savings', year, month, appUser?.uid);
+    lastMonthsSavings = await getAllFromCloudIndex('savings', lastMonthYear, lastMonth, appUser?.uid);
+    displaySavings(savings, lastMonthsSavings);
   }
-
-  savingsBody.innerHTML = savingsBlock;
 };
 
 loadSavings();
