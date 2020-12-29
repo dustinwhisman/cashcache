@@ -1,5 +1,28 @@
 import { schemaVersion, schemaName, updateSchema, uuid } from './db-utilities.mjs';
 
+const keepLocalCurrent = (storeName, record) => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(schemaName, schemaVersion);
+    request.onupgradeneeded = updateSchema;
+
+    request.onerror = (event) => {
+      console.log(`Database error: ${event.target.errorCode}`);
+      reject();
+    };
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], 'readwrite');
+      const objectStore = transaction.objectStore(storeName);
+      const result = objectStore.put(record);
+
+      result.onsuccess = () => {
+        resolve();
+      };
+    };
+  });
+};
+
 export const getFromDb = (storeName, key, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
@@ -41,6 +64,8 @@ export const getFromCloudDb = async (storeName, key, uid) => {
     });
 
     const data = await request.json();
+    await keepLocalCurrent(storeName, data);
+
     return data;
   } catch (error) {
     console.error(error);
