@@ -1,14 +1,25 @@
-import { getAllFromIndex } from './db.mjs';
+const initialState = `
+  <div data-no-expenses hidden>
+    <p>
+      You haven't tracked any expenses yet.
+    </p>
+  </div>
+  <div data-manage-recurring-expenses hidden>
+    <div data-copy-expenses hidden>
+      <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+        Copy Recurring Expenses
+      </button>
+    </div>
+    <a href="/recurring-expenses" class="small">
+      View Recurring Expenses
+    </a>
+  </div>
+`;
 
-export const getExpenses = async (year, month) => {
-  const expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
+const generateBodyHtml = (expenses) => {
   if (!expenses?.length) {
     return null;
   }
-
-  const total = expenses.reduce((a, b) => a + b.amount, 0);
-  const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
-  totalExpensesIndicator.innerHTML = formatCurrency(total);
 
   const preferences = localStorage.getItem('expenses-preferences') || '{}';
   const {
@@ -154,4 +165,32 @@ export const getExpenses = async (year, month) => {
       </div>
       `;
   }
+};
+
+export const displayExpenses = (expenses, lastMonthsExpenses) => {
+  const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
+  const expensesBody = document.querySelector('[data-expenses][data-section-body]');
+  expensesBody.innerHTML = initialState;
+
+  const total = expenses.reduce((a, b) => a + b.amount, 0);
+  totalExpensesIndicator.innerHTML = formatCurrency(total);
+
+  if (!expenses.length) {
+    const manageRecurringExpensesDiv = document.querySelector('[data-manage-recurring-expenses]');
+    manageRecurringExpensesDiv.removeAttribute('hidden');
+
+    if (lastMonthsExpenses.length) {
+      const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
+      copyExpensesDiv.removeAttribute('hidden');
+    }
+
+    const noExpensesMessage = document.querySelector('[data-no-expenses]');
+    noExpensesMessage.removeAttribute('hidden');
+  }
+
+  const expensesBlock = generateBodyHtml(expenses);
+  if (expensesBlock == null) {
+    return;
+  }
+  expensesBody.innerHTML = expensesBlock;
 };

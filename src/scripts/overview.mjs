@@ -1,5 +1,5 @@
-import { getAllFromIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
-import { getExpenses } from './get-expenses.mjs';
+import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
+import { displayExpenses } from './get-expenses.mjs';
 import { getIncome } from './get-income.mjs';
 import { getSavings } from './get-savings.mjs';
 import { getDebt } from './get-debt.mjs';
@@ -12,23 +12,15 @@ if (lastMonth < 0) {
 }
 
 const loadExpenses = async () => {
-  const expensesBody = document.querySelector('[data-expenses][data-section-body]');
-  const expensesBlock = await getExpenses(year, month);
+  let expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
+  let lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+  displayExpenses(expenses, lastMonthsExpenses);
 
-  if (expensesBlock == null) {
-    const manageRecurringExpensesDiv = document.querySelector('[data-manage-recurring-expenses]');
-    manageRecurringExpensesDiv.removeAttribute('hidden');
-    const lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-    if (lastMonthsExpenses.length) {
-      const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
-      copyExpensesDiv.removeAttribute('hidden');
-    }
-    const noExpensesMessage = document.querySelector('[data-no-expenses]');
-    noExpensesMessage.removeAttribute('hidden');
-    return;
+  if (appUser?.uid) {
+    expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
+    lastMonthsExpenses = await getAllFromCloudIndex('expenses', lastMonthYear, lastMonth, appUser?.uid);
+    displayExpenses(expenses, lastMonthsExpenses);
   }
-
-  expensesBody.innerHTML = expensesBlock;
 };
 
 loadExpenses();

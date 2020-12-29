@@ -95,6 +95,33 @@ export const getAllFromIndex = (storeName, indexName, year, month, uid = null) =
   });
 };
 
+export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
+  try {
+    const request = await fetch('/api/get-all-from-index', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        year,
+        month,
+        uid,
+      }),
+    });
+
+    const data = await request.json();
+    await Promise.all(data.map(async (record) => {
+      await keepLocalCurrent(storeName, record);
+      return Promise.resolve();
+    }));
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getAllFromObjectStore = (storeName, uid = null) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
