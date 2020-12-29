@@ -207,9 +207,33 @@ export const deleteFromDb = (storeName, key, uid = null) => {
         data.isDeleted = true;
         const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
-          const successEvent = new CustomEvent('item-deleted');
-          document.dispatchEvent(successEvent);
-          resolve();
+          if (!uid) {
+            const successEvent = new CustomEvent('item-deleted');
+            document.dispatchEvent(successEvent);
+            resolve();
+            return;
+          }
+
+          fetch('/api/add-to-db', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              storeName,
+              record: data,
+            }),
+          })
+            .then(response => response.json())
+            .then(() => {
+              const successEvent = new CustomEvent('item-deleted');
+              document.dispatchEvent(successEvent);
+              resolve();
+            })
+            .catch((error) => {
+              console.error(error);
+              reject();
+            });
         }
       };
     }
