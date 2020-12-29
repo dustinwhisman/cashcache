@@ -161,22 +161,24 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
 };
 
 export const bulkAddToDb = async (storeName, records) => {
-  try {
-    const request = await fetch('/api/bulk-add-to-db', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        storeName,
-        records,
-      }),
-    });
+  for (let i = 0; i < records.length; i += 100) {
+    const recordsBatch = records.slice(i, i + 100);
+    try {
+      const request = await fetch('/api/bulk-add-to-db', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          storeName,
+          records: recordsBatch,
+        }),
+      });
 
-    const data = await request.json();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
+      await request.json();
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
 
