@@ -1,14 +1,25 @@
-import { getAllFromIndex } from './db.mjs';
+const initialState = `
+  <div data-no-income hidden>
+    <p>
+      You haven't tracked any income yet.
+    </p>
+  </div>
+  <div data-manage-recurring-income hidden>
+    <div data-copy-income hidden>
+      <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+        Copy Recurring Income
+      </button>
+    </div>
+    <a href="/recurring-income" class="small">
+      View Recurring Income
+    </a>
+  </div>
+`;
 
-export const getIncome = async (year, month) => {
-  const income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
+const generateBodyHtml = (income) => {
   if (!income?.length) {
     return null;
   }
-
-  const total = income.reduce((a, b) => a + b.amount, 0);
-  const totalIncomeIndicator = document.querySelector('[data-total-income]');
-  totalIncomeIndicator.innerHTML = formatCurrency(total);
 
   const preferences = localStorage.getItem('income-preferences') || '{}';
   const {
@@ -154,4 +165,31 @@ export const getIncome = async (year, month) => {
       </div>
     `;
   }
+};
+
+export const displayIncome = (income, lastMonthsIncome) => {
+  const totalIncomeIndicator = document.querySelector('[data-total-income]');
+  const incomeBody = document.querySelector('[data-income][data-section-body]');
+  incomeBody.innerHTML = initialState;
+
+  const total = income.reduce((a, b) => a + b.amount, 0);
+  totalIncomeIndicator.innerHTML = formatCurrency(total);
+
+  if (!income.length) {
+    const manageRecurringIncomeDiv = document.querySelector('[data-manage-recurring-income]');
+    manageRecurringIncomeDiv.removeAttribute('hidden');
+
+    if (lastMonthsIncome.length) {
+      const copyIncomeDiv = document.querySelector('[data-copy-income]');
+      copyIncomeDiv.removeAttribute('hidden');
+    }
+    const noIncomeMessage = document.querySelector('[data-no-income]');
+    noIncomeMessage.removeAttribute('hidden');
+  }
+
+  const incomeBlock = generateBodyHtml(income);
+  if (incomeBlock == null) {
+    return;
+  }
+  incomeBody.innerHTML = incomeBlock;
 };

@@ -1,6 +1,6 @@
 import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
 import { displayExpenses } from './get-expenses.mjs';
-import { getIncome } from './get-income.mjs';
+import { displayIncome } from './get-income.mjs';
 import { getSavings } from './get-savings.mjs';
 import { getDebt } from './get-debt.mjs';
 
@@ -26,23 +26,15 @@ const loadExpenses = async () => {
 loadExpenses();
 
 const loadIncome = async () => {
-  const incomeBody = document.querySelector('[data-income][data-section-body]');
-  const incomeBlock = await getIncome(year, month);
+  let income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
+  let lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+  displayIncome(income, lastMonthsIncome);
 
-  if (incomeBlock == null) {
-    const manageRecurringIncomeDiv = document.querySelector('[data-manage-recurring-income]');
-    manageRecurringIncomeDiv.removeAttribute('hidden');
-    const lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-    if (lastMonthsIncome.length) {
-      const copyIncomeDiv = document.querySelector('[data-copy-income]');
-      copyIncomeDiv.removeAttribute('hidden');
-    }
-    const noIncomeMessage = document.querySelector('[data-no-income]');
-    noIncomeMessage.removeAttribute('hidden');
-    return;
+  if (appUser?.uid) {
+    income = await getAllFromCloudIndex('income', year, month, appUser?.uid);
+    lastMonthsIncome = await getAllFromCloudIndex('income', lastMonthYear, lastMonth, appUser?.uid);
+    displayIncome(income, lastMonthsIncome);
   }
-
-  incomeBody.innerHTML = incomeBlock;
 };
 
 loadIncome();

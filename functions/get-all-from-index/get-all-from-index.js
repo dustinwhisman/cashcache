@@ -20,7 +20,6 @@ const handler = async (event) => {
           result.push(doc);
         }
       });
-      console.log(result);
 
       client.close();
 
