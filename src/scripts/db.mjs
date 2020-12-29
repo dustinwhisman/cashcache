@@ -127,9 +127,33 @@ export const addToDb = (storeName, thingToAdd) => {
 
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
-          const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-          document.dispatchEvent(successEvent);
-          resolve();
+          if (!thingToAdd.uid) {
+            const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
+            document.dispatchEvent(successEvent);
+            resolve();
+            return;
+          }
+
+          fetch('/api/add-to-db', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              storeName,
+              record: thingToAdd,
+            }),
+          })
+            .then(response => response.json())
+            .then(() => {
+              const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
+              document.dispatchEvent(successEvent);
+              resolve();
+            })
+            .catch((error) => {
+              console.error(error);
+              reject();
+            });
         };
       };
     }

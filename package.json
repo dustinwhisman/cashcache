@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"postcss src/styles/index.css -o src/_includes/styles.css -w\" \"cross-env NODE_ENV=development npx @11ty/eleventy --serve\"",
+    "develop": "concurrently \"postcss src/styles/index.css -o src/_includes/styles.css -w\" \"cross-env NODE_ENV=development npx @11ty/eleventy --serve\"",
+    "dev": "netlify dev -c \"npm run develop\"",
     "build": "postcss src/styles/index.css -o src/_includes/styles.css && cross-env NODE_ENV=production npx @11ty/eleventy"
   },
   "keywords": [],
@@ -16,6 +17,7 @@
     "cross-env": "^7.0.3",
     "cssnano": "^4.1.10",
     "dotenv": "^8.2.0",
+    "mongodb": "^3.6.3",
     "postcss": "^8.2.1",
     "postcss-cli": "^8.3.1",
     "postcss-import": "^14.0.0",
