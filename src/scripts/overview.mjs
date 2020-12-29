@@ -1,4 +1,4 @@
-import { getAllFromIndex, getAllFromObjectStore, addToDb } from './db.mjs';
+import { getAllFromIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
 import { getExpenses } from './get-expenses.mjs';
 import { getIncome } from './get-income.mjs';
 import { getSavings } from './get-savings.mjs';
@@ -114,9 +114,14 @@ document.addEventListener('click', async (event) => {
         key: null,
       };
 
-      await addToDb('savings', newFund);
+      await addToDb('savings', newFund, true);
       return Promise.resolve();
     }));
+
+    if (appUser?.uid) {
+      const savingsToAdd = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
+      await bulkAddToDb('savings', savingsToAdd);
+    }
 
     loadSavings();
   }
@@ -131,9 +136,14 @@ document.addEventListener('click', async (event) => {
         key: null,
       };
 
-      await addToDb('debt', newLoan);
+      await addToDb('debt', newLoan, true);
       return Promise.resolve();
     }));
+
+    if (appUser?.uid) {
+      const debtToAdd = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
+      await bulkAddToDb('debt', debtToAdd);
+    }
 
     loadDebt();
   }
@@ -158,7 +168,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('expenses', newExpense);
+        await addToDb('expenses', newExpense, true);
         return Promise.resolve();
       }
 
@@ -178,7 +188,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('expenses', newExpense);
+        await addToDb('expenses', newExpense, true);
         return Promise.resolve();
       }
 
@@ -198,7 +208,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('expenses', newExpense);
+        await addToDb('expenses', newExpense, true);
         return Promise.resolve();
       }
 
@@ -218,7 +228,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('expenses', newExpense);
+        await addToDb('expenses', newExpense, true);
         return Promise.resolve();
       }
 
@@ -246,7 +256,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('expenses', newExpense);
+          await addToDb('expenses', newExpense, true);
           expenseDay.setDate(expenseDay.getDate() + 7);
         }
 
@@ -277,7 +287,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('expenses', newExpense);
+          await addToDb('expenses', newExpense, true);
           expenseDay.setDate(expenseDay.getDate() + 14);
         }
 
@@ -297,7 +307,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('expenses', newExpense);
+          await addToDb('expenses', newExpense, true);
           return Promise.resolve();
         }));
 
@@ -306,6 +316,11 @@ document.addEventListener('click', async (event) => {
 
       return Promise.resolve();
     }));
+
+    if (appUser?.uid) {
+      const expensesToAdd = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
+      await bulkAddToDb('expenses', expensesToAdd);
+    }
 
     loadExpenses();
   }
@@ -329,7 +344,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('income', newIncome);
+        await addToDb('income', newIncome, true);
         return Promise.resolve();
       }
 
@@ -349,7 +364,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('income', newIncome);
+        await addToDb('income', newIncome, true);
         return Promise.resolve();
       }
 
@@ -369,7 +384,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('income', newIncome);
+        await addToDb('income', newIncome, true);
         return Promise.resolve();
       }
 
@@ -389,7 +404,7 @@ document.addEventListener('click', async (event) => {
           key: null,
         };
 
-        await addToDb('income', newIncome);
+        await addToDb('income', newIncome, true);
         return Promise.resolve();
       }
 
@@ -417,7 +432,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('income', newIncome);
+          await addToDb('income', newIncome, true);
           incomeDay.setDate(incomeDay.getDate() + 7);
         }
 
@@ -448,7 +463,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('income', newIncome);
+          await addToDb('income', newIncome, true);
           incomeDay.setDate(incomeDay.getDate() + 14);
         }
 
@@ -468,7 +483,7 @@ document.addEventListener('click', async (event) => {
             key: null,
           };
 
-          await addToDb('income', newIncome);
+          await addToDb('income', newIncome, true);
           return Promise.resolve();
         }));
 
@@ -477,6 +492,11 @@ document.addEventListener('click', async (event) => {
 
       return Promise.resolve();
     }));
+
+    if (appUser?.uid) {
+      const incomeToAdd = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
+      await bulkAddToDb('income', incomeToAdd);
+    }
 
     loadIncome();
   }

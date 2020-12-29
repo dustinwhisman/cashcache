@@ -44,21 +44,25 @@ layout: layouts/simple-layout.njk
 
 {% include "scripts/firebase.njk" %}
 <script type="module">
-  import { getAllFromObjectStore, addToDb } from '/scripts/db.mjs';
+  import { getAllFromObjectStore, addToDb, bulkAddToDb } from '/scripts/db.mjs';
 
   const associateRecords = async (storeName, records) => {
-    await Promise.all(records.map(async (record) => {
+    const recordsToUpdate = records.map((record) => ({
+      ...record,
+      uid: appUser?.uid,
+    }));
+
+    await Promise.all(recordsToUpdate.map(async (record) => {
       try {
-        await addToDb(storeName, {
-          ...record,
-          uid: appUser?.uid,
-        });
+        await addToDb(storeName, record, true);
         return Promise.resolve();
       } catch (error) {
         console.error(error);
         return Promise.reject();
       }
     }));
+
+    await bulkAddToDb(storeName, recordsToUpdate);
   };
 
   const associateDataToAccount = async () => {

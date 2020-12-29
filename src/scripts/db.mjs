@@ -101,7 +101,7 @@ export const getAllCategories = (storeName) => {
   });
 };
 
-export const addToDb = (storeName, thingToAdd) => {
+export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
   return new Promise((resolve, reject) => {
     if (thingToAdd.key == null) {
       thingToAdd.key = uuid();
@@ -127,7 +127,7 @@ export const addToDb = (storeName, thingToAdd) => {
 
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
-          if (!thingToAdd.uid) {
+          if (!thingToAdd.uid || isBulkAdd) {
             const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
             document.dispatchEvent(successEvent);
             resolve();
@@ -158,6 +158,26 @@ export const addToDb = (storeName, thingToAdd) => {
       };
     }
   });
+};
+
+export const bulkAddToDb = async (storeName, records) => {
+  try {
+    const request = await fetch('/api/bulk-add-to-db', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        records,
+      }),
+    });
+
+    const data = await request.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const deleteFromDb = (storeName, key, uid = null) => {

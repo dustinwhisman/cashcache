@@ -83,7 +83,7 @@ layout: layouts/simple-layout.njk
         await addToDb(storeName, {
           ...record,
           uid: null,
-        });
+        }, true);
         return Promise.resolve();
       } catch (error) {
         console.error(error);

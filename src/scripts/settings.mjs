@@ -1,4 +1,4 @@
-import { addToDb, getAllFromObjectStore, deleteAllRecords } from './db.mjs';
+import { addToDb, bulkAddToDb, getAllFromObjectStore, deleteAllRecords } from './db.mjs';
 
 const importData = async (data) => {
   const importProgressIndicator = document.querySelector('[data-import-progress]');
@@ -12,58 +12,88 @@ const importData = async (data) => {
   } = data;
 
   importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
-  await Promise.all(expenses.map(async (e) => {
-    await addToDb('expenses', {
-      ...e,
-      uid: appUser?.uid,
-    });
+  const expensesToUpdate = expenses.map((expense) => ({
+    ...expense,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(expensesToUpdate.map(async (expense) => {
+    await addToDb('expenses', expense, true);
     return Promise.resolve();
   }));
+
+  if (appUser?.uid) {
+    await bulkAddToDb('expenses', expensesToUpdate);
+  }
 
   importProgressIndicator.innerHTML = '<p>Importing income...</p>';
-  await Promise.all(income.map(async (i) => {
-    await addToDb('income', {
-      ...i,
-      uid: appUser?.uid,
-    });
+  const incomeToUpdate = income.map((income) => ({
+    ...income,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(incomeToUpdate.map(async (income) => {
+    await addToDb('income', income, true);
     return Promise.resolve();
   }));
+
+  if (appUser?.uid) {
+    await bulkAddToDb('income', incomeToUpdate);
+  }
 
   importProgressIndicator.innerHTML = '<p>Importing savings...</p>';
-  await Promise.all(savings.map(async (s) => {
-    await addToDb('savings', {
-      ...s,
-      uid: appUser?.uid,
-    });
+  const savingsToUpdate = savings.map((savings) => ({
+    ...savings,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(savingsToUpdate.map(async (savings) => {
+    await addToDb('savings', savings, true);
     return Promise.resolve();
   }));
+
+  if (appUser?.uid) {
+    await bulkAddToDb('savings', savingsToUpdate);
+  }
 
   importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
-  await Promise.all(debt.map(async (d) => {
-    await addToDb('debt', {
-      ...d,
-      uid: appUser?.uid,
-    });
+  const debtToUpdate = debt.map((debt) => ({
+    ...debt,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(debtToUpdate.map(async (debt) => {
+    await addToDb('debt', debt, true);
     return Promise.resolve();
   }));
+
+  if (appUser?.uid) {
+    await bulkAddToDb('debt', debtToUpdate);
+  }
 
   importProgressIndicator.innerHTML = '<p>Importing recurring expenses...</p>';
-  await Promise.all(recurringExpenses.map(async (r) => {
-    await addToDb('recurring-expenses', {
-      ...r,
-      uid: appUser?.uid,
-    });
+  const recurringExpensesToUpdate = recurringExpenses.map((expense) => ({
+    ...expense,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(recurringExpensesToUpdate.map(async (expense) => {
+    await addToDb('recurring-expenses', expense, true);
     return Promise.resolve();
   }));
 
+  if (appUser?.uid) {
+    await bulkAddToDb('recurring-expenses', recurringExpensesToUpdate);
+  }
+
   importProgressIndicator.innerHTML = '<p>Importing recurring income...</p>';
-  await Promise.all(recurringIncome.map(async (r) => {
-    await addToDb('recurring-income', {
-      ...r,
-      uid: appUser?.uid,
-    });
+  const recurringIncomeToUpdate = recurringIncome.map((income) => ({
+    ...income,
+    uid: appUser?.uid,
+  }));
+  await Promise.all(recurringIncomeToUpdate.map(async (income) => {
+    await addToDb('recurring-income', income, true);
     return Promise.resolve();
   }));
+
+  if (appUser?.uid) {
+    await bulkAddToDb('recurring-income', recurringIncomeToUpdate);
+  }
 
   importProgressIndicator.innerHTML = `
     <p>
@@ -288,9 +318,9 @@ document.addEventListener('change', (event) => {
         const expensesData = csvStringToArray(e.target.result);
         importProgressIndicator.innerHTML = '<p>Uploading Expenses...</p>';
 
-        await Promise.all(expensesData.map(async (expense) => {
+        const expensesToImport = expensesData.map((expense) => {
           const date = new Date(expense['Date']);
-          const newExpense = {
+          return {
             uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
@@ -300,10 +330,16 @@ document.addEventListener('change', (event) => {
             amount: sanitize(expense['Amount']),
             key: null,
           };
-
-          await addToDb('expenses', newExpense);
+        });
+        await Promise.all(expensesToImport.map(async (expense) => {
+          await addToDb('expenses', expense, true);
           Promise.resolve();
         }));
+
+        if (appUser?.uid) {
+          const allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
+          await bulkAddToDb('expenses', allExpenses);
+        }
 
         importProgressIndicator.innerHTML = `
           <p>
@@ -335,9 +371,9 @@ document.addEventListener('change', (event) => {
         const incomeData = csvStringToArray(e.target.result);
         importProgressIndicator.innerHTML = '<p>Uploading Income...</p>';
 
-        await Promise.all(incomeData.map(async (income) => {
+        const incomeToImport = incomeData.map((income) => {
           const date = new Date(income['Date']);
-          const newIncome = {
+          return {
             uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
@@ -347,10 +383,16 @@ document.addEventListener('change', (event) => {
             amount: sanitize(income['Amount']),
             key: null,
           };
-
-          await addToDb('income', newIncome);
+        });
+        await Promise.all(incomeToImport.map(async (income) => {
+          await addToDb('income', income, true);
           Promise.resolve();
         }));
+
+        if (appUser?.uid) {
+          const allIncome = await getAllFromObjectStore('income', appUser?.uid);
+          await bulkAddToDb('income', allIncome);
+        }
 
         importProgressIndicator.innerHTML = `
           <p>
@@ -382,9 +424,9 @@ document.addEventListener('change', (event) => {
         const savingsData = csvStringToArray(e.target.result);
         importProgressIndicator.innerHTML = '<p>Uploading Savings...</p>';
 
-        await Promise.all(savingsData.map(async (savings) => {
+        const savingsToImport = savingsData.map((savings) => {
           const date = new Date(savings['Date']);
-          const newSavings = {
+          return {
             uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
@@ -393,10 +435,16 @@ document.addEventListener('change', (event) => {
             amount: sanitize(savings['Balance']),
             key: null,
           };
-
-          await addToDb('savings', newSavings);
+        });
+        await Promise.all(savingsToImport.map(async (savings) => {
+          await addToDb('savings', savings, true);
           Promise.resolve();
         }));
+
+        if (appUser?.uid) {
+          const allSavings = await getAllFromObjectStore('savings', appUser?.uid);
+          await bulkAddToDb('savings', allSavings);
+        }
 
         importProgressIndicator.innerHTML = `
           <p>
@@ -428,9 +476,9 @@ document.addEventListener('change', (event) => {
         const debtData = csvStringToArray(e.target.result);
         importProgressIndicator.innerHTML = '<p>Uploading Debt...</p>';
 
-        await Promise.all(debtData.map(async (debt) => {
+        const debtToImport = debtData.map((debt) => {
           const date = new Date(debt['Date']);
-          const newDebt = {
+          return {
             uid: appUser?.uid,
             year: date.getFullYear(),
             month: date.getMonth(),
@@ -440,10 +488,16 @@ document.addEventListener('change', (event) => {
             interestRate: sanitize(debt['Interest Rate']),
             key: null,
           };
-
-          await addToDb('debt', newDebt);
+        });
+        await Promise.all(debtToImport.map(async (debt) => {
+          await addToDb('debt', debt, true);
           Promise.resolve();
         }));
+
+        if (appUser?.uid) {
+          const allDebt = await getAllFromObjectStore('debt', appUser?.uid);
+          await bulkAddToDb('debt', allDebt);
+        }
 
         importProgressIndicator.innerHTML = `
           <p>
