@@ -2,7 +2,7 @@ import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, addToDb, 
 import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
 import { displaySavings } from './get-savings.mjs';
-import { getDebt } from './get-debt.mjs';
+import { displayDebt } from './get-debt.mjs';
 
 let lastMonth = month - 1;
 let lastMonthYear = year;
@@ -54,21 +54,15 @@ const loadSavings = async () => {
 loadSavings();
 
 const loadDebt = async () => {
-  const debtBody = document.querySelector('[data-debt][data-section-body]');
-  const debtBlock = await getDebt(year, month);
+  let debt = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
+  let lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+  displayDebt(debt, lastMonthsDebt);
 
-  if (debtBlock == null) {
-    const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-    if (lastMonthsDebt.length) {
-      const copyDebtDiv = document.querySelector('[data-copy-debt]');
-      copyDebtDiv.removeAttribute('hidden');
-    }
-    const noDebtMessage = document.querySelector('[data-no-debt]');
-    noDebtMessage.removeAttribute('hidden');
-    return;
+  if (appUser?.uid) {
+    debt = await getAllFromCloudIndex('debt', year, month, appUser?.uid);
+    lastMonthsDebt = await getAllFromCloudIndex('debt', lastMonthYear, lastMonth, appUser?.uid);
+    displayDebt(debt, lastMonthsDebt);
   }
-
-  debtBody.innerHTML = debtBlock;
 };
 
 loadDebt();

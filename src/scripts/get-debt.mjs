@@ -1,14 +1,20 @@
-import { getAllFromIndex } from './db.mjs';
+const initialState = `
+  <div data-no-debt hidden>
+    <p>
+      You haven't tracked any debt yet.
+    </p>
+  </div>
+  <div data-copy-debt hidden>
+    <button type="button" style="width: 100%">
+      Copy Last Month's Debt
+    </button>
+  </div>
+`;
 
-export const getDebt = async (year, month) => {
-  const debts = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
+const generateBodyHtml = (debts) => {
   if (!debts?.length) {
     return null;
   }
-
-  const total = debts.reduce((a, b) => a + b.amount, 0);
-  const totalDebtIndicator = document.querySelector('[data-total-debt]');
-  totalDebtIndicator.innerHTML = formatCurrency(total);
 
   const preferences = localStorage.getItem('debt-preferences') || '{}';
   const { method = 'avalanche' } = JSON.parse(preferences);
@@ -130,4 +136,29 @@ export const getDebt = async (year, month) => {
       </div>
     `;
   }
+};
+
+export const displayDebt = (debts, lastMonthsDebt) => {
+  const totalDebtIndicator = document.querySelector('[data-total-debt]');
+  const debtBody = document.querySelector('[data-debt][data-section-body]');
+  debtBody.innerHTML = initialState;
+
+  const total = debts.reduce((a, b) => a + b.amount, 0);
+  totalDebtIndicator.innerHTML = formatCurrency(total);
+
+  if (!debts.length) {
+    if (lastMonthsDebt.length) {
+      const copyDebtDiv = document.querySelector('[data-copy-debt]');
+      copyDebtDiv.removeAttribute('hidden');
+    }
+
+    const noDebtMessage = document.querySelector('[data-no-debt]');
+    noDebtMessage.removeAttribute('hidden');
+  }
+
+  const debtBlock = generateBodyHtml(debts);
+  if (debtBlock == null) {
+    return;
+  }
+  debtBody.innerHTML = debtBlock;
 };
