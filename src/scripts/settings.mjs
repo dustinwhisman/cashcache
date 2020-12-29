@@ -599,27 +599,27 @@ document.addEventListener('click', async (event) => {
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all expenses...</p>';
       const expensesRecords = await getAllFromObjectStore('expenses', appUser?.uid);
-      await deleteAllRecords('expenses', expensesRecords);
+      await deleteAllRecords('expenses', expensesRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all income...</p>';
       const incomeRecords = await getAllFromObjectStore('income', appUser?.uid);
-      await deleteAllRecords('income', incomeRecords);
+      await deleteAllRecords('income', incomeRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all savings...</p>';
       const savingsRecords = await getAllFromObjectStore('savings', appUser?.uid);
-      await deleteAllRecords('savings', savingsRecords);
+      await deleteAllRecords('savings', savingsRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all debt...</p>';
       const debtRecords = await getAllFromObjectStore('debt', appUser?.uid);
-      await deleteAllRecords('debt', debtRecords);
+      await deleteAllRecords('debt', debtRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring expenses...</p>';
       const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
-      await deleteAllRecords('recurring-expenses', recurringExpensesRecords);
+      await deleteAllRecords('recurring-expenses', recurringExpensesRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring income...</p>';
       const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', appUser?.uid);
-      await deleteAllRecords('recurring-income', recurringIncomeRecords);
+      await deleteAllRecords('recurring-income', recurringIncomeRecords, appUser?.uid);
 
       deleteDataProgressBlock.innerHTML = `
         <p>

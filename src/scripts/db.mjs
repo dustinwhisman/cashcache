@@ -262,7 +262,7 @@ const hardDeleteFromDb = (storeName, key) => {
   });
 }
 
-export const deleteAllRecords = async (storeName, records) => {
+export const deleteAllRecords = async (storeName, records, uid = null) => {
   await Promise.all(records.map(async (record) => {
     try {
       await hardDeleteFromDb(storeName, record.key);
@@ -272,4 +272,23 @@ export const deleteAllRecords = async (storeName, records) => {
       return Promise.reject();
     }
   }));
+
+  if (uid) {
+    try {
+      const request = await fetch('/api/bulk-delete-all-records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          storeName,
+          uid,
+        }),
+      });
+
+      await request.json();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 };
