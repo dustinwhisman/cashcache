@@ -12,8 +12,11 @@ const handler = async (event) => {
       const collection = client.db(process.env.MONGODB_DB_NAME).collection(storeName);
 
       await Promise.all(records.map(async (record) => {
+        const recordToInsert = { ...record };
+        delete recordToInsert._id;
+
         const query = { uid: record.uid, key: record.key };
-        const update = { $set: { ...record } };
+        const update = { $set: { ...recordToInsert } };
         const options = { upsert: true };
 
         await collection.updateOne(query, update, options);
