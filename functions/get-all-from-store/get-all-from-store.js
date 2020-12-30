@@ -9,6 +9,7 @@ const handler = async (event) => {
   try {
     const { storeName, uid } = JSON.parse(event.body);
 
+    console.log('Opening client');
     await client.connect();
 
     const collection = client.db(process.env.MONGODB_DB_NAME).collection(storeName);
@@ -18,12 +19,18 @@ const handler = async (event) => {
     const cursor = collection.find(query);
 
     for await (const doc of cursor) {
+      console.log('Fetching document');
       result.push(doc);
     }
+
+    console.log('Closing cursor');
+    await cursor.close();
   } catch (error) {
+    console.error({ error });
     statusCode = 500;
     result = { error };
   } finally {
+    console.log('Closing client');
     await client.close();
   }
 
