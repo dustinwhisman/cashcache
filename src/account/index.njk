@@ -75,7 +75,7 @@ layout: layouts/simple-layout.njk
 </script>
 {% include "scripts/firebase.njk" %}
 <script type="module">
-  import { getAllFromObjectStore, addToDb } from '/scripts/db.mjs';
+  import { getAllFromObjectStore, addToDb, deleteAllCloudRecords } from '/scripts/db.mjs';
 
   const disassociateRecords = async (storeName, records) => {
     await Promise.all(records.map(async (record) => {
@@ -118,6 +118,14 @@ layout: layouts/simple-layout.njk
     statusUpdate.innerHTML = '<p>Removing recurring income associations from your account...</p>';
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', uid);
     await disassociateRecords('recurring-income', recurringIncomeRecords);
+
+    statusUpdate.innerHTML = `<p>Deleting all of your data from the cloud...</p>`;
+    await deleteAllCloudRecords('expenses', uid);
+    await deleteAllCloudRecords('income', uid);
+    await deleteAllCloudRecords('savings', uid);
+    await deleteAllCloudRecords('debt', uid);
+    await deleteAllCloudRecords('recurring-expenses', uid);
+    await deleteAllCloudRecords('recurring-income', uid);
 
     statusUpdate.innerHTML = `
       <p>

@@ -365,3 +365,26 @@ export const deleteAllRecords = async (storeName, records, uid = null) => {
     }
   }
 };
+
+export const deleteAllCloudRecords = async (storeName, uid) => {
+  if (!uid) {
+    return;
+  }
+
+  try {
+    const request = await fetch('/api/bulk-delete-all-records', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        uid,
+      }),
+    });
+
+    await request.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
