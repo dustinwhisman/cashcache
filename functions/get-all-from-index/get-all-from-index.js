@@ -30,7 +30,7 @@ const handler = async (event) => {
     } catch (error) {
       return {
         statusCode: 500,
-        body: JSON.stringify(error),
+        body: JSON.stringify({ ...error }),
       };
     }
 };
