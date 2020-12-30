@@ -1,4 +1,4 @@
-import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, addToDb, bulkAddToDb } from './db.mjs';
+import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from './db.mjs';
 import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
 import { displaySavings } from './get-savings.mjs';
@@ -77,6 +77,7 @@ const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
 
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-copy-savings] button')) {
+    event.target.innerHTML = 'Copying...';
     const lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     await Promise.all(lastMonthsSavings.map(async (fund) => {
       const newFund = {
@@ -99,6 +100,7 @@ document.addEventListener('click', async (event) => {
   }
 
   if (event.target.matches('[data-copy-debt] button')) {
+    event.target.innerHTML = 'Copying...';
     const lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
     await Promise.all(lastMonthsDebt.map(async (loan) => {
       const newLoan = {
@@ -122,7 +124,15 @@ document.addEventListener('click', async (event) => {
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   if (event.target.matches('[data-copy-expenses] button')) {
-    const recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+    event.target.innerHTML = 'Copying...';
+    let recurringExpenses = [];
+
+    if (appUser?.uid) {
+      recurringExpenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
+    } else {
+      recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+    }
+
     await Promise.all(recurringExpenses.map(async (expense) => {
       if (expense.isDeleted || !expense.active) {
         return Promise.resolve();
@@ -298,7 +308,15 @@ document.addEventListener('click', async (event) => {
   }
 
   if (event.target.matches('[data-copy-income] button')) {
-    const recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
+    event.target.innerHTML = 'Copying...';
+    let recurringIncome = [];
+
+    if (appUser?.uid) {
+      recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
+    } else {
+      recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
+    }
+
     await Promise.all(recurringIncome.map(async (income) => {
       if (income.isDeleted || !income.active) {
         return Promise.resolve();

@@ -32,7 +32,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/firebase.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllFromObjectStore } from '/scripts/db.mjs';
+  import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
 
   const formatDay = (number) => {
     switch(number) {
@@ -140,10 +140,10 @@ layout: layouts/simple-layout.njk
     return template;
   };
 
-  (async () => {
+  const displayRecurringIncome = (income) => {
     const recurringIncomeBlock = document.querySelector('[data-recurring-income]');
-    let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
-    recurringIncome = recurringIncome.filter(income => !income.isDeleted);
+    recurringIncomeBlock.innerHTML = '';
+    const recurringIncome = income.filter(income => !income.isDeleted);
 
     if (!recurringIncome?.length) {
       const noRecurringIncome = document.querySelector('[data-no-recurring-income]');
@@ -221,6 +221,16 @@ layout: layouts/simple-layout.njk
         recurringIncomeBlock.innerHTML += template;
       });
 
-      recurringIncomeBlock.removeAttribute('hidden');
+    recurringIncomeBlock.removeAttribute('hidden');
+  };
+
+  (async () => {
+    let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
+    displayRecurringIncome(recurringIncome);
+
+    if (appUser?.uid) {
+      recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
+      displayRecurringIncome(recurringIncome);
+    }
   })();
 </script>

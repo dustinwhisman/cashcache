@@ -19,9 +19,7 @@ layout: layouts/simple-layout.njk
   but predictable expenses like insurance.
 </p>
 
-<div class="stack" data-recurring-expenses hidden>
-
-</div>
+<div class="stack" data-recurring-expenses hidden></div>
 
 <div>
   <a href="/recurring-expenses/add">
@@ -32,7 +30,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/firebase.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllFromObjectStore } from '/scripts/db.mjs';
+  import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
 
   const formatDay = (number) => {
     switch(number) {
@@ -140,10 +138,10 @@ layout: layouts/simple-layout.njk
     return template;
   };
 
-  (async () => {
+  const displayRecurringExpenses = (expenses) => {
     const recurringExpensesBlock = document.querySelector('[data-recurring-expenses]');
-    let recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
-    recurringExpenses = recurringExpenses.filter(expense => !expense.isDeleted);
+    recurringExpensesBlock.innerHTML = '';
+    const recurringExpenses = expenses.filter(expense => !expense.isDeleted);
 
     if (!recurringExpenses?.length) {
       const noRecurringExpenses = document.querySelector('[data-no-recurring-expenses]');
@@ -221,6 +219,16 @@ layout: layouts/simple-layout.njk
         recurringExpensesBlock.innerHTML += template;
       });
 
-      recurringExpensesBlock.removeAttribute('hidden');
+    recurringExpensesBlock.removeAttribute('hidden');
+  };
+
+  (async () => {
+    let expenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+    displayRecurringExpenses(expenses);
+
+    if (appUser?.uid) {
+      expenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
+      displayRecurringExpenses(expenses);
+    }
   })();
 </script>

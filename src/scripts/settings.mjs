@@ -1,4 +1,4 @@
-import { addToDb, bulkAddToDb, getAllFromObjectStore, deleteAllRecords } from './db.mjs';
+import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from './db.mjs';
 
 const importData = async (data) => {
   const importProgressIndicator = document.querySelector('[data-import-progress]');
@@ -574,14 +574,27 @@ document.addEventListener('submit', (event) => {
 
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-export-data]')) {
-    const data = {
-      expenses: await getAllFromObjectStore('expenses', appUser?.uid),
-      income: await getAllFromObjectStore('income', appUser?.uid),
-      savings: await getAllFromObjectStore('savings', appUser?.uid),
-      debt: await getAllFromObjectStore('debt', appUser?.uid),
-      recurringExpenses: await getAllFromObjectStore('recurring-expenses', appUser?.uid),
-      recurringIncome: await getAllFromObjectStore('recurring-income', appUser?.uid),
-    };
+    event.target.innerHTML = 'Exporting...';
+    let data;
+    if (appUser?.uid) {
+      data = {
+        expenses: await getAllFromCloud('expenses', appUser?.uid),
+        income: await getAllFromCloud('income', appUser?.uid),
+        savings: await getAllFromCloud('savings', appUser?.uid),
+        debt: await getAllFromCloud('debt', appUser?.uid),
+        recurringExpenses: await getAllFromCloud('recurring-expenses', appUser?.uid),
+        recurringIncome: await getAllFromCloud('recurring-income', appUser?.uid),
+      };
+    } else {
+      data = {
+        expenses: await getAllFromObjectStore('expenses', appUser?.uid),
+        income: await getAllFromObjectStore('income', appUser?.uid),
+        savings: await getAllFromObjectStore('savings', appUser?.uid),
+        debt: await getAllFromObjectStore('debt', appUser?.uid),
+        recurringExpenses: await getAllFromObjectStore('recurring-expenses', appUser?.uid),
+        recurringIncome: await getAllFromObjectStore('recurring-income', appUser?.uid),
+      };
+    }
 
     const today = new Date();
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
@@ -591,6 +604,8 @@ document.addEventListener('click', async (event) => {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+
+    event.target.innerHTML = 'Export Data';
   }
 
   if (event.target.matches('[data-delete-data]')) {

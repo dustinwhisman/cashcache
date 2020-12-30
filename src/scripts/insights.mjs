@@ -1,4 +1,4 @@
-import { getAllFromObjectStore } from './db.mjs';
+import { getAllFromObjectStore, getAllFromCloud } from './db.mjs';
 
 const formatMonthString = (year, month) => new Date(year, month, 1)
   .toLocaleString('en-US', {
@@ -78,9 +78,10 @@ const runwayDescription = (numberOfMonths, recentMonthsCount) => {
 
 const calculateRunway = (totalExpensesByMonth, totalSavingsByMonth) => {
   const runwayBlock = document.querySelector('[data-runway]');
+  const runwayDetails = document.querySelector('[data-runway-details]');
   const recentExpenses = totalExpensesByMonth.slice(-13, -1);
   if (!recentExpenses.length) {
-    runwayBlock.innerHTML += `
+    runwayDetails.innerHTML = `
       <p>
         We don't have enough expenses data to calculate what your runway might
         be. As a rule, we don't factor in the current month for this
@@ -99,7 +100,7 @@ const calculateRunway = (totalExpensesByMonth, totalSavingsByMonth) => {
 
   const currentSavings = totalSavingsByMonth[totalSavingsByMonth.length - 1]?.total;
   if (!currentSavings) {
-    runwayBlock.innerHTML += `
+    runwayDetails.innerHTML = `
       <p>
         We don't have enough savings data to calculate what your runway might
         be. All we need is one month of savings, so if you track what's
@@ -114,7 +115,7 @@ const calculateRunway = (totalExpensesByMonth, totalSavingsByMonth) => {
   const averageRecentExpenses = recentExpenses.reduce((acc, e) => (acc + e.total), 0) / recentExpenses.length;
   const runwayInMonths = Math.floor(currentSavings / averageRecentExpenses);
 
-  runwayBlock.innerHTML += runwayDescription(runwayInMonths, recentExpenses.length);
+  runwayDetails.innerHTML = runwayDescription(runwayInMonths, recentExpenses.length);
   runwayBlock.removeAttribute('hidden');
 };
 
@@ -322,7 +323,8 @@ const drawProgressChart = (totalExpensesByMonth, totalIncomeByMonth, totalSaving
 
   if (!Object.keys(monthlyProgress).length) {
     const progressChartBlock = document.querySelector('[data-progress-chart]');
-    progressChartBlock.innerHTML += `
+    const progressChartDetails = document.querySelector('[data-progress-chart-details]');
+    progressChartDetails.innerHTML = `
       <p>
         We don't have enough data to chart your progress right now. Once you
         have expenses, income, and savings data for one month (other than the
@@ -488,7 +490,8 @@ const drawProgressChart = (totalExpensesByMonth, totalIncomeByMonth, totalSaving
   `;
 
   const progressChartBlock = document.querySelector('[data-progress-chart]');
-  progressChartBlock.innerHTML += svgTemplate;
+  const progressChartDetails = document.querySelector('[data-progress-chart-details]');
+  progressChartDetails.innerHTML = svgTemplate;
   progressChartBlock.removeAttribute('hidden');
 };
 
@@ -532,7 +535,8 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
 
   if (!Object.keys(monthlyData).length) {
     const savingsRateBlock = document.querySelector('[data-savings-rate]');
-    savingsRateBlock.innerHTML += `
+    const savingsRateDetails = document.querySelector('[data-savings-rate-details]');
+    savingsRateDetails.innerHTML = `
       <p>
         We don't have enough data to chart your savings rate right now.
         Once you have expenses, and income data for one month (other than the
@@ -686,16 +690,20 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
   `;
 
   const savingsRateBlock = document.querySelector('[data-savings-rate]');
-  savingsRateBlock.innerHTML += svgTemplate;
+  const savingsRateDetails = document.querySelector('[data-savings-rate-details]');
+  savingsRateDetails.innerHTML = svgTemplate;
   savingsRateBlock.removeAttribute('hidden');
 };
 
-(async () => {
+const displayInsights = (allExpenses, allIncome, allSavings) => {
   const today = new Date();
   const thisYear = today.getFullYear();
   const thisMonth = today.getMonth();
-  const allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
   const expensesByMonth = allExpenses.reduce((acc, expense) => {
+    if (expense.isDeleted) {
+      return acc;
+    }
+
     if (expense.year > thisYear) {
       return acc;
     }
@@ -722,8 +730,11 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
     }))
     .sort(sortingFunction);
 
-  const allIncome = await getAllFromObjectStore('income', appUser?.uid);
   const incomeByMonth = allIncome.reduce((acc, income) => {
+    if (income.isDeleted) {
+      return acc;
+    }
+
     if (income.year > thisYear) {
       return acc;
     }
@@ -750,8 +761,11 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
     }))
     .sort(sortingFunction);
 
-  const allSavings = await getAllFromObjectStore('savings', appUser?.uid);
   const savingsByMonth = allSavings.reduce((acc, savings) => {
+    if (savings.isDeleted) {
+      return acc;
+    }
+
     if (savings.year > thisYear) {
       return acc;
     }
@@ -782,4 +796,20 @@ const drawRollingSavingsChart = (totalExpensesByMonth, totalIncomeByMonth, total
   calculateRetirementEstimates(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
   drawProgressChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
   drawRollingSavingsChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
+};
+
+(async () => {
+  let allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
+  let allIncome = await getAllFromObjectStore('income', appUser?.uid);
+  let allSavings = await getAllFromObjectStore('savings', appUser?.uid);
+
+  displayInsights(allExpenses, allIncome, allSavings);
+
+  if (appUser?.uid) {
+    allExpenses = await getAllFromCloud('expenses', appUser?.uid);
+    allIncome = await getAllFromCloud('income', appUser?.uid);
+    allSavings = await getAllFromCloud('savings', appUser?.uid);
+
+    displayInsights(allExpenses, allIncome, allSavings);
+  }
 })();

@@ -144,6 +144,31 @@ export const getAllFromObjectStore = (storeName, uid = null) => {
   });
 };
 
+export const getAllFromCloud = async (storeName, uid) => {
+  try {
+    const request = await fetch('/api/get-all-from-store', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        uid,
+      }),
+    });
+
+    const data = await request.json();
+    await Promise.all(data.map(async (record) => {
+      await keepLocalCurrent(storeName, record);
+      return Promise.resolve();
+    }));
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getAllCategories = (storeName) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(schemaName, schemaVersion);
