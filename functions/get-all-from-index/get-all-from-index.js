@@ -4,6 +4,8 @@ const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const handler = async (event) => {
+  let statusCode = 200;
+  let result = [];
   try {
     const { storeName, uid, year, month } = JSON.parse(event.body);
 
@@ -13,24 +15,23 @@ const handler = async (event) => {
 
     const query = { uid, year, month };
 
-    const result = [];
     const cursor = collection.find(query);
     await cursor.forEach((doc) => {
       if (!doc.isDeleted) {
         result.push(doc);
       }
     });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result),
-    };
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error }),
-    };
+    statusCode = 500;
+    result = { error };
+  } finally {
+    await client.close();
   }
+
+  return {
+    statusCode,
+    body: JSON.stringify(result),
+  };
 };
 
 module.exports = { handler };
