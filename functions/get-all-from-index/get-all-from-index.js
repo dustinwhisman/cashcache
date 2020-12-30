@@ -16,25 +16,19 @@ const handler = async (event) => {
     const result = [];
     const cursor = collection.find(query);
     await cursor.forEach((doc) => {
-      console.log(doc);
       if (!doc.isDeleted) {
         result.push(doc);
       }
     });
-
-    console.log('Closing client');
-    client.close();
 
     return {
       statusCode: 200,
       body: JSON.stringify(result),
     };
   } catch (error) {
-    console.error({ error });
-    console.error(error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ ...error }),
+      body: JSON.stringify({ error }),
     };
   }
 };
