@@ -4,35 +4,37 @@ const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const handler = async (event) => {
-    try {
-      const { storeName, uid, year, month } = JSON.parse(event.body);
+  try {
+    const { storeName, uid, year, month } = JSON.parse(event.body);
 
-      await client.connect();
+    await client.connect();
 
-      const collection = client.db(process.env.MONGODB_DB_NAME).collection(storeName);
+    const collection = client.db(process.env.MONGODB_DB_NAME).collection(storeName);
 
-      const query = { uid, year, month };
+    const query = { uid, year, month };
 
-      const result = [];
-      const cursor = collection.find(query);
-      await cursor.forEach((doc) => {
-        if (!doc.isDeleted) {
-          result.push(doc);
-        }
-      });
+    const result = [];
+    const cursor = collection.find(query);
+    await cursor.forEach((doc) => {
+      if (!doc.isDeleted) {
+        result.push(doc);
+      }
+    });
 
-      client.close();
+    client.close();
 
-      return {
-        statusCode: 200,
-        body: JSON.stringify(result),
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ ...error }),
-      };
-    }
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result),
+    };
+  } catch (error) {
+    console.error({ error });
+    console.error(error.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ ...error }),
+    };
+  }
 };
 
 module.exports = { handler };
