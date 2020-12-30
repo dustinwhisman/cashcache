@@ -16,11 +16,13 @@ const handler = async (event) => {
     const result = [];
     const cursor = collection.find(query);
     await cursor.forEach((doc) => {
+      console.log(doc);
       if (!doc.isDeleted) {
         result.push(doc);
       }
     });
 
+    console.log('Closing client');
     client.close();
 
     return {
