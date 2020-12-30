@@ -15,7 +15,7 @@ const handler = async (event) => {
 
       const result = await collection.findOne(query);
 
-      client.close();
+      await client.close();
 
       return {
         statusCode: 200,

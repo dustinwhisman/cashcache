@@ -16,7 +16,7 @@ const handler = async (event) => {
 
       await collection.updateOne(query, update, options);
 
-      client.close();
+      await client.close();
 
       return {
         statusCode: 200,

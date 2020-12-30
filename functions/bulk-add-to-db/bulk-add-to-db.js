@@ -24,7 +24,7 @@ const handler = async (event) => {
         return Promise.resolve();
       }));
 
-      client.close();
+      await client.close();
 
       return {
         statusCode: 200,

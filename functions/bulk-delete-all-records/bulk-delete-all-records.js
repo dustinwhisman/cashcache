@@ -15,7 +15,7 @@ const handler = async (event) => {
 
       await collection.deleteMany(query);
 
-      client.close();
+      await client.close();
 
       return {
         statusCode: 200,
