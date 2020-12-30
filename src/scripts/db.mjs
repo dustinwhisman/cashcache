@@ -116,7 +116,7 @@ export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
       return Promise.resolve();
     }));
 
-    return data;
+    return data.filter(x => !x.isDeleted);
   } catch (error) {
     console.error(error);
   }

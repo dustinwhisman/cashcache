@@ -18,10 +18,8 @@ const handler = async (event) => {
 
     const cursor = collection.find(query);
 
-    for await (const doc of cursor) {
-      console.log('Fetching document');
-      result.push(doc);
-    }
+    console.log('Fetching documents');
+    result = await cursor.toArray();
 
     console.log('Closing cursor');
     await cursor.close();
