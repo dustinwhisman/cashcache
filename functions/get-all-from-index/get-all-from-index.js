@@ -16,11 +16,12 @@ const handler = async (event) => {
     const query = { uid, year, month };
 
     const cursor = collection.find(query);
-    await cursor.forEach((doc) => {
+
+    for await (const doc of cursor) {
       if (!doc.isDeleted) {
         result.push(doc);
       }
-    });
+    }
   } catch (error) {
     statusCode = 500;
     result = { error };

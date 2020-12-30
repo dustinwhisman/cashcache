@@ -16,9 +16,10 @@ const handler = async (event) => {
     const query = { uid };
 
     const cursor = collection.find(query);
-    await cursor.forEach((doc) => {
+
+    for await (const doc of cursor) {
       result.push(doc);
-    });
+    }
   } catch (error) {
     statusCode = 500;
     result = { error };
