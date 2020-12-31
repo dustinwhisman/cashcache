@@ -20,7 +20,7 @@ layout: layouts/simple-layout.njk
     before logging you in on this device. If you want to log in on your original
     device, close this tab and open the link on that device.
   </p>
-  <form class="stack">
+  <form class="stack" data-confirm-email-form>
     <div>
       <label for="email">
         Email
@@ -42,9 +42,64 @@ layout: layouts/simple-layout.njk
   </p>
 </div>
 
+<div class="stack" data-subscription hidden>
+  <h2>
+    Subscription Type
+  </h2>
+  <p>
+    Please choose how you would like to be billed. You will be taken to a secure
+    payment form after you choose.
+  </p>
+  <form class="stack" data-subscription-form>
+    <fieldset>
+      <legend>
+        Subscription Options
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="price-id" value="{{ env.monthlyPlanId }}" checked>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            $5.00/month
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="price-id" value="{{ env.yearlyPlanId }}">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            $50.00/year
+          </span>
+        </label>
+      </div>
+    </fieldset>
+    <div>
+      <button type="submit">
+        Subscribe
+      </button>
+    </div>
+  </form>
+</div>
+
 {% include "scripts/firebase.njk" %}
+<script src="https://js.stripe.com/v3/"></script>
 <script type="module">
   import { getAllFromObjectStore, addToDb, bulkAddToDb } from '/scripts/db.mjs';
+
+  const createCheckoutSession = (priceId) => {
+    return fetch('/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ priceId }),
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .catch(console.error);
+  };
+
+  const isPayingUser = () => false;
 
   const associateRecords = async (storeName, records) => {
     const recordsToUpdate = records.map((record) => ({
@@ -92,13 +147,19 @@ layout: layouts/simple-layout.njk
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
     await associateRecords('recurring-income', recurringIncomeRecords);
 
-    statusUpdate.innerHTML = `
-      <p>
-        All done! Redirecting you to the <a href="/overview">overview page</a>
-        now.
-      </p>
-    `;
-    window.location.href = '/overview';
+    if (isPayingUser()) {
+      statusUpdate.innerHTML = `
+        <p>
+          All done! Redirecting you to the <a href="/overview">overview page</a>
+          now.
+        </p>
+      `;
+      window.location.href = '/overview';
+    } else {
+      statusUpdate.setAttribute('hidden', true);
+      const subscriptionBlock = document.querySelector('[data-subscription]');
+      subscriptionBlock.removeAttribute('hidden');
+    }
   };
 
   (async () => {
@@ -124,17 +185,29 @@ layout: layouts/simple-layout.njk
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
-      const email = event.target.elements.email.value;
+    if (event.target.matches('[data-confirm-email-form]')) {
+      if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+        const email = event.target.elements.email.value;
 
-      firebase.auth().signInWithEmailLink(email, window.location.href)
-        .then(async (result) => {
-          await associateDataToAccount();
-        })
-        .catch((error) => {
-          const errorMessage = document.querySelector('[data-login-error]');
-          errorMessage.removeAttribute('hidden');
+        firebase.auth().signInWithEmailLink(email, window.location.href)
+          .then(async (result) => {
+            await associateDataToAccount();
+          })
+          .catch((error) => {
+            const errorMessage = document.querySelector('[data-login-error]');
+            errorMessage.removeAttribute('hidden');
+          });
+      }
+    }
+
+    if (event.target.matches('[data-subscription-form]')) {
+      const priceId = event.target.elements['price-id'].value;
+      createCheckoutSession(priceId).then((data) => {
+        stripe.redirectToCheckout({
+          sessionId: data.sessionId,
         });
+      })
+      .catch(console.error);
     }
   });
 </script>
