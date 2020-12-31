@@ -27,7 +27,7 @@
       .then((data) => {
         if (data?.customerId) {
           isPayingUser = true;
-          localStorage.setItem('customerId', data.customerId);
+          localStorage.setItem('customerId', 'exists');
         } else {
           isPayingUser = false;
           localStorage.removeItem('customerId');
