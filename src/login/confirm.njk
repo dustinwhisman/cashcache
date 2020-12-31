@@ -86,27 +86,26 @@ layout: layouts/simple-layout.njk
 
   const stripe = Stripe('{{ env.stripePublishableKey }}');
 
-  const checkIsPayingUser = (uid) => {
+  const checkIsPayingUser = async (uid) => {
     if (!uid) {
       return false;
     }
 
-    return fetch('/api/get-customer-id', {
+    try {
+      const response = await fetch('/api/get-customer-id', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ uid }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data?.customerId) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .catch(() => false);
+      });
+
+      const data = await response.json();
+      return !!data?.customerId;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   };
 
   const createCheckoutSession = (priceId) => {
@@ -169,7 +168,7 @@ layout: layouts/simple-layout.njk
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
     await associateRecords('recurring-income', recurringIncomeRecords);
 
-    if (checkIsPayingUser(appUser?.uid)) {
+    if (await checkIsPayingUser(appUser?.uid)) {
       statusUpdate.innerHTML = `
         <p>
           All done! Redirecting you to the <a href="/overview">overview page</a>
