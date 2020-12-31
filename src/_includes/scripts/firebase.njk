@@ -14,6 +14,28 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
+  let isPayingUser = !!localStorage.getItem('customerId');
+  const getCustomerId = (uid) => {
+    fetch('/api/get-customer-id', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ uid }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data?.customerId) {
+          isPayingUser = true;
+          localStorage.setItem('customerId', data.customerId);
+        } else {
+          isPayingUser = false;
+          localStorage.removeItem('customerId');
+        }
+      })
+      .catch(console.error);
+  };
+
   const loginLink = document.querySelector('[data-login-link]');
   const accountLink = document.querySelector('[data-account-link]');
   let appUser;
@@ -29,6 +51,7 @@
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
+      getCustomerId(user.uid);
       appUser = user;
       loginLink.setAttribute('hidden', true);
       accountLink.removeAttribute('hidden');
@@ -41,6 +64,7 @@
       const notLoggedInEvent = new CustomEvent('not-logged-in');
       document.dispatchEvent(notLoggedInEvent);
       localStorage.removeItem('user');
+      localStorage.removeItem('customerId');
     }
   });
 </script>

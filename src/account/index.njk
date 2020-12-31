@@ -140,6 +140,7 @@ layout: layouts/simple-layout.njk
       firebase.auth().signOut()
         .then(() => {
           localStorage.removeItem('user');
+          localStorage.removeItem('customerId');
           window.location.href = '/';
         })
         .catch(console.error);
