@@ -97,11 +97,12 @@ layout: layouts/simple-layout.njk
     disassociated with your account from the cloud. All of your data will still be
     saved in your browser, so you can still access it as a free user.
   </p>
-  <div>
-    <button type="button" data-delete-account>
+  <form data-delete-account>
+    <input type="hidden" name="customer-id" value="">
+    <button type="submit" data-delete-account>
       Delete Account
     </button>
-  </div>
+  </form>
   <div data-status-update aria-live="polite"></div>
 </div>
 
@@ -122,8 +123,10 @@ layout: layouts/simple-layout.njk
 
   document.addEventListener('is-paying-customer', ({ detail }) => {
     const subscriptionDetails = document.querySelector('[data-subscription-details]');
-    const manageSubscriptionForm = document.querySelector('[data-manage-subscription-form]');
-    manageSubscriptionForm.elements['customer-id'].value = detail;
+    const customerIdInputs = document.querySelectorAll('[name="customer-id"]');
+    customerIdInputs.forEach((input) => {
+      input.value = detail;
+    });
     subscriptionDetails.removeAttribute('hidden');
   });
 
@@ -220,21 +223,9 @@ layout: layouts/simple-layout.njk
         })
         .catch(console.error);
     }
-
-    if (event.target.matches('[data-delete-account]')) {
-      if (window.confirm('Are you sure you want to delete your account? This action is irreversible.')) {
-        const uid = appUser.uid;
-        appUser.delete().then(async () => {
-          await disassociateDataFromAccount(uid);
-        })
-        .catch(() => {
-          alert(`Since this action is sensitive, we'll need you to log in again real quick before trying again.`);
-        });
-      }
-    }
   });
 
-  document.addEventListener('submit', (event) => {
+  document.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (event.target.matches('[data-update-email-form]')) {
       appUser.updateEmail(event.target.elements['new-email'].value).then(() => {
@@ -270,6 +261,31 @@ layout: layouts/simple-layout.njk
           window.location.href = data.url;
         })
         .catch(console.error);
+    }
+
+    if (event.target.matches('[data-delete-account]')) {
+      if (window.confirm('Are you sure you want to delete your account? This action is irreversible.')) {
+        try {
+          const request = await fetch('/api/cancel-subscription', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ customerId: event.target.elements['customer-id'].value }),
+          });
+          const result = await request.json();
+        } catch (error) {
+          console.error(error);
+        }
+
+        const uid = appUser.uid;
+        appUser.delete().then(async () => {
+          await disassociateDataFromAccount(uid);
+        })
+        .catch(() => {
+          alert(`Since this action is sensitive, we'll need you to log in again real quick before trying again.`);
+        });
+      }
     }
   });
 </script>
