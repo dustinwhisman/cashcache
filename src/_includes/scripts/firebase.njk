@@ -28,9 +28,13 @@
         if (data?.customerId) {
           isPayingUser = true;
           localStorage.setItem('customerId', 'exists');
+          const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data.customerId });
+          document.dispatchEvent(isPayingCustomerEvent);
         } else {
           isPayingUser = false;
           localStorage.removeItem('customerId');
+          const notPayingCustomerEvent = new CustomEvent('not-paying-customer');
+          document.dispatchEvent(notPayingCustomerEvent);
         }
       })
       .catch(console.error);
