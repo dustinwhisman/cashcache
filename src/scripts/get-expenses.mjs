@@ -1,9 +1,4 @@
-const initialState = `
-  <div data-no-expenses hidden>
-    <p>
-      You haven't tracked any expenses yet.
-    </p>
-  </div>
+let recurringExpensesBlock = `
   <div data-manage-recurring-expenses hidden>
     <div data-copy-expenses hidden>
       <button type="button" style="width: 100%; margin-block-end: 1.5rem">
@@ -11,9 +6,39 @@ const initialState = `
       </button>
     </div>
     <a href="/recurring-expenses" class="small">
-      View Recurring Expenses
+      Manage Recurring Expenses
     </a>
   </div>
+`;
+
+if (!appUser?.uid) {
+  recurringExpensesBlock = `
+    <div data-manage-recurring-expenses hidden>
+      <p class="small font-style:italic">
+        If you <a href="/login">sign up</a>, you can speed things up by setting
+        up recurring expenses that you can copy at the beginning of each month.
+      </p>
+    </div>
+  `;
+} else if (!isPayingUser) {
+  recurringExpensesBlock = `
+    <div data-manage-recurring-expenses hidden>
+      <p class="small font-style:italic">
+        If you <a href="/account">subscribe</a>, you can speed things up by
+        setting up recurring expenses that you can copy at the beginning of each
+        month.
+      </p>
+    </div>
+  `;
+}
+
+const initialState = `
+  <div data-no-expenses hidden>
+    <p>
+      You haven't tracked any expenses yet.
+    </p>
+  </div>
+  ${recurringExpensesBlock}
 `;
 
 const generateBodyHtml = (expenses) => {
@@ -129,7 +154,7 @@ const generateBodyHtml = (expenses) => {
     }).join('') + `
       <div style="padding-block-end: 1rem">
         <a href="/recurring-expenses" class="small">
-          View Recurring Expenses
+          Manage Recurring Expenses
         </a>
       </div>
     `;
@@ -159,7 +184,7 @@ const generateBodyHtml = (expenses) => {
           }).join('')}
         <div style="padding-block-end: 1rem">
           <a href="/recurring-expenses" class="small">
-            View Recurring Expenses
+            Manage Recurring Expenses
           </a>
         </div>
       </div>
@@ -181,7 +206,7 @@ export const displayExpenses = (expenses, lastMonthsExpenses) => {
 
     if (lastMonthsExpenses.length) {
       const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
-      copyExpensesDiv.removeAttribute('hidden');
+      copyExpensesDiv?.removeAttribute('hidden');
     }
 
     const noExpensesMessage = document.querySelector('[data-no-expenses]');

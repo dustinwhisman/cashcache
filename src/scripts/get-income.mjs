@@ -1,9 +1,4 @@
-const initialState = `
-  <div data-no-income hidden>
-    <p>
-      You haven't tracked any income yet.
-    </p>
-  </div>
+let recurringIncomeBlock = `
   <div data-manage-recurring-income hidden>
     <div data-copy-income hidden>
       <button type="button" style="width: 100%; margin-block-end: 1.5rem">
@@ -11,9 +6,39 @@ const initialState = `
       </button>
     </div>
     <a href="/recurring-income" class="small">
-      View Recurring Income
+      Manage Recurring Income
     </a>
   </div>
+`;
+
+if (!appUser?.uid) {
+  recurringIncomeBlock = `
+    <div data-manage-recurring-income hidden>
+      <p class="small font-style:italic">
+        If you <a href="/login">sign up</a>, you can speed things up by setting
+        up recurring income that you can copy at the beginning of each month.
+      </p>
+    </div>
+  `;
+} else if (!isPayingUser) {
+  recurringIncomeBlock = `
+    <div data-manage-recurring-income hidden>
+      <p class="small font-style:italic">
+        If you <a href="/account">subscribe</a>, you can speed things up by
+        setting up recurring income that you can copy at the beginning of each
+        month.
+      </p>
+    </div>
+  `;
+}
+
+const initialState = `
+  <div data-no-income hidden>
+    <p>
+      You haven't tracked any income yet.
+    </p>
+  </div>
+  ${recurringIncomeBlock}
 `;
 
 const generateBodyHtml = (income) => {
@@ -129,7 +154,7 @@ const generateBodyHtml = (income) => {
     }).join('') + `
     <div style="padding-block-end: 1rem">
       <a href="/recurring-income" class="small">
-        View Recurring Income
+        Manage Recurring Income
       </a>
     </div>
   `;
@@ -159,7 +184,7 @@ const generateBodyHtml = (income) => {
           }).join('')}
         <div style="padding-block-end: 1rem">
           <a href="/recurring-income" class="small">
-            View Recurring Income
+            Manage Recurring Income
           </a>
         </div>
       </div>
@@ -181,7 +206,7 @@ export const displayIncome = (income, lastMonthsIncome) => {
 
     if (lastMonthsIncome.length) {
       const copyIncomeDiv = document.querySelector('[data-copy-income]');
-      copyIncomeDiv.removeAttribute('hidden');
+      copyIncomeDiv?.removeAttribute('hidden');
     }
     const noIncomeMessage = document.querySelector('[data-no-income]');
     noIncomeMessage.removeAttribute('hidden');

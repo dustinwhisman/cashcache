@@ -1,14 +1,38 @@
+let copyDebtBlock = `
+  <div data-copy-debt hidden>
+    <button type="button" style="width: 100%">
+      Copy Last Month's Debt
+    </button>
+  </div>
+`;
+
+if (!appUser?.uid) {
+  copyDebtBlock = `
+    <div data-copy-debt hidden>
+      <p class="small font-style:italic">
+        If you <a href="/login">sign up</a>, you can speed things up by copying
+        your debt from last month.
+      </p>
+    </div>
+  `;
+} else if (!isPayingUser) {
+  copyDebtBlock = `
+    <div data-copy-debt hidden>
+      <p class="small font-style:italic">
+        If you <a href="/account">subscribe</a>, you can speed things up by
+        copying your debt from last month.
+      </p>
+    </div>
+  `;
+}
+
 const initialState = `
   <div data-no-debt hidden>
     <p>
       You haven't tracked any debt yet.
     </p>
   </div>
-  <div data-copy-debt hidden>
-    <button type="button" style="width: 100%">
-      Copy Last Month's Debt
-    </button>
-  </div>
+  ${copyDebtBlock}
 `;
 
 const generateBodyHtml = (debts) => {

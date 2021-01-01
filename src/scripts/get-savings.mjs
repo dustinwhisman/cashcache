@@ -1,14 +1,38 @@
+let copySavingsBlock = `
+  <div data-copy-savings hidden>
+    <button type="button" style="width: 100%">
+      Copy Last Month's Savings
+    </button>
+  </div>
+`;
+
+if (!appUser?.uid) {
+  copySavingsBlock = `
+    <div data-copy-savings hidden>
+      <p class="small font-style:italic">
+        If you <a href="/login">sign up</a>, you can speed things up by copying
+        your savings from last month.
+      </p>
+    </div>
+  `;
+} else if (!isPayingUser) {
+  copySavingsBlock = `
+    <div data-copy-savings hidden>
+      <p class="small font-style:italic">
+        If you <a href="/account">subscribe</a>, you can speed things up by
+        copying your savings from last month.
+      </p>
+    </div>
+  `;
+}
+
 const initialState = `
   <div data-no-savings hidden>
     <p>
       You haven't tracked any savings yet.
     </p>
   </div>
-  <div data-copy-savings hidden>
-    <button type="button" style="width: 100%">
-      Copy Last Month's Savings
-    </button>
-  </div>
+  ${copySavingsBlock}
 `;
 
 const generateBodyHtml = (savings) => {
