@@ -41,41 +41,82 @@ layout: layouts/simple-layout.njk
   }
 </style>
 
-{% include "components/insights-month-nav.njk" %}
-
-<div data-heat-map class="stack" hidden>
-  <h3>
-    Heat Map
-  </h3>
+<div class="stack" data-paywall-message hidden>
+  <h1>
+    Monthly Insights
+  </h1>
   <p>
-    Here's how much money you spent or earned, broken down by day of the month.
+    Monthly insights are a premium feature, but here's a breakdown of what
+    you're missing.
   </p>
-  <div class="dates-grid" data-dates-grid></div>
+  <ul class="stack" style="--stack-space: 0.75em">
+    <li>
+      A heat map of when you spent and earned money during the month. You might
+      spot some patterns that you're unaware of, such as a predilection for
+      shopping on the weekends or whatever.
+    </li>
+    <li>
+      Your savings rate for the month. Remember, higher is better, and a
+      negative number is bad news.
+    </li>
+    <li>
+      Month to month comparisons of what you earned and spent, as well as how
+      much your savings and debt changed.
+    </li>
+    <li>
+      Year over year comparisons to show how you're doing compared to this time
+      last year.
+    </li>
+  </ul>
+  <div data-cta-log-in hidden>
+    <a href="/login" class="button">
+      Sign Up to Gain Access
+    </a>
+  </div>
+  <div data-cta-subscribe hidden>
+    <a href="/account" class="button">
+      Subscribe to Gain Access
+    </a>
+  </div>
 </div>
 
-<h3>
-  Savings Rate
-</h3>
-<div class="stack" data-savings-rate hidden></div>
+<div class="stack" data-monthly-insights>
+  {% include "components/insights-month-nav.njk" %}
 
-<h3>
-  Month to Month Comparisons
-</h3>
-<div class="stack">
-  <div data-monthly-expenses></div>
-  <div data-monthly-income></div>
-  <div data-monthly-savings></div>
-  <div data-monthly-debt></div>
-</div>
+  <div data-heat-map class="stack" hidden>
+    <h3>
+      Heat Map
+    </h3>
+    <p>
+      Here's how much money you spent or earned, broken down by day of the month.
+    </p>
+    <div class="dates-grid" data-dates-grid></div>
+  </div>
 
-<h3>
-  Year to Year Comparisons
-</h3>
-<div class="stack">
-  <div data-yearly-expenses></div>
-  <div data-yearly-income></div>
-  <div data-yearly-savings></div>
-  <div data-yearly-debt></div>
+  <h3>
+    Savings Rate
+  </h3>
+  <div class="stack" data-savings-rate hidden></div>
+
+  <h3>
+    Month to Month Comparisons
+  </h3>
+  <div class="stack">
+    <div data-monthly-expenses></div>
+    <div data-monthly-income></div>
+    <div data-monthly-savings></div>
+    <div data-monthly-debt></div>
+  </div>
+
+  <h3>
+    Year to Year Comparisons
+  </h3>
+  <div class="stack">
+    <div data-yearly-expenses></div>
+    <div data-yearly-income></div>
+    <div data-yearly-savings></div>
+    <div data-yearly-debt></div>
+  </div>
 </div>
 
 {% include "scripts/firebase.njk" %}
@@ -467,6 +508,24 @@ layout: layouts/simple-layout.njk
   };
 
   (async () => {
+    if (!appUser?.uid || !isPayingUser) {
+      const monthlyInsights = document.querySelector('[data-monthly-insights]');
+      const paywallMessage = document.querySelector('[data-paywall-message]');
+
+      monthlyInsights.setAttribute('hidden', true);
+      paywallMessage.removeAttribute('hidden');
+
+      if (!appUser?.uid) {
+        const ctaLogIn = document.querySelector('[data-cta-log-in]');
+        ctaLogIn.removeAttribute('hidden');
+      } else {
+        const ctaSubscribe = document.querySelector('[data-cta-subscribe]');
+        ctaSubscribe.removeAttribute('hidden');
+      }
+
+      return;
+    }
+
     let expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
     let totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
 

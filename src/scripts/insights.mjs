@@ -799,6 +799,24 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
 };
 
 (async () => {
+  if (!appUser?.uid || !isPayingUser) {
+    const insights = document.querySelector('[data-insights]');
+    const paywallMessage = document.querySelector('[data-paywall-message]');
+
+    insights.setAttribute('hidden', true);
+    paywallMessage.removeAttribute('hidden');
+
+    if (!appUser?.uid) {
+      const ctaLogIn = document.querySelector('[data-cta-log-in]');
+      ctaLogIn.removeAttribute('hidden');
+    } else {
+      const ctaSubscribe = document.querySelector('[data-cta-subscribe]');
+      ctaSubscribe.removeAttribute('hidden');
+    }
+
+    return;
+  }
+
   let allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
   let allIncome = await getAllFromObjectStore('income', appUser?.uid);
   let allSavings = await getAllFromObjectStore('savings', appUser?.uid);
