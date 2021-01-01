@@ -1,15 +1,17 @@
 require('dotenv').config();
+const isDevelopment = process.env.NODE_ENV === 'development';
 const MongoClient = require('mongodb').MongoClient;
 const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.vdomk.mongodb.net/${process.env.MONGODB_DB_NAME}?retryWrites=true&w=majority`;
 
 let cachedDb = null;
+let client;
 
 const connectToDatabase = async (uri) => {
   if (cachedDb) {
     return cachedDb;
   }
 
-  const client = await MongoClient.connect(uri, {
+  client = await MongoClient.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
@@ -24,6 +26,10 @@ const addToDb = async (db, storeName, record) => {
   const update = { $set: { ...record } };
   const options = { upsert: true };
   await db.collection(storeName).updateOne(query, update, options);
+
+  if (isDevelopment && client != null) {
+    await client.close();
+  }
 
   return {
     statusCode: 200,
