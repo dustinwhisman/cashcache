@@ -75,19 +75,16 @@ layout: layouts/simple-layout.njk
   <h2>
     Change Email Address
   </h2>
-  <form class="stack" data-update-email-form>
-    <div>
-      <label for="new-email">
-        New Email
-      </label>
-      <input id="new-email" type="email" name="new-email" style="width: 50ch">
-    </div>
-    <div>
-      <button type="submit" data-update-email-button>
-        Save Changes
-      </button>
-    </div>
-  </form>
+  <p>
+    To change your email address, you will need to sign in again before making
+    the change. We'll send you an email with a link that will take you to a page
+    where you can update your email address.
+  </p>
+  <div>
+    <button type="button" data-change-email-button>
+      Change Email Address
+    </button>
+  </div>
 
   <h2>
     Delete Account
@@ -223,18 +220,21 @@ layout: layouts/simple-layout.njk
         })
         .catch(console.error);
     }
+
+    if (event.target.matches('[data-change-email-button]')) {
+      firebase.auth().sendSignInLinkToEmail(appUser.email, {
+        url: {% if env.environment == 'production' %}'https://cashcache-v2.netlify.app/account/change-email-address'{% else %}'http://localhost:8888/account/change-email-address'{% endif %},
+        handleCodeInApp: true,
+      })
+        .then(() => {
+          event.target.innerHTML = 'Email Sent';
+        })
+        .catch(console.error);
+    }
   });
 
   document.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (event.target.matches('[data-update-email-form]')) {
-      appUser.updateEmail(event.target.elements['new-email'].value).then(() => {
-        window.location.reload(true);
-      })
-      .catch(() => {
-        alert(`Since this action is sensitive, we'll need you to log in again real quick before trying again.`);
-      });
-    }
 
     if (event.target.matches('[data-subscription-form]')) {
       const priceId = event.target.elements['price-id'].value;
