@@ -1,5 +1,11 @@
 const getCategories = async (storeName) => {
-  const categories = await getAllCategories(storeName);
+  let categories = [];
+  if (appUser?.uid && isPayingUser) {
+    categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
+  } else {
+    categories = await getAllCategories(storeName);
+  }
+
   const categoriesDiv = document.querySelector('[data-category]');
   categories?.sort().forEach((category) => {
     const categoryTemplate = `

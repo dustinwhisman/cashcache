@@ -56,7 +56,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
 <script type="module">
-  import { getAllCategories, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 

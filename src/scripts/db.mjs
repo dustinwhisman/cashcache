@@ -199,6 +199,27 @@ export const getAllCategories = (storeName) => {
   });
 };
 
+export const getAllCategoriesFromCloud = async (storeName, uid) => {
+  try {
+    const request = await fetch('/api/get-all-categories', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        storeName,
+        uid,
+      }),
+    });
+
+    const data = await request.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
   return new Promise((resolve, reject) => {
     if (thingToAdd.key == null) {

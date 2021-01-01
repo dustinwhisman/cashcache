@@ -35,7 +35,7 @@ layout: layouts/simple-layout.njk
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
 <script type="module">
-  import { getAllCategories, addToDb } from '/scripts/db.mjs';
+  import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
 
   {% include "scripts/get-categories.njk" %}
 
