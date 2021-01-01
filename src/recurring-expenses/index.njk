@@ -226,7 +226,7 @@ layout: layouts/simple-layout.njk
     let expenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
     displayRecurringExpenses(expenses);
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       expenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
       displayRecurringExpenses(expenses);
     }

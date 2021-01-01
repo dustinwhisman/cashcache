@@ -228,7 +228,7 @@ layout: layouts/simple-layout.njk
     let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     displayRecurringIncome(recurringIncome);
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
       displayRecurringIncome(recurringIncome);
     }

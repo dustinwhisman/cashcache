@@ -16,7 +16,7 @@ const loadExpenses = async () => {
   let lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
   displayExpenses(expenses, lastMonthsExpenses);
 
-  if (appUser?.uid) {
+  if (appUser?.uid && isPayingUser) {
     expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
     lastMonthsExpenses = await getAllFromCloudIndex('expenses', lastMonthYear, lastMonth, appUser?.uid);
     displayExpenses(expenses, lastMonthsExpenses);
@@ -30,7 +30,7 @@ const loadIncome = async () => {
   let lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
   displayIncome(income, lastMonthsIncome);
 
-  if (appUser?.uid) {
+  if (appUser?.uid && isPayingUser) {
     income = await getAllFromCloudIndex('income', year, month, appUser?.uid);
     lastMonthsIncome = await getAllFromCloudIndex('income', lastMonthYear, lastMonth, appUser?.uid);
     displayIncome(income, lastMonthsIncome);
@@ -44,7 +44,7 @@ const loadSavings = async () => {
   let lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
   displaySavings(savings, lastMonthsSavings);
 
-  if (appUser?.uid) {
+  if (appUser?.uid && isPayingUser) {
     savings = await getAllFromCloudIndex('savings', year, month, appUser?.uid);
     lastMonthsSavings = await getAllFromCloudIndex('savings', lastMonthYear, lastMonth, appUser?.uid);
     displaySavings(savings, lastMonthsSavings);
@@ -58,7 +58,7 @@ const loadDebt = async () => {
   let lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
   displayDebt(debt, lastMonthsDebt);
 
-  if (appUser?.uid) {
+  if (appUser?.uid && isPayingUser) {
     debt = await getAllFromCloudIndex('debt', year, month, appUser?.uid);
     lastMonthsDebt = await getAllFromCloudIndex('debt', lastMonthYear, lastMonth, appUser?.uid);
     displayDebt(debt, lastMonthsDebt);
@@ -91,7 +91,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       const savingsToAdd = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
       await bulkAddToDb('savings', savingsToAdd);
     }
@@ -114,7 +114,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       const debtToAdd = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
       await bulkAddToDb('debt', debtToAdd);
     }
@@ -127,7 +127,7 @@ document.addEventListener('click', async (event) => {
     event.target.innerHTML = 'Copying...';
     let recurringExpenses = [];
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       recurringExpenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
     } else {
       recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
@@ -299,7 +299,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       const expensesToAdd = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
       await bulkAddToDb('expenses', expensesToAdd);
     }
@@ -311,7 +311,7 @@ document.addEventListener('click', async (event) => {
     event.target.innerHTML = 'Copying...';
     let recurringIncome = [];
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     } else {
       recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
@@ -483,7 +483,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       const incomeToAdd = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
       await bulkAddToDb('income', incomeToAdd);
     }

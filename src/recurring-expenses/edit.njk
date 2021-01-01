@@ -207,7 +207,7 @@ layout: layouts/simple-layout.njk
       let expense = await getFromDb('recurring-expenses', key, appUser?.uid);
       populateForm(expense);
 
-      if (appUser?.uid) {
+      if (appUser?.uid && isPayingUser) {
         expense = await getFromCloudDb('recurring-expenses', key, appUser?.uid);
         populateForm(expense);
       }

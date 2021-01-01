@@ -110,7 +110,7 @@ layout: layouts/simple-layout.njk
       let savings = await getFromDb('savings', key, appUser?.uid);
       populateForm(savings);
 
-      if (appUser?.uid) {
+      if (appUser?.uid && isPayingUser) {
         savings = await getFromCloudDb('savings', key, appUser?.uid);
         populateForm(savings);
       }

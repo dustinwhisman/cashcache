@@ -287,7 +287,7 @@ layout: layouts/simple-layout.njk
     compareMonthlySavings(lastMonthsSavings, totalSavings);
     compareMonthlyDebt(lastMonthsDebt, totalDebt);
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       lastMonthsExpenses = await getAllFromCloudIndex('expenses', prevYear, prevMonth, appUser?.uid);
       lastMonthsIncome = await getAllFromCloudIndex('income', prevYear, prevMonth, appUser?.uid);
       lastMonthsSavings = await getAllFromCloudIndex('savings', prevYear, prevMonth, appUser?.uid);
@@ -436,7 +436,7 @@ layout: layouts/simple-layout.njk
     compareYearlySavings(lastYearsSavings, totalSavings);
     compareYearlyDebt(lastYearsDebt, totalDebt);
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       lastYearsExpenses = await getAllFromCloudIndex('expenses', year - 1, month, appUser?.uid);
       lastYearsIncome = await getAllFromCloudIndex('income', year - 1, month, appUser?.uid);
       lastYearsSavings = await getAllFromCloudIndex('savings', year - 1, month, appUser?.uid);
@@ -484,7 +484,7 @@ layout: layouts/simple-layout.njk
     compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
     showSavingsRate(totalExpenses, totalIncome);
 
-    if (appUser?.uid) {
+    if (appUser?.uid && isPayingUser) {
       expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
       totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
 

@@ -116,7 +116,7 @@ layout: layouts/simple-layout.njk
       let debt = await getFromDb('debt', key, appUser?.uid);
       populateForm(debt);
 
-      if (appUser?.uid) {
+      if (appUser?.uid && isPayingUser) {
         debt = await getFromCloudDb('debt', key, appUser?.uid);
         populateForm(debt);
       }
