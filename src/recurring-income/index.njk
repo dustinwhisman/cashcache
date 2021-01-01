@@ -7,26 +7,53 @@ layout: layouts/simple-layout.njk
   Recurring Income
 </h1>
 
-<p>
-  Save time by adding your typical income here. At the beginning of each month,
-  you can copy these into your tracked income, giving you an idea of what you're
-  working with for the month ahead.
-</p>
-
-<p data-no-recurring-income hidden>
-  You haven't set up any recurring income yet. Take a look at your typical
-  income like your paycheck as well as any other money that you get on a
-  predictable basis.
-</p>
-
-<div class="stack" data-recurring-income hidden>
-
+<div class="stack" data-paywall-message hidden>
+  <p>
+    Managing your recurring income is a premium feature, but here's what
+    you're missing.
+  </p>
+  <ul class="stack" style="--stack-space: 0.75em">
+    <li>
+      Speed up the process of entering income that is the same every month, or
+      two weeks, or whatever the case may be
+    </li>
+    <li>
+      Know how much money you can expect to come in during the month so you
+      don't overshoot with your expenses
+    </li>
+  </ul>
+  <div data-cta-log-in hidden>
+    <a href="/login" class="button">
+      Sign Up to Gain Access
+    </a>
+  </div>
+  <div data-cta-subscribe hidden>
+    <a href="/account" class="button">
+      Subscribe to Gain Access
+    </a>
+  </div>
 </div>
 
-<div>
-  <a href="/recurring-income/add">
-    Add Recurring Income
-  </a>
+<div class="stack" data-recurring-income-container>
+  <p>
+    Save time by adding your typical income here. At the beginning of each month,
+    you can copy these into your tracked income, giving you an idea of what you're
+    working with for the month ahead.
+  </p>
+
+  <p data-no-recurring-income hidden>
+    You haven't set up any recurring income yet. Take a look at your typical
+    income like your paycheck as well as any other money that you get on a
+    predictable basis.
+  </p>
+
+  <div class="stack" data-recurring-income hidden></div>
+
+  <div>
+    <a href="/recurring-income/add">
+      Add Recurring Income
+    </a>
+  </div>
 </div>
 
 {% include "scripts/firebase.njk" %}
@@ -225,6 +252,24 @@ layout: layouts/simple-layout.njk
   };
 
   (async () => {
+    if (!appUser?.uid || !isPayingUser) {
+      const recurringIncomeContainer = document.querySelector('[data-recurring-income-container]');
+      const paywallMessage = document.querySelector('[data-paywall-message]');
+
+      recurringIncomeContainer.setAttribute('hidden', true);
+      paywallMessage.removeAttribute('hidden');
+
+      if (!appUser?.uid) {
+        const ctaLogIn = document.querySelector('[data-cta-log-in]');
+        ctaLogIn.removeAttribute('hidden');
+      } else {
+        const ctaSubscribe = document.querySelector('[data-cta-subscribe]');
+        ctaSubscribe.removeAttribute('hidden');
+      }
+
+      return;
+    }
+
     let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     displayRecurringIncome(recurringIncome);
 

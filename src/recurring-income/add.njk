@@ -109,6 +109,10 @@ layout: layouts/simple-layout.njk
 <script type="module">
   import { getAllCategories, addToDb } from '/scripts/db.mjs';
 
+  if (!appUser?.uid || !isPayingUser) {
+    window.location.href = '/recurring-income';
+  }
+
   {% include "scripts/get-categories.njk" %}
 
   document.addEventListener('submit', (event) => {
