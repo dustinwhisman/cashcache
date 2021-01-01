@@ -225,7 +225,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
 
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
-          if (!thingToAdd.uid || isBulkAdd) {
+          if (!isPayingUser || !thingToAdd.uid || isBulkAdd) {
             const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
             document.dispatchEvent(successEvent);
             resolve();
@@ -305,7 +305,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
         data.isDeleted = true;
         const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
-          if (!uid) {
+          if (!isPayingUser || !uid) {
             const successEvent = new CustomEvent('item-deleted');
             document.dispatchEvent(successEvent);
             resolve();
