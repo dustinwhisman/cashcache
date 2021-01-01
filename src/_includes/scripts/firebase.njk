@@ -14,9 +14,9 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
-  let isPayingUser = !!localStorage.getItem('customerId');
+  let isPayingUser = !!localStorage.getItem('isPayingUser');
   const getCustomerId = (uid) => {
-    fetch('/api/get-customer-id', {
+    fetch('/api/get-is-paying-user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,14 +25,14 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data?.customerId) {
+        if (data?.isPayingUser) {
           isPayingUser = true;
-          localStorage.setItem('customerId', 'exists');
-          const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data.customerId });
+          localStorage.setItem('isPayingUser', 'true');
+          const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data?.customerId });
           document.dispatchEvent(isPayingCustomerEvent);
         } else {
           isPayingUser = false;
-          localStorage.removeItem('customerId');
+          localStorage.removeItem('isPayingUser');
           const notPayingCustomerEvent = new CustomEvent('not-paying-customer');
           document.dispatchEvent(notPayingCustomerEvent);
         }
@@ -68,7 +68,7 @@
       const notLoggedInEvent = new CustomEvent('not-logged-in');
       document.dispatchEvent(notLoggedInEvent);
       localStorage.removeItem('user');
-      localStorage.removeItem('customerId');
+      localStorage.removeItem('isPayingUser');
     }
   });
 </script>

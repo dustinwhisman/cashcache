@@ -92,7 +92,7 @@ layout: layouts/simple-layout.njk
     }
 
     try {
-      const response = await fetch('/api/get-customer-id', {
+      const response = await fetch('/api/get-is-paying-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ layout: layouts/simple-layout.njk
       });
 
       const data = await response.json();
-      return !!data?.customerId;
+      return !!data?.isPayingUser;
     } catch (error) {
       console.error(error);
       return false;
