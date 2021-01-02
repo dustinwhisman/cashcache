@@ -174,10 +174,12 @@ layout: layouts/simple-layout.njk
     recurringExpensesBlock.innerHTML = '';
     const recurringExpenses = expenses.filter(expense => !expense.isDeleted);
 
+    const noRecurringExpenses = document.querySelector('[data-no-recurring-expenses]');
     if (!recurringExpenses?.length) {
-      const noRecurringExpenses = document.querySelector('[data-no-recurring-expenses]');
       noRecurringExpenses.removeAttribute('hidden');
       return;
+    } else {
+      noRecurringExpenses.setAttribute('hidden', true);
     }
 
     recurringExpenses

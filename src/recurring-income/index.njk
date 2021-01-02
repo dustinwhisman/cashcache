@@ -172,10 +172,12 @@ layout: layouts/simple-layout.njk
     recurringIncomeBlock.innerHTML = '';
     const recurringIncome = income.filter(income => !income.isDeleted);
 
+    const noRecurringIncome = document.querySelector('[data-no-recurring-income]');
     if (!recurringIncome?.length) {
-      const noRecurringIncome = document.querySelector('[data-no-recurring-income]');
       noRecurringIncome.removeAttribute('hidden');
       return;
+    } else {
+      noRecurringIncome.setAttribute('hidden', true);
     }
 
     recurringIncome
