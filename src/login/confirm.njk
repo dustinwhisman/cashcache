@@ -177,9 +177,32 @@ layout: layouts/simple-layout.njk
       `;
       window.location.href = '/overview';
     } else {
+      saveCustomerId(appUser?.uid);
       statusUpdate.setAttribute('hidden', true);
       const subscriptionBlock = document.querySelector('[data-subscription]');
       subscriptionBlock.removeAttribute('hidden');
+    }
+  };
+
+  const saveCustomerId = (uid) => {
+    if (uid) {
+      fetch('/api/save-customer-id', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid,
+            customerId: null,
+          }),
+        })
+          .then(response => response.json())
+          .then(() => {
+            console.log('Customer ID saved');
+          })
+          .catch((error) => {
+            console.error(error);
+          });
     }
   };
 
