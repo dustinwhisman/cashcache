@@ -42,6 +42,10 @@ button,
   text-decoration: none;
 }
 
+button.tiny {
+  padding: 0 0.5em;
+}
+
 .custom-checkbox {
   position: relative;
   display: flex;

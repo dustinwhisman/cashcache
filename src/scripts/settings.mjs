@@ -300,7 +300,12 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file or try exporting a new one from your other device or
             browser. If you continue to have problems, contact us at
-            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+            <a href="mailto:help@cashcache.io">
+              help@cashcache.io
+            </a>
+            <button type="button" class="tiny" data-copy-link-button>
+              Copy
+            </button>
           </p>
         `;
       }
@@ -353,7 +358,12 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file and try again. If you continue to have problems,
             contact us at
-            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+            <a href="mailto:help@cashcache.io">
+              help@cashcache.io
+            </a>
+            <button type="button" class="tiny" data-copy-link-button>
+              Copy
+            </button>
           </p>
         `;
       }
@@ -406,7 +416,12 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file and try again. If you continue to have problems,
             contact us at
-            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+            <a href="mailto:help@cashcache.io">
+              help@cashcache.io
+            </a>
+            <button type="button" class="tiny" data-copy-link-button>
+              Copy
+            </button>
           </p>
         `;
       }
@@ -458,7 +473,12 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file and try again. If you continue to have problems,
             contact us at
-            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+            <a href="mailto:help@cashcache.io">
+              help@cashcache.io
+            </a>
+            <button type="button" class="tiny" data-copy-link-button>
+              Copy
+            </button>
           </p>
         `;
       }
@@ -511,7 +531,12 @@ document.addEventListener('change', (event) => {
             There was a problem importing data from that file. Please double
             check the file and try again. If you continue to have problems,
             contact us at
-            <a href="mailto:help@cashcache.io">help@cashcache.io</a>.
+            <a href="mailto:help@cashcache.io">
+              help@cashcache.io
+            </a>
+            <button type="button" class="tiny" data-copy-link-button>
+              Copy
+            </button>
           </p>
         `;
       }
