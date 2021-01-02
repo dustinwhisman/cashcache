@@ -164,7 +164,7 @@ layout: layouts/simple-layout.njk
 
     if (event.target.matches('[data-change-email-button]')) {
       firebase.auth().sendSignInLinkToEmail(appUser.email, {
-        url: {% if env.environment == 'production' %}'https://cashcache-v2.netlify.app/account/change-email-address'{% else %}'http://localhost:8888/account/change-email-address'{% endif %},
+        url: {% if env.environment == 'production' %}'https://cashcache.io/account/change-email-address'{% else %}'http://localhost:8888/account/change-email-address'{% endif %},
         handleCodeInApp: true,
       })
         .then(() => {
@@ -175,7 +175,7 @@ layout: layouts/simple-layout.njk
 
     if (event.target.matches('[data-delete-account-button]')) {
       firebase.auth().sendSignInLinkToEmail(appUser.email, {
-        url: {% if env.environment == 'production' %}'https://cashcache-v2.netlify.app/account/delete-account'{% else %}'http://localhost:8888/account/delete-account'{% endif %},
+        url: {% if env.environment == 'production' %}'https://cashcache.io/account/delete-account'{% else %}'http://localhost:8888/account/delete-account'{% endif %},
         handleCodeInApp: true,
       })
         .then(() => {

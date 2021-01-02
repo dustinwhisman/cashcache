@@ -33,7 +33,7 @@ layout: layouts/simple-layout.njk
     event.preventDefault();
     const email = event.target.elements.email.value;
     firebase.auth().sendSignInLinkToEmail(email, {
-      url: {% if env.environment == 'production' %}'https://cashcache-v2.netlify.app/login/confirm'{% else %}'http://localhost:8888/login/confirm'{% endif %},
+      url: {% if env.environment == 'production' %}'https://cashcache.io/login/confirm'{% else %}'http://localhost:8888/login/confirm'{% endif %},
       handleCodeInApp: true,
     })
       .then(() => {
