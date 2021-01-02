@@ -31,6 +31,13 @@ const getCustomerId = async (db, uid) => {
     await client.close();
   }
 
+  if (customerId == null) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ isPayingUser: false, customerId: null }),
+    };
+  }
+
   const customer = await stripe.customers.retrieve(customerId, {
     expand: ['subscriptions'],
   });
