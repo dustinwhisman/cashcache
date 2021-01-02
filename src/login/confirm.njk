@@ -92,24 +92,15 @@ layout: layouts/simple-layout.njk
     }
 
     try {
-      const customerIdRequest = await fetch('/api/get-customer-id', {
+      const response = await fetch('/api/get-is-paying-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ uid }),
       });
-      const { customerId } = await customerIdRequest.json();
 
-      const isPayingUserRequest = await fetch('/api/get-is-paying-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ customerId }),
-      });
-      const data = await isPayingUserRequest.json();
-
+      const data = await response.json();
       return !!data?.isPayingUser;
     } catch (error) {
       console.error(error);

@@ -15,40 +15,29 @@
   firebase.initializeApp(firebaseConfig);
 
   let isPayingUser = !!localStorage.getItem('isPayingUser');
-  const getCustomerId = async (uid) => {
-    try {
-      const customerIdRequest = await fetch('/api/get-customer-id', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ uid }),
-      });
-      const { customerId } = await customerIdRequest.json();
-
-      const isPayingUserRequest = await fetch('/api/get-is-paying-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ customerId }),
-      });
-      const data = await isPayingUserRequest.json();
-
-      if (data?.isPayingUser) {
-        isPayingUser = true;
-        localStorage.setItem('isPayingUser', 'true');
-        const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data?.customerId });
-        document.dispatchEvent(isPayingCustomerEvent);
-      } else {
-        isPayingUser = false;
-        localStorage.removeItem('isPayingUser');
-        const notPayingCustomerEvent = new CustomEvent('not-paying-customer');
-        document.dispatchEvent(notPayingCustomerEvent);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const getCustomerId = (uid) => {
+    fetch('/api/get-is-paying-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ uid }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data?.isPayingUser) {
+          isPayingUser = true;
+          localStorage.setItem('isPayingUser', 'true');
+          const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data?.customerId });
+          document.dispatchEvent(isPayingCustomerEvent);
+        } else {
+          isPayingUser = false;
+          localStorage.removeItem('isPayingUser');
+          const notPayingCustomerEvent = new CustomEvent('not-paying-customer');
+          document.dispatchEvent(notPayingCustomerEvent);
+        }
+      })
+      .catch(console.error);
   };
 
   const loginLink = document.querySelector('[data-login-link]');
