@@ -1,4 +1,3 @@
-try {
 require('dotenv').config();
 const isDevelopment = process.env.NODE_ENV === 'development';
 const Stripe = require('stripe');
@@ -59,6 +58,3 @@ const handler = async (event, context) => {
 };
 
 module.exports = { handler };
-} catch (error) {
-  console.error({ error });
-}
