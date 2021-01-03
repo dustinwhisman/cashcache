@@ -86,8 +86,8 @@ layout: layouts/simple-layout.njk
 
   const stripe = Stripe('{{ env.stripePublishableKey }}');
 
-  const checkIsPayingUser = async (uid) => {
-    if (!uid) {
+  const checkIsPayingUser = async (idToken) => {
+    if (!idToken) {
       return false;
     }
 
@@ -96,7 +96,7 @@ layout: layouts/simple-layout.njk
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
       });
 
@@ -142,7 +142,7 @@ layout: layouts/simple-layout.njk
     await bulkAddToDb(storeName, recordsToUpdate);
   };
 
-  const associateDataToAccount = async () => {
+  const associateDataToAccount = async (idToken) => {
     const statusUpdate = document.querySelector('[data-status-update]');
 
     statusUpdate.innerHTML = '<p>Associating existing expenses to your account...</p>';
@@ -169,7 +169,7 @@ layout: layouts/simple-layout.njk
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
     await associateRecords('recurring-income', recurringIncomeRecords);
 
-    if (await checkIsPayingUser(appUser?.uid)) {
+    if (await checkIsPayingUser(idToken)) {
       statusUpdate.innerHTML = `
         <p>
           All done! Redirecting you to the <a href="/overview">overview page</a>
@@ -178,20 +178,20 @@ layout: layouts/simple-layout.njk
       `;
       window.location.href = '/overview';
     } else {
-      saveCustomerId(appUser?.uid);
+      saveCustomerId(idToken);
       statusUpdate.setAttribute('hidden', true);
       const subscriptionBlock = document.querySelector('[data-subscription]');
       subscriptionBlock.removeAttribute('hidden');
     }
   };
 
-  const saveCustomerId = (uid) => {
-    if (uid) {
+  const saveCustomerId = (idToken) => {
+    if (idToken) {
       fetch('/api/save-customer-id', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${idToken}`,
           },
           body: JSON.stringify({
             customerId: null,
@@ -219,7 +219,9 @@ layout: layouts/simple-layout.njk
       firebase.auth().signInWithEmailLink(email, window.location.href)
         .then(async (result) => {
           localStorage.removeItem('emailForSignIn');
-          await associateDataToAccount();
+          result.user.getIdToken(true).then(async (idToken) => {
+            await associateDataToAccount(idToken);
+          });
         })
         .catch((error) => {
           const errorMessage = document.querySelector('[data-login-error]');
@@ -237,7 +239,9 @@ layout: layouts/simple-layout.njk
 
         firebase.auth().signInWithEmailLink(email, window.location.href)
           .then(async (result) => {
-            await associateDataToAccount();
+            result.user.getIdToken(true).then(async (idToken) => {
+              await associateDataToAccount(idToken);
+            });
           })
           .catch((error) => {
             const errorMessage = document.querySelector('[data-login-error]');
