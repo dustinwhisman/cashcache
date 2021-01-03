@@ -1,6 +1,8 @@
 require('dotenv').config();
 const Stripe = require('stripe');
 const MongoClient = require('mongodb').MongoClient;
+const admin = require('firebase-admin');
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -52,9 +54,27 @@ const getCustomerId = async (db, uid) => {
 
 const handler = async (event, context) => {
   try {
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    }
+
+    let uid;
+    let token = event.headers.authorization;
+    token = token.replace(/^Bearer\s+/, '');
+    if (token) {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      uid = decodedToken.uid;
+    } else {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: 'This request was not authorized.' }),
+      };
+    }
+
     context.callbackWaitsForEmptyEventLoop = false;
 
-    const { uid } = JSON.parse(event.body);
     const db = await connectToDatabase(uri);
     return getCustomerId(db, uid);
   } catch (error) {
