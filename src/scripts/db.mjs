@@ -55,11 +55,11 @@ export const getFromCloudDb = async (storeName, key, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         storeName,
         key,
-        uid,
       }),
     });
 
@@ -101,12 +101,12 @@ export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         storeName,
         year,
         month,
-        uid,
       }),
     });
 
@@ -150,10 +150,10 @@ export const getAllFromCloud = async (storeName, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         storeName,
-        uid,
       }),
     });
 
@@ -205,10 +205,10 @@ export const getAllCategoriesFromCloud = async (storeName, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         storeName,
-        uid,
       }),
     });
 
@@ -257,6 +257,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
               storeName,
@@ -287,6 +288,7 @@ export const bulkAddToDb = async (storeName, records) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           storeName,
@@ -318,6 +320,8 @@ export const deleteFromDb = (storeName, key, uid = null) => {
       const result = objectStore.get(key);
       result.onsuccess = (event) => {
         const data = event.target.result;
+        delete data._id;
+
         if (data.uid != uid) {
           reject('You do not have permission to delete this record.');
           return;
@@ -337,6 +341,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
               storeName,
@@ -398,10 +403,10 @@ export const deleteAllRecords = async (storeName, records, uid = null) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           storeName,
-          uid,
         }),
       });
 
@@ -422,10 +427,10 @@ export const deleteAllCloudRecords = async (storeName, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         storeName,
-        uid,
       }),
     });
 

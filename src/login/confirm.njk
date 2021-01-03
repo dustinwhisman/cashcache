@@ -96,8 +96,8 @@ layout: layouts/simple-layout.njk
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ uid }),
       });
 
       const data = await response.json();
@@ -113,6 +113,7 @@ layout: layouts/simple-layout.njk
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ priceId }),
     })
@@ -190,9 +191,9 @@ layout: layouts/simple-layout.njk
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
-            uid,
             customerId: null,
           }),
         })

@@ -117,8 +117,8 @@ layout: layouts/simple-layout.njk
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify({ uid: appUser.uid }),
         });
         const result = await request.json();
       } catch (error) {

@@ -142,6 +142,7 @@ layout: layouts/simple-layout.njk
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ priceId }),
     })
@@ -203,6 +204,7 @@ layout: layouts/simple-layout.njk
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           customerId: event.target.elements['customer-id'].value,
