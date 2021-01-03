@@ -192,7 +192,7 @@ const generateBodyHtml = (income) => {
   }
 };
 
-export const displayIncome = (income, lastMonthsIncome) => {
+export const displayIncome = (income, recurringIncome) => {
   const totalIncomeIndicator = document.querySelector('[data-total-income]');
   const incomeBody = document.querySelector('[data-income][data-section-body]');
   incomeBody.innerHTML = initialState;
@@ -204,7 +204,7 @@ export const displayIncome = (income, lastMonthsIncome) => {
     const manageRecurringIncomeDiv = document.querySelector('[data-manage-recurring-income]');
     manageRecurringIncomeDiv.removeAttribute('hidden');
 
-    if (lastMonthsIncome.length) {
+    if (recurringIncome.length) {
       const copyIncomeDiv = document.querySelector('[data-copy-income]');
       copyIncomeDiv?.removeAttribute('hidden');
     }

@@ -277,7 +277,7 @@ description: Here is all of your recurring income – the money you make on a re
     displayRecurringIncome(recurringIncome);
 
     if (appUser?.uid && isPayingUser) {
-      recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
+      recurringIncome = await getAllFromCloud('recurring-income');
       displayRecurringIncome(recurringIncome);
     }
   })();

@@ -279,7 +279,7 @@ description: Here are your recurring expenses – the things that you pay on a r
     displayRecurringExpenses(expenses);
 
     if (appUser?.uid && isPayingUser) {
-      expenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
+      expenses = await getAllFromCloud('recurring-expenses');
       displayRecurringExpenses(expenses);
     }
   })();

@@ -603,12 +603,12 @@ document.addEventListener('click', async (event) => {
     let data;
     if (appUser?.uid && isPayingUser) {
       data = {
-        expenses: await getAllFromCloud('expenses', appUser?.uid),
-        income: await getAllFromCloud('income', appUser?.uid),
-        savings: await getAllFromCloud('savings', appUser?.uid),
-        debt: await getAllFromCloud('debt', appUser?.uid),
-        recurringExpenses: await getAllFromCloud('recurring-expenses', appUser?.uid),
-        recurringIncome: await getAllFromCloud('recurring-income', appUser?.uid),
+        expenses: await getAllFromCloud('expenses'),
+        income: await getAllFromCloud('income'),
+        savings: await getAllFromCloud('savings'),
+        debt: await getAllFromCloud('debt'),
+        recurringExpenses: await getAllFromCloud('recurring-expenses'),
+        recurringIncome: await getAllFromCloud('recurring-income'),
       };
     } else {
       data = {

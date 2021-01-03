@@ -149,7 +149,7 @@ export const getAllFromObjectStore = (storeName, uid = null) => {
   });
 };
 
-export const getAllFromCloud = async (storeName, uid) => {
+export const getAllFromCloud = async (storeName) => {
   try {
     const request = await fetch('/api/get-all-from-store', {
       method: 'POST',

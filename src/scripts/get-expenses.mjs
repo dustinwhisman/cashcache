@@ -192,7 +192,7 @@ const generateBodyHtml = (expenses) => {
   }
 };
 
-export const displayExpenses = (expenses, lastMonthsExpenses) => {
+export const displayExpenses = (expenses, recurringExpenses) => {
   const totalExpensesIndicator = document.querySelector('[data-total-expenses]');
   const expensesBody = document.querySelector('[data-expenses][data-section-body]');
   expensesBody.innerHTML = initialState;
@@ -204,7 +204,7 @@ export const displayExpenses = (expenses, lastMonthsExpenses) => {
     const manageRecurringExpensesDiv = document.querySelector('[data-manage-recurring-expenses]');
     manageRecurringExpensesDiv.removeAttribute('hidden');
 
-    if (lastMonthsExpenses.length) {
+    if (recurringExpenses.length) {
       const copyExpensesDiv = document.querySelector('[data-copy-expenses]');
       copyExpensesDiv?.removeAttribute('hidden');
     }

@@ -824,9 +824,9 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
   displayInsights(allExpenses, allIncome, allSavings);
 
   if (appUser?.uid && isPayingUser) {
-    allExpenses = await getAllFromCloud('expenses', appUser?.uid);
-    allIncome = await getAllFromCloud('income', appUser?.uid);
-    allSavings = await getAllFromCloud('savings', appUser?.uid);
+    allExpenses = await getAllFromCloud('expenses');
+    allIncome = await getAllFromCloud('income');
+    allSavings = await getAllFromCloud('savings');
 
     displayInsights(allExpenses, allIncome, allSavings);
   }

@@ -13,13 +13,13 @@ if (lastMonth < 0) {
 
 const loadExpenses = async () => {
   let expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
-  let lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-  displayExpenses(expenses, lastMonthsExpenses);
+  let recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+  displayExpenses(expenses, recurringExpenses);
 
   if (appUser?.uid && isPayingUser) {
     expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
-    lastMonthsExpenses = await getAllFromCloudIndex('expenses', lastMonthYear, lastMonth, appUser?.uid);
-    displayExpenses(expenses, lastMonthsExpenses);
+    recurringExpenses = await getAllFromCloud('recurring-expenses');
+    displayExpenses(expenses, recurringExpenses);
   }
 };
 
@@ -27,13 +27,13 @@ loadExpenses();
 
 const loadIncome = async () => {
   let income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
-  let lastMonthsIncome = await getAllFromIndex('income', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-  displayIncome(income, lastMonthsIncome);
+  let recurringIncome = await getAllFromObjectStore('income', appUser?.uid);
+  displayIncome(income, recurringIncome);
 
   if (appUser?.uid && isPayingUser) {
     income = await getAllFromCloudIndex('income', year, month, appUser?.uid);
-    lastMonthsIncome = await getAllFromCloudIndex('income', lastMonthYear, lastMonth, appUser?.uid);
-    displayIncome(income, lastMonthsIncome);
+    recurringIncome = await getAllFromCloud('recurring-income');
+    displayIncome(income, recurringIncome);
   }
 };
 
@@ -128,7 +128,7 @@ document.addEventListener('click', async (event) => {
     let recurringExpenses = [];
 
     if (appUser?.uid && isPayingUser) {
-      recurringExpenses = await getAllFromCloud('recurring-expenses', appUser?.uid);
+      recurringExpenses = await getAllFromCloud('recurring-expenses');
     } else {
       recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
     }
@@ -314,7 +314,7 @@ document.addEventListener('click', async (event) => {
     if (appUser?.uid && isPayingUser) {
       recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
     } else {
-      recurringIncome = await getAllFromCloud('recurring-income', appUser?.uid);
+      recurringIncome = await getAllFromCloud('recurring-income');
     }
 
     await Promise.all(recurringIncome.map(async (income) => {
