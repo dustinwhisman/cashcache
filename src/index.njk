@@ -1,29 +1,84 @@
 ---
 title: Welcome
 layout: layouts/simple-layout.njk
+decription: Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.
 ---
 
 <h1>
-  A Better Way to Track Your Money
+  Simplify Your Personal Finance Routine
 </h1>
 <p>
   Instead of working with complicated spreadsheets or inflexible budgets, Cash
-  Cache is built around tracking your money as it comes in and goes out. By simply
+  Cache is built around tracking your money as it flows in and out. By simply
   paying attention to what you do with your money, you're better equipped to
   handle your finances than most, and you don't have to deal with the hassle of
   creating a budget every month that you'll inevitably break.
 </p>
 
+<div class="cluster">
+  <div>
+    <a href="/overview" class="button">
+      Try for Free
+    </a>
+    <a href="/login" class="button">
+      Sign Up ($5/month or $50/year)
+    </a>
+  </div>
+</div>
+
 <h2>
   The Process
 </h2>
 <p>
-  Our approach to tracking money is very simple. When you spend money, track it.
-  When you earn money, track it. Once per month, track the balances of any savings
-  accounts or loans that you have. Over time, we use rolling averages and monthly
-  data to show trends and project when you can expect to retire based on your
-  savings and monthly expenses.
+  Our approach to personal finance is very simple.
 </p>
+<ol class="stack" style="--stack-space: 0.75em">
+  <li>
+    Track expenses when you spend money
+  </li>
+  <li>
+    Track income when you earn money
+  </li>
+  <li>
+    Once per month, take a snapshot of your current savings and debt
+  </li>
+  <li>
+    Review and plan ahead
+  </li>
+</ol>
+<p>
+  You'll be able to see at a glance how much you spend and earn in a month, and
+  whether your savings are in good shape. If you have multiple sources of debt,
+  we help you plan how to pay it off as quickly as possible.
+</p>
+<p>
+  If you <a href="/login">sign up</a>, we show more insights into your finances,
+  including:
+</p>
+<ul class="stack" style="--stack-space: 0.75em">
+  <li>
+    Your financial progress over time
+  </li>
+  <li>
+    How long your savings would last you without income
+  </li>
+  <li>
+    How much you'll need to retire, and how long it might take to get there
+  </li>
+  <li>
+    Your savings rate over time
+  </li>
+  <li>
+    Monthly heat maps of when you spent and earned money, revealing hidden
+    habits, such as higher spending on weekends
+  </li>
+  <li>
+    Month to month comparisons to show short term progress
+  </li>
+  <li>
+    Year over year comparisons to show long term progress
+  </li>
+</ul>
 
 <h2>
   Try for Free
@@ -31,12 +86,26 @@ layout: layouts/simple-layout.njk
 <p>
   If you want to kick the tires, you can make use of out basic tracking features
   for free, no login or credit card required. Your data is stored on your device
-  until you create an account, so we won't see anything that you track unless you
-  decide to upgrade.
+  until you create an account, so you can try it out while keeping your info
+  completely private. However, if you want to use multiple devices, you'll have
+  to import/export data yourself.
 </p>
+<div>
+  <a href="/overview" class="button">
+    Get Started for Free
+  </a>
+</div>
 <p>
-  If you want more advanced features, such as insights or tracking recurring
-  expenses, you can create an account for $5/month or $50/year.
+  When you create an account, any data on your device will be backed up to the
+  cloud and accessible from any device you log into afterwards. You'll also gain
+  access to premium features, such as the aforementioned insights, as well as
+  quality of life features like copying savings and debt from month to month and
+  setting up recurring expenses and income.
 </p>
+<div>
+  <a href="/login" class="button">
+    Sign Up for $5/month or $50/year
+  </a>
+</div>
 
 {% include "scripts/firebase.njk" %}
