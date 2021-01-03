@@ -1,7 +1,7 @@
 {
   "name": "cashcache",
   "version": "0.1.0",
-  "description": "",
+  "description": "Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.",
   "main": "index.js",
   "scripts": {
     "develop": "concurrently \"postcss src/styles/index.css -o src/_includes/styles.css -w\" \"cross-env NODE_ENV=development npx @11ty/eleventy --serve\"",
