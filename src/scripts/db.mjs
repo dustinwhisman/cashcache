@@ -64,6 +64,7 @@ export const getFromCloudDb = async (storeName, key, uid) => {
     });
 
     const data = await request.json();
+    delete data._id;
     await keepLocalCurrent(storeName, data);
 
     return data;
@@ -112,11 +113,15 @@ export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
 
     const data = await request.json();
     await Promise.all(data.map(async (record) => {
+      delete record._id;
       await keepLocalCurrent(storeName, record);
       return Promise.resolve();
     }));
 
-    return data.filter(x => !x.isDeleted);
+    return data.filter(x => !x.isDeleted).map((record) => {
+      delete record._id;
+      return record;
+    });
   } catch (error) {
     console.error(error);
   }
@@ -159,11 +164,15 @@ export const getAllFromCloud = async (storeName, uid) => {
 
     const data = await request.json();
     await Promise.all(data.map(async (record) => {
+      delete record._id;
       await keepLocalCurrent(storeName, record);
       return Promise.resolve();
     }));
 
-    return data;
+    return data.map((record) => {
+      delete record._id;
+      return record;
+    });
   } catch (error) {
     console.error(error);
   }
