@@ -11,60 +11,74 @@ if (lastMonth < 0) {
   lastMonthYear -= 1;
 }
 
-const loadExpenses = async () => {
-  let expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
-  let recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
-  displayExpenses(expenses, recurringExpenses);
+let networkExpensesLoaded = false;
+let networkIncomeLoaded = false;
+let networkSavingsLoaded = false;
+let networkDebtLoaded = false;
 
-  if (appUser?.uid && isPayingUser) {
-    expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
-    recurringExpenses = await getAllFromCloud('recurring-expenses');
-    displayExpenses(expenses, recurringExpenses);
-  }
+const loadExpenses = () => {
+  Promise.all([
+    getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
+    getAllFromObjectStore('recurring-expenses', appUser?.uid)
+  ])
+    .then((values) => {
+      const [ expenses, recurringExpenses ] = values;
+
+      if (!networkExpensesLoaded) {
+        displayExpenses(expenses, recurringExpenses);
+      }
+    })
+    .catch(console.error);
+};
+
+const loadIncome = () => {
+  Promise.all([
+    getAllFromIndex('income', 'year-month', year, month, appUser?.uid),
+    getAllFromObjectStore('recurring-income', appUser?.uid)
+  ])
+    .then((values) => {
+      const [ income, recurringIncome ] = values;
+
+      if (!networkIncomeLoaded) {
+        displayIncome(income, recurringIncome);
+      }
+    })
+    .catch(console.error);
+};
+
+const loadSavings = () => {
+  Promise.all([
+    getAllFromIndex('savings', 'year-month', year, month, appUser?.uid),
+    getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid)
+  ])
+    .then((values) => {
+      const [ savings, lastMonthsSavings ] = values;
+
+      if (!networkSavingsLoaded) {
+        displaySavings(savings, lastMonthsSavings);
+      }
+    })
+    .catch(console.error);
+};
+
+const loadDebt = async () => {
+  Promise.all([
+    getAllFromIndex('debt', 'year-month', year, month, appUser?.uid),
+    getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid)
+  ])
+    .then((values) => {
+      const [ debt, lastMonthsDebt ] = values;
+
+      if (!networkDebtLoaded) {
+        displayDebt(debt, lastMonthsDebt);
+      }
+    })
+    .catch(console.error);
 };
 
 loadExpenses();
-
-const loadIncome = async () => {
-  let income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
-  let recurringIncome = await getAllFromObjectStore('income', appUser?.uid);
-  displayIncome(income, recurringIncome);
-
-  if (appUser?.uid && isPayingUser) {
-    income = await getAllFromCloudIndex('income', year, month, appUser?.uid);
-    recurringIncome = await getAllFromCloud('recurring-income');
-    displayIncome(income, recurringIncome);
-  }
-};
-
 loadIncome();
-
-const loadSavings = async () => {
-  let savings = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
-  let lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-  displaySavings(savings, lastMonthsSavings);
-
-  if (appUser?.uid && isPayingUser) {
-    savings = await getAllFromCloudIndex('savings', year, month, appUser?.uid);
-    lastMonthsSavings = await getAllFromCloudIndex('savings', lastMonthYear, lastMonth, appUser?.uid);
-    displaySavings(savings, lastMonthsSavings);
-  }
-};
-
 loadSavings();
-
-const loadDebt = async () => {
-  let debt = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
-  let lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
-  displayDebt(debt, lastMonthsDebt);
-
-  if (appUser?.uid && isPayingUser) {
-    debt = await getAllFromCloudIndex('debt', year, month, appUser?.uid);
-    lastMonthsDebt = await getAllFromCloudIndex('debt', lastMonthYear, lastMonth, appUser?.uid);
-    displayDebt(debt, lastMonthsDebt);
-  }
-};
-
 loadDebt();
 
 const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
@@ -74,6 +88,58 @@ const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
 
   return true;
 };
+
+document.addEventListener('token-confirmed', () => {
+  if (appUser?.uid && isPayingUser) {
+    Promise.all([
+      getAllFromCloudIndex('expenses', year, month, appUser?.uid),
+      getAllFromCloud('recurring-expenses')
+    ])
+      .then((values) => {
+        const [ expenses, recurringExpenses ] = values;
+        networkExpensesLoaded = true;
+
+        displayExpenses(expenses, recurringExpenses);
+      })
+      .catch(console.error);
+
+    Promise.all([
+      getAllFromCloudIndex('income', year, month, appUser?.uid),
+      getAllFromCloud('recurring-income')
+    ])
+      .then((values) => {
+        const [ income, recurringIncome ] = values;
+        networkIncomeLoaded = true;
+
+        displayIncome(income, recurringIncome);
+      })
+      .catch(console.error);
+
+    Promise.all([
+      getAllFromCloudIndex('savings', year, month, appUser?.uid),
+      getAllFromCloud('recurring-savings')
+    ])
+      .then((values) => {
+        const [ savings, lastMonthsSavings ] = values;
+        networkSavingsLoaded = true;
+
+        displaySavings(savings, lastMonthsSavings);
+      })
+      .catch(console.error);
+
+    Promise.all([
+      getAllFromCloudIndex('debt', year, month, appUser?.uid),
+      getAllFromCloud('recurring-debt')
+    ])
+      .then((values) => {
+        const [ debt, lastMonthsDebt ] = values;
+        networkDebtLoaded = true;
+
+        displayDebt(debt, lastMonthsDebt);
+      })
+      .catch(console.error);
+  }
+});
 
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-copy-savings] button')) {

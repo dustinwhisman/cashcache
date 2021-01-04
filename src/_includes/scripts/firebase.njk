@@ -60,6 +60,8 @@
         token = idToken;
         localStorage.setItem('token', token);
         getCustomerId(user.uid, token);
+        const tokenConfirmedEvent = new CustomEvent('token-confirmed');
+        document.dispatchEvent(tokenConfirmedEvent);
       });
       appUser = user;
       loginLink.setAttribute('hidden', true);
