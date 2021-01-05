@@ -38,7 +38,33 @@ description: Add income. Categorize it, describe it, and say how much you earned
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
 
-  {% include "scripts/get-categories.njk" %}
+  const storeName = 'income';
+  let networkCategoriesLoaded = false;
+  const renderCategories = (categories) => {
+    const categoriesDiv = document.querySelector('[data-category]');
+    let categoryTemplate = `
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    `;
+    categories?.sort().forEach((category) => {
+      categoryTemplate += `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+    });
+    categoriesDiv.innerHTML = categoryTemplate;
+  };
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -60,5 +86,20 @@ description: Add income. Categorize it, describe it, and say how much you earned
 
   {% include "scripts/item-added-listener.njk" %}
 
-  getCategories('income');
+  (async () => {
+    const categories = await getAllCategories(storeName);
+
+    if (!networkCategoriesLoaded) {
+      renderCategories(categories);
+    }
+  })();
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
+      networkCategoriesLoaded = true;
+
+      renderCategories(categories);
+    }
+  });
 </script>

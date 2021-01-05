@@ -59,7 +59,34 @@ description: Edit or delete an expense.
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
-  {% include "scripts/get-categories.njk" %}
+  let key;
+  const storeName = 'expenses';
+  let networkCategoriesLoaded = false;
+  const renderCategories = (categories) => {
+    const categoriesDiv = document.querySelector('[data-category]');
+    let categoryTemplate = `
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    `;
+    categories?.sort().forEach((category) => {
+      categoryTemplate += `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+    });
+    categoriesDiv.innerHTML = categoryTemplate;
+  };
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -98,9 +125,7 @@ description: Edit or delete an expense.
   };
 
   (async () => {
-    await getCategories('expenses');
     const params = new URLSearchParams(window.location.search);
-    let key;
 
     if (params?.has('key')) {
       key = params.get('key');
@@ -110,13 +135,18 @@ description: Edit or delete an expense.
     deleteButton.dataset.key = key;
 
     try {
-      let expense = await getFromDb('expenses', key, appUser?.uid);
-      populateForm(expense);
+      Promise.all([
+        getFromDb(storeName, key, appUser?.uid),
+        getAllCategories(storeName),
+      ])
+        .then((values) => {
+          const [ expense, categories ] = values;
 
-      if (appUser?.uid && isPayingUser) {
-        expense = await getFromCloudDb('expenses', key, appUser?.uid);
-        populateForm(expense);
-      }
+          if (!networkCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(expense);
+          }
+        });
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');
       const accessDenied = document.querySelector('[data-access-denied]');
@@ -147,6 +177,23 @@ description: Edit or delete an expense.
           window.alert(error.message);
         }
       }
+    }
+  });
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      Promise.all([
+        getFromCloudDb(storeName, key, appUser?.uid),
+        getAllCategoriesFromCloud(storeName, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ expense, categories ] = values;
+          networkCategoriesLoaded = true;
+
+          renderCategories(categories);
+          populateForm(expense);
+        })
+        .catch(console.error);
     }
   });
 </script>

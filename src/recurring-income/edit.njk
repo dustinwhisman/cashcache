@@ -135,7 +135,34 @@ description: Edit or delete recurring income. You can also set it to inactive in
     window.location.href = '/recurring-income';
   }
 
-  {% include "scripts/get-categories.njk" %}
+  let key;
+  const storeName = 'income';
+  let networkCategoriesLoaded = false;
+  const renderCategories = (categories) => {
+    const categoriesDiv = document.querySelector('[data-category]');
+    let categoryTemplate = `
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    `;
+    categories?.sort().forEach((category) => {
+      categoryTemplate += `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+    });
+    categoriesDiv.innerHTML = categoryTemplate;
+  };
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -197,9 +224,7 @@ description: Edit or delete recurring income. You can also set it to inactive in
   };
 
   (async () => {
-    await getCategories('income');
     const params = new URLSearchParams(window.location.search);
-    let key;
 
     if (params?.has('key')) {
       key = params.get('key');
@@ -209,13 +234,18 @@ description: Edit or delete recurring income. You can also set it to inactive in
     deleteButton.dataset.key = key;
 
     try {
-      let income = await getFromDb('recurring-income', key, appUser?.uid);
-      populateForm(income);
+      Promise.all([
+        getFromDb('recurring-income', key, appUser?.uid),
+        getAllCategories(storeName),
+      ])
+        .then((values) => {
+          const [ income, categories ] = values;
 
-      if (appUser?.uid && isPayingUser) {
-        income = await getFromCloudDb('recurring-income', key, appUser?.uid);
-        populateForm(income);
-      }
+          if (!networkCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(income);
+          }
+        });
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');
       const accessDenied = document.querySelector('[data-access-denied]');
@@ -246,6 +276,23 @@ description: Edit or delete recurring income. You can also set it to inactive in
           window.alert(error.message);
         }
       }
+    }
+  });
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      Promise.all([
+        getFromCloudDb('recurring-income', key, appUser?.uid),
+        getAllCategoriesFromCloud(storeName, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ income, categories ] = values;
+          networkCategoriesLoaded = true;
+
+          renderCategories(categories);
+          populateForm(income);
+        })
+        .catch(console.error);
     }
   });
 </script>

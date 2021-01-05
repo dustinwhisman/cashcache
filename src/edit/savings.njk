@@ -59,7 +59,34 @@ description: Edit or delete savings.
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
-  {% include "scripts/get-categories.njk" %}
+  let key;
+  const storeName = 'savings';
+  let networkCategoriesLoaded = false;
+  const renderCategories = (categories) => {
+    const categoriesDiv = document.querySelector('[data-category]');
+    let categoryTemplate = `
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    `;
+    categories?.sort().forEach((category) => {
+      categoryTemplate += `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+    });
+    categoriesDiv.innerHTML = categoryTemplate;
+  };
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -96,9 +123,7 @@ description: Edit or delete savings.
   };
 
   (async () => {
-    await getCategories('savings');
     const params = new URLSearchParams(window.location.search);
-    let key;
 
     if (params?.has('key')) {
       key = params.get('key');
@@ -108,13 +133,18 @@ description: Edit or delete savings.
     deleteButton.dataset.key = key;
 
     try {
-      let savings = await getFromDb('savings', key, appUser?.uid);
-      populateForm(savings);
+      Promise.all([
+        getFromDb(storeName, key, appUser?.uid),
+        getAllCategories(storeName),
+      ])
+        .then((values) => {
+          const [ savings, categories ] = values;
 
-      if (appUser?.uid && isPayingUser) {
-        savings = await getFromCloudDb('savings', key, appUser?.uid);
-        populateForm(savings);
-      }
+          if (!networkCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(savings);
+          }
+        });
     } catch (error) {
       const typicalState = document.querySelector('[data-typical-state]');
       const accessDenied = document.querySelector('[data-access-denied]');
@@ -145,6 +175,23 @@ description: Edit or delete savings.
           window.alert(error.message);
         }
       }
+    }
+  });
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      Promise.all([
+        getFromCloudDb(storeName, key, appUser?.uid),
+        getAllCategoriesFromCloud(storeName, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ savings, categories ] = values;
+          networkCategoriesLoaded = true;
+
+          renderCategories(categories);
+          populateForm(savings);
+        })
+        .catch(console.error);
     }
   });
 </script>

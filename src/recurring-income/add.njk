@@ -114,7 +114,33 @@ description: Add recurring income, such as your paycheck, so you can save time i
     window.location.href = '/recurring-income';
   }
 
-  {% include "scripts/get-categories.njk" %}
+  const storeName = 'income';
+  let networkCategoriesLoaded = false;
+  const renderCategories = (categories) => {
+    const categoriesDiv = document.querySelector('[data-category]');
+    let categoryTemplate = `
+      <label class="custom-checkbox">
+        <input type="radio" name="category" value="new-category" required>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          New Category
+        </span>
+      </label>
+    `;
+    categories?.sort().forEach((category) => {
+      categoryTemplate += `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="${category}" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            ${category}
+          </span>
+        </label>
+      `;
+
+    });
+    categoriesDiv.innerHTML = categoryTemplate;
+  };
 
   document.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -141,5 +167,20 @@ description: Add recurring income, such as your paycheck, so you can save time i
     window.location.href = `/recurring-income`;
   });
 
-  getCategories('income');
+  (async () => {
+    const categories = await getAllCategories(storeName);
+
+    if (!networkCategoriesLoaded) {
+      renderCategories(categories);
+    }
+  })();
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
+      networkCategoriesLoaded = true;
+
+      renderCategories(categories);
+    }
+  });
 </script>
