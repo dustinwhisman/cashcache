@@ -125,6 +125,10 @@ description: See how this month went in terms of when and how much you spent or 
 <script type="module">
   import { getAllFromIndex, getAllFromCloudIndex } from '/scripts/db.mjs';
 
+  let networkDataLoaded = false;
+  let networkLastMonthDataLoaded = false;
+  let networkLastYearDataLoaded = false;
+
   const generateDateGrid = (expenses, income, totalExpenses, totalIncome) => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -318,28 +322,24 @@ description: See how this month went in terms of when and how much you spent or 
     }
   };
 
-  const compareToLastMonth = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
-    let lastMonthsExpenses = await getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, appUser?.uid);
-    let lastMonthsIncome = await getAllFromIndex('income', 'year-month', prevYear, prevMonth, appUser?.uid);
-    let lastMonthsSavings = await getAllFromIndex('savings', 'year-month', prevYear, prevMonth, appUser?.uid);
-    let lastMonthsDebt = await getAllFromIndex('debt', 'year-month', prevYear, prevMonth, appUser?.uid);
+  const compareToLastMonth = (totalExpenses, totalIncome, totalSavings, totalDebt) => {
+    Promise.all([
+      getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, appUser?.uid),
+      getAllFromIndex('income', 'year-month', prevYear, prevMonth, appUser?.uid),
+      getAllFromIndex('savings', 'year-month', prevYear, prevMonth, appUser?.uid),
+      getAllFromIndex('debt', 'year-month', prevYear, prevMonth, appUser?.uid),
+    ])
+      .then((values) => {
+        const [ lastMonthsExpenses, lastMonthsIncome, lastMonthsSavings, lastMonthsDebt ] = values;
 
-    compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
-    compareMonthlyIncome(lastMonthsIncome, totalIncome);
-    compareMonthlySavings(lastMonthsSavings, totalSavings);
-    compareMonthlyDebt(lastMonthsDebt, totalDebt);
-
-    if (appUser?.uid && isPayingUser) {
-      lastMonthsExpenses = await getAllFromCloudIndex('expenses', prevYear, prevMonth, appUser?.uid);
-      lastMonthsIncome = await getAllFromCloudIndex('income', prevYear, prevMonth, appUser?.uid);
-      lastMonthsSavings = await getAllFromCloudIndex('savings', prevYear, prevMonth, appUser?.uid);
-      lastMonthsDebt = await getAllFromCloudIndex('debt', prevYear, prevMonth, appUser?.uid);
-
-      compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
-      compareMonthlyIncome(lastMonthsIncome, totalIncome);
-      compareMonthlySavings(lastMonthsSavings, totalSavings);
-      compareMonthlyDebt(lastMonthsDebt, totalDebt);
-    }
+        if (!networkLastMonthDataLoaded) {
+          compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
+          compareMonthlyIncome(lastMonthsIncome, totalIncome);
+          compareMonthlySavings(lastMonthsSavings, totalSavings);
+          compareMonthlyDebt(lastMonthsDebt, totalDebt);
+        }
+      })
+      .catch(console.error);
   };
 
   const compareYearlyExpenses = (lastYearsExpenses, totalExpenses) => {
@@ -467,28 +467,24 @@ description: See how this month went in terms of when and how much you spent or 
     }
   };
 
-  const compareToLastYear = async (totalExpenses, totalIncome, totalSavings, totalDebt) => {
-    let lastYearsExpenses = await getAllFromIndex('expenses', 'year-month', year - 1, month, appUser?.uid);
-    let lastYearsIncome = await getAllFromIndex('income', 'year-month', year - 1, month, appUser?.uid);
-    let lastYearsSavings = await getAllFromIndex('savings', 'year-month', year - 1, month, appUser?.uid);
-    let lastYearsDebt = await getAllFromIndex('debt', 'year-month', year - 1, month, appUser?.uid);
+  const compareToLastYear = (totalExpenses, totalIncome, totalSavings, totalDebt) => {
+    Promise.all([
+      getAllFromIndex('expenses', 'year-month', year - 1, month, appUser?.uid),
+      getAllFromIndex('income', 'year-month', year - 1, month, appUser?.uid),
+      getAllFromIndex('savings', 'year-month', year - 1, month, appUser?.uid),
+      getAllFromIndex('debt', 'year-month', year - 1, month, appUser?.uid),
+    ])
+      .then((values) => {
+        const [ lastYearsExpenses, lastYearsIncome, lastYearsSavings, lastYearsDebt ] = values;
 
-    compareYearlyExpenses(lastYearsExpenses, totalExpenses);
-    compareYearlyIncome(lastYearsIncome, totalIncome);
-    compareYearlySavings(lastYearsSavings, totalSavings);
-    compareYearlyDebt(lastYearsDebt, totalDebt);
-
-    if (appUser?.uid && isPayingUser) {
-      lastYearsExpenses = await getAllFromCloudIndex('expenses', year - 1, month, appUser?.uid);
-      lastYearsIncome = await getAllFromCloudIndex('income', year - 1, month, appUser?.uid);
-      lastYearsSavings = await getAllFromCloudIndex('savings', year - 1, month, appUser?.uid);
-      lastYearsDebt = await getAllFromCloudIndex('debt', year - 1, month, appUser?.uid);
-
-      compareYearlyExpenses(lastYearsExpenses, totalExpenses);
-      compareYearlyIncome(lastYearsIncome, totalIncome);
-      compareYearlySavings(lastYearsSavings, totalSavings);
-      compareYearlyDebt(lastYearsDebt, totalDebt);
-    }
+        if (!networkLastYearDataLoaded) {
+          compareYearlyExpenses(lastYearsExpenses, totalExpenses);
+          compareYearlyIncome(lastYearsIncome, totalIncome);
+          compareYearlySavings(lastYearsSavings, totalSavings);
+          compareYearlyDebt(lastYearsDebt, totalDebt);
+        }
+      })
+      .catch(console.error);
   };
 
   const showSavingsRate = (totalExpenses, totalIncome) => {
@@ -508,7 +504,7 @@ description: See how this month went in terms of when and how much you spent or 
     savingsRateBlock.removeAttribute('hidden');
   };
 
-  (async () => {
+  (() => {
     if (!appUser?.uid || !isPayingUser) {
       const monthlyInsights = document.querySelector('[data-monthly-insights]');
       const paywallMessage = document.querySelector('[data-paywall-message]');
@@ -527,40 +523,87 @@ description: See how this month went in terms of when and how much you spent or 
       return;
     }
 
-    let expenses = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
-    let totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
+    Promise.all([
+      getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
+      getAllFromIndex('income', 'year-month', year, month, appUser?.uid),
+      getAllFromIndex('savings', 'year-month', year, month, appUser?.uid),
+      getAllFromIndex('debt', 'year-month', year, month, appUser?.uid),
+    ])
+      .then((values) => {
+        const [ expenses, income, savings, debt ] = values;
 
-    let income = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
-    let totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
+        const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
+        const totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
+        const totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
+        const totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
 
-    let savings = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
-    let totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
-
-    let debt = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
-    let totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
-
-    generateDateGrid(expenses, income, totalExpenses, totalIncome);
-    compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
-    compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
-    showSavingsRate(totalExpenses, totalIncome);
-
-    if (appUser?.uid && isPayingUser) {
-      expenses = await getAllFromCloudIndex('expenses', year, month, appUser?.uid);
-      totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
-
-      income = await getAllFromCloudIndex('income', year, month, appUser?.uid);
-      totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
-
-      savings = await getAllFromCloudIndex('savings', year, month, appUser?.uid);
-      totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
-
-      debt = await getAllFromCloudIndex('debt', year, month, appUser?.uid);
-      totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
-
-      generateDateGrid(expenses, income, totalExpenses, totalIncome);
-      compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
-      compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
-      showSavingsRate(totalExpenses, totalIncome);
-    }
+        if (!networkDataLoaded) {
+          generateDateGrid(expenses, income, totalExpenses, totalIncome);
+          compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
+          compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
+          showSavingsRate(totalExpenses, totalIncome);
+        }
+      })
+      .catch(console.error);
   })();
+
+  document.addEventListener('token-confirmed', () => {
+    if (appUser?.uid && isPayingUser) {
+      Promise.all([
+        getAllFromCloudIndex('expenses', year, month, appUser?.uid),
+        getAllFromCloudIndex('income', year, month, appUser?.uid),
+        getAllFromCloudIndex('savings', year, month, appUser?.uid),
+        getAllFromCloudIndex('debt', year, month, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ expenses, income, savings, debt ] = values;
+          networkDataLoaded = true;
+
+          const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
+          const totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
+          const totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
+          const totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
+
+          generateDateGrid(expenses, income, totalExpenses, totalIncome);
+          compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
+          compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
+          showSavingsRate(totalExpenses, totalIncome);
+        })
+        .catch(console.error);
+
+      Promise.all([
+        getAllFromCloudIndex('expenses', prevYear, prevMonth, appUser?.uid),
+        getAllFromCloudIndex('income', prevYear, prevMonth, appUser?.uid),
+        getAllFromCloudIndex('savings', prevYear, prevMonth, appUser?.uid),
+        getAllFromCloudIndex('debt', prevYear, prevMonth, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ lastMonthsExpenses, lastMonthsIncome, lastMonthsSavings, lastMonthsDebt ] = values;
+          networkLastMonthDataLoaded = true;
+
+          compareMonthlyExpenses(lastMonthsExpenses, totalExpenses);
+          compareMonthlyIncome(lastMonthsIncome, totalIncome);
+          compareMonthlySavings(lastMonthsSavings, totalSavings);
+          compareMonthlyDebt(lastMonthsDebt, totalDebt);
+        })
+        .catch(console.error);
+
+      Promise.all([
+        getAllFromCloudIndex('expenses', year - 1, month, appUser?.uid),
+        getAllFromCloudIndex('income', year - 1, month, appUser?.uid),
+        getAllFromCloudIndex('savings', year - 1, month, appUser?.uid),
+        getAllFromCloudIndex('debt', year - 1, month, appUser?.uid),
+      ])
+        .then((values) => {
+          const [ lastYearsExpenses, lastYearsIncome, lastYearsSavings, lastYearsDebt ] = values;
+          networkLastYearDataLoaded = true;
+
+          compareYearlyExpenses(lastYearsExpenses, totalExpenses);
+          compareYearlyIncome(lastYearsIncome, totalIncome);
+          compareYearlySavings(lastYearsSavings, totalSavings);
+          compareYearlyDebt(lastYearsDebt, totalDebt);
+        })
+        .catch(console.error);
+    }
+  });
 </script>
