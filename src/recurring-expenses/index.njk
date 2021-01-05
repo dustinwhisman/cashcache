@@ -64,6 +64,8 @@ description: Here are your recurring expenses – the things that you pay on a r
 <script type="module">
   import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
 
+  let networkDataLoaded = false;
+
   const formatDay = (number) => {
     switch(number) {
       case 1:
@@ -275,12 +277,19 @@ description: Here are your recurring expenses – the things that you pay on a r
       return;
     }
 
-    let expenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
-    displayRecurringExpenses(expenses);
+    const expenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
 
-    if (appUser?.uid && isPayingUser) {
-      expenses = await getAllFromCloud('recurring-expenses');
+    if (!networkDataLoaded) {
       displayRecurringExpenses(expenses);
     }
   })();
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      const expenses = await getAllFromCloud('recurring-expenses');
+      networkDataLoaded = true;
+
+      displayRecurringExpenses(expenses);
+    }
+  });
 </script>

@@ -62,6 +62,8 @@ description: Here is all of your recurring income – the money you make on a re
 <script type="module">
   import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
 
+  let networkDataLoaded = false;
+
   const formatDay = (number) => {
     switch(number) {
       case 1:
@@ -273,12 +275,19 @@ description: Here is all of your recurring income – the money you make on a re
       return;
     }
 
-    let recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
-    displayRecurringIncome(recurringIncome);
+    const recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
 
-    if (appUser?.uid && isPayingUser) {
-      recurringIncome = await getAllFromCloud('recurring-income');
+    if (!networkDataLoaded) {
       displayRecurringIncome(recurringIncome);
     }
   })();
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      const recurringIncome = await getAllFromCloud('recurring-income');
+      networkDataLoaded = true;
+
+      displayRecurringIncome(recurringIncome);
+    }
+  });
 </script>
