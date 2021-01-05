@@ -1,5 +1,7 @@
 import { getAllFromObjectStore, getAllFromCloud } from './db.mjs';
 
+let networkDataLoaded = false;
+
 const formatMonthString = (year, month) => new Date(year, month, 1)
   .toLocaleString('en-US', {
     month: 'short',
@@ -798,7 +800,7 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
   drawRollingSavingsChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
 };
 
-(async () => {
+(() => {
   if (!appUser?.uid || !isPayingUser) {
     const insights = document.querySelector('[data-insights]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
@@ -817,17 +819,34 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
     return;
   }
 
-  let allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
-  let allIncome = await getAllFromObjectStore('income', appUser?.uid);
-  let allSavings = await getAllFromObjectStore('savings', appUser?.uid);
+  Promise.all([
+    getAllFromObjectStore('expenses', appUser?.uid),
+    getAllFromObjectStore('income', appUser?.uid),
+    getAllFromObjectStore('savings', appUser?.uid),
+  ])
+    .then((values) => {
+      const [ allExpenses, allIncome, allSavings ] = values;
 
-  displayInsights(allExpenses, allIncome, allSavings);
-
-  if (appUser?.uid && isPayingUser) {
-    allExpenses = await getAllFromCloud('expenses');
-    allIncome = await getAllFromCloud('income');
-    allSavings = await getAllFromCloud('savings');
-
-    displayInsights(allExpenses, allIncome, allSavings);
-  }
+      if (!networkDataLoaded) {
+        displayInsights(allExpenses, allIncome, allSavings);
+      }
+    })
+    .catch(console.error);
 })();
+
+document.addEventListener('token-confirmed', () => {
+  if (appUser?.uid && isPayingUser) {
+    Promise.all([
+      getAllFromCloud('expenses'),
+      getAllFromCloud('income'),
+      getAllFromCloud('savings'),
+    ])
+      .then((values) => {
+        const [ allExpenses, allIncome, allSavings ] = values;
+        networkDataLoaded = true;
+
+        displayInsights(allExpenses, allIncome, allSavings);
+      })
+      .catch(console.error);
+  }
+});
