@@ -597,40 +597,69 @@ document.addEventListener('submit', (event) => {
   }
 });
 
+const triggerDownload = (event, data) => {
+  const today = new Date();
+  const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
+  const anchor = document.createElement('a');
+  anchor.setAttribute('href', dataStr);
+  anchor.setAttribute('download', `cash-cache.${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.json`);
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  event.target.innerHTML = 'Export Data';
+};
+
 document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-export-data]')) {
     event.target.innerHTML = 'Exporting...';
-    let data;
     if (appUser?.uid && isPayingUser) {
-      data = {
-        expenses: await getAllFromCloud('expenses'),
-        income: await getAllFromCloud('income'),
-        savings: await getAllFromCloud('savings'),
-        debt: await getAllFromCloud('debt'),
-        recurringExpenses: await getAllFromCloud('recurring-expenses'),
-        recurringIncome: await getAllFromCloud('recurring-income'),
-      };
+      Promise.all([
+        getAllFromCloud('expenses'),
+        getAllFromCloud('income'),
+        getAllFromCloud('savings'),
+        getAllFromCloud('debt'),
+        getAllFromCloud('recurring-expenses'),
+        getAllFromCloud('recurring-income'),
+      ])
+        .then((values) => {
+          const [ expenses, income, savings, debt, recurringExpenses, recurringIncome ] = values;
+          const data = {
+            expenses,
+            income,
+            savings,
+            debt,
+            recurringExpenses,
+            recurringIncome,
+          };
+
+          triggerDownload(event, data);
+        })
+        .catch(console.error);
     } else {
-      data = {
-        expenses: await getAllFromObjectStore('expenses', appUser?.uid),
-        income: await getAllFromObjectStore('income', appUser?.uid),
-        savings: await getAllFromObjectStore('savings', appUser?.uid),
-        debt: await getAllFromObjectStore('debt', appUser?.uid),
-        recurringExpenses: await getAllFromObjectStore('recurring-expenses', appUser?.uid),
-        recurringIncome: await getAllFromObjectStore('recurring-income', appUser?.uid),
-      };
+      Promise.all([
+        getAllFromObjectStore('expenses', appUser?.uid),
+        getAllFromObjectStore('income', appUser?.uid),
+        getAllFromObjectStore('savings', appUser?.uid),
+        getAllFromObjectStore('debt', appUser?.uid),
+        getAllFromObjectStore('recurring-expenses', appUser?.uid),
+        getAllFromObjectStore('recurring-income', appUser?.uid),
+      ])
+        .then((values) => {
+          const [ expenses, income, savings, debt, recurringExpenses, recurringIncome ] = values;
+          const data = {
+            expenses,
+            income,
+            savings,
+            debt,
+            recurringExpenses,
+            recurringIncome,
+          };
+
+          triggerDownload(event, data);
+        })
+        .catch(console.error);
     }
-
-    const today = new Date();
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
-    const anchor = document.createElement('a');
-    anchor.setAttribute('href', dataStr);
-    anchor.setAttribute('download', `cash-cache.${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.json`);
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-
-    event.target.innerHTML = 'Export Data';
   }
 
   if (event.target.matches('[data-delete-data]')) {
