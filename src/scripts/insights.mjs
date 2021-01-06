@@ -202,85 +202,109 @@ const calculateRetirementEstimates = (totalExpensesByMonth, totalIncomeByMonth, 
 
   const estimatedYearsToRetirement = yearsToRetirement(currentSavings, estimatedAnnualSavings, estimatedRetirementAmount);
 
-  retirementSummaryBlock.innerHTML = `
-    <p>
-      Amount needed to retire:
-      <b>
-        ${formatCurrency(estimatedRetirementAmount)}
-      </b>
-    </p>
-    <p>
-      Estimated time until retirement:
-      <b>
-        ${estimatedYearsToRetirement === 1
-          ? '1 year'
-          : estimatedYearsToRetirement > 99
-            ? '100 or more years'
-            : `${estimatedYearsToRetirement} years`}
-      </b>
-    </p>
-  `;
+  if (estimatedYearsToRetirement < 1) {
+    retirementSummaryBlock.innerHTML = `
+      <p>
+        Amount needed to retire:
+        <b>
+          ${formatCurrency(estimatedRetirementAmount)}
+        </b>
+      </p>
+      <p>
+        Current savings:
+        <b>
+          ${formatCurrency(currentSavings)}
+        </b>
+      </p>
+      <p>
+        But wait... That would mean... You already have enough to retire! Of
+        course that's assuming no major changes and that you don't withdraw more
+        than 4% of your savings per year. Even so, well done!
+      </p>
+    `;
+  } else {
+    retirementSummaryBlock.innerHTML = `
+      <p>
+        Amount needed to retire:
+        <b>
+          ${formatCurrency(estimatedRetirementAmount)}
+        </b>
+      </p>
+      <p>
+        Estimated time until retirement:
+        <b>
+          ${estimatedYearsToRetirement === 1
+            ? '1 year'
+            : estimatedYearsToRetirement > 99
+              ? '100 or more years'
+              : `${estimatedYearsToRetirement} years`}
+        </b>
+      </p>
+    `;
+  }
 
-  retirementDetailsBlock.innerHTML = `
-    <details>
-      <summary>
-        Details
-      </summary>
-      <div class="stack">
-        <p>
-          Based on your average expenses over the past
-          ${recentExpenses.length === 1 ? 'month' : `${recentExpenses.length} months`},
-          we estimate that you will need at least
-          <b>${formatCurrency(estimatedRetirementAmount)}</b>
-          to retire safely. This assumes you spend no more than 4% of your
-          savings every year and your expenses remain similar to what they are
-          now.
-        </p>
-        ${estimatedYearsToRetirement > 99
-          ? `
-            <p>
-              Based on your current savings and expenses, it is highly unlikely
-              that you will be able to save enough money to retire. This means
-              that you're either spending more money than you make, or it means
-              that you aren't saving enough to meaningfully grow your retirement
-              savings.
-            </p>
-            <p>
-              You might want to consider finding a financial advisor, but make
-              sure you ask them if they are a fiduciary and whether they get paid
-              through a fee-only model. If they answer no to either question, find
-              somebody else to help.
-            </p>
-          `
-          : `
-            <p>
-              Based on how much you save per year (income minus expenses), we
-              estimate that it will take about
-              <b>
-                ${estimatedYearsToRetirement === 1 ? '1 year' : `${estimatedYearsToRetirement} years`}
-              </b>
-              for you to have enough saved to retire. This assumes that you
-              continue to save the same amount every year and that your
-              investments average a 7% annual return over the long run.
-            </p>
-          `}
-        <p>
-          If those numbers seem impossibly large, the best way to make them
-          smaller is to reduce your average expenses. We recommend that instead of
-          focusing on minor luxury expenses (the so-called "latte factor"), you
-          start with your largest expenses and see what you can do to make them
-          smaller.
-        </p>
-        <p>
-          Making more money also helps, but there's no actionable advice for doing
-          that. Changes such as shopping around for better insurance, finding
-          cheaper housing, and using public transportation, bikes, or cheap used
-          cars instead of driving new, rapidly depreciating cars are more within
-          reach.
-        </p>
-      </div>
-    </details>
-  `;
+  if (estimatedYearsToRetirement > 0) {
+    retirementDetailsBlock.innerHTML = `
+      <details>
+        <summary>
+          Details
+        </summary>
+        <div class="stack">
+          <p>
+            Based on your average expenses over the past
+            ${recentExpenses.length === 1 ? 'month' : `${recentExpenses.length} months`},
+            we estimate that you will need at least
+            <b>${formatCurrency(estimatedRetirementAmount)}</b>
+            to retire safely. This assumes you spend no more than 4% of your
+            savings every year and your expenses remain similar to what they are
+            now.
+          </p>
+          ${estimatedYearsToRetirement > 99
+            ? `
+              <p>
+                Based on your current savings and expenses, it is highly unlikely
+                that you will be able to save enough money to retire. This means
+                that you're either spending more money than you make, or it means
+                that you aren't saving enough to meaningfully grow your retirement
+                savings.
+              </p>
+              <p>
+                You might want to consider finding a financial advisor, but make
+                sure you ask them if they are a fiduciary and whether they get paid
+                through a fee-only model. If they answer no to either question, find
+                somebody else to help.
+              </p>
+            `
+            : `
+              <p>
+                Based on how much you save per year (income minus expenses), we
+                estimate that it will take about
+                <b>
+                  ${estimatedYearsToRetirement === 1 ? '1 year' : `${estimatedYearsToRetirement} years`}
+                </b>
+                for you to have enough saved to retire. This assumes that you
+                continue to save the same amount every year and that your
+                investments average a 7% annual return over the long run.
+              </p>
+            `}
+          <p>
+            If those numbers seem impossibly large, the best way to make them
+            smaller is to reduce your average expenses. We recommend that instead of
+            focusing on minor luxury expenses (the so-called "latte factor"), you
+            start with your largest expenses and see what you can do to make them
+            smaller.
+          </p>
+          <p>
+            Making more money also helps, but there's no actionable advice for doing
+            that. Changes such as shopping around for better insurance, finding
+            cheaper housing, and using public transportation, bikes, or cheap used
+            cars instead of driving new, rapidly depreciating cars are more within
+            reach.
+          </p>
+        </div>
+      </details>
+    `;
+  }
 
   retirementBlock.removeAttribute('hidden');
 };
