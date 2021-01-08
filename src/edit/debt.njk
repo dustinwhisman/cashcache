@@ -70,6 +70,9 @@ description: Edit or delete debt.
 <script type="module">
   import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
 
+  let key;
+  let networkDataLoaded = false;
+  let cachedDataLoaded = false;
   document.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -94,17 +97,34 @@ description: Edit or delete debt.
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = debt.key;
-    elements['year'].value = `${debt.year}`;
-    elements['month'].value = `${debt.month + 1}`;
-    elements['debt-description'].value = `${debt.description}`;
-    elements['amount'].value = `${formatCurrency(debt.amount)}`;
-    elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
-    elements['interest-rate'].value = `${debt.interestRate}%`;
+
+    if (elements['year'] !== document.activeElement) {
+      elements['year'].value = `${debt.year}`;
+    }
+
+    if (elements['month'] !== document.activeElement) {
+      elements['month'].value = `${debt.month + 1}`;
+    }
+
+    if (elements['debt-description'] !== document.activeElement) {
+      elements['debt-description'].value = `${debt.description}`;
+    }
+
+    if (elements['amount'] !== document.activeElement) {
+      elements['amount'].value = `${formatCurrency(debt.amount)}`;
+    }
+
+    if (elements['minimum-payment'] !== document.activeElement) {
+      elements['minimum-payment'].value = `${formatCurrency(debt.minimumPayment)}`;
+    }
+
+    if (elements['interest-rate'] !== document.activeElement) {
+      elements['interest-rate'].value = `${debt.interestRate}%`;
+    }
   };
 
   (async () => {
     const params = new URLSearchParams(window.location.search);
-    let key;
 
     if (params?.has('key')) {
       key = params.get('key');
@@ -114,11 +134,10 @@ description: Edit or delete debt.
     deleteButton.dataset.key = key;
 
     try {
-      let debt = await getFromDb('debt', key, appUser?.uid);
-      populateForm(debt);
+      const debt = await getFromDb('debt', key, appUser?.uid);
+      cachedDataLoaded = true;
 
-      if (appUser?.uid && isPayingUser) {
-        debt = await getFromCloudDb('debt', key, appUser?.uid);
+      if (!networkDataLoaded) {
         populateForm(debt);
       }
     } catch (error) {
@@ -152,6 +171,15 @@ description: Edit or delete debt.
           window.alert(error.message);
         }
       }
+    }
+  });
+
+  document.addEventListener('token-confirmed', async () => {
+    if (appUser?.uid && isPayingUser) {
+      const debt = await getFromCloudDb('debt', key, appUser?.uid);
+      networkDataLoaded = true;
+
+      populateForm(debt);
     }
   });
 </script>

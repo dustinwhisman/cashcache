@@ -62,6 +62,7 @@ description: Edit or delete an expense.
   let key;
   const storeName = 'expenses';
   let networkCategoriesLoaded = false;
+  let cachedCategoriesLoaded = false;
   const renderCategories = (categories) => {
     const categoriesDiv = document.querySelector('[data-category]');
     let categoryTemplate = `
@@ -112,15 +113,32 @@ description: Edit or delete an expense.
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = expense.key;
-    elements['year'].value = `${expense.year}`;
-    elements['month'].value = `${expense.month + 1}`;
-    elements['day'].value = `${expense.day}`;
-    elements['expense-description'].value = `${expense.description}`;
-    elements['amount'].value = `${formatCurrency(expense.amount)}`;
 
-    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
+    if (elements['year'] !== document.activeElement) {
+      elements['year'].value = `${expense.year}`;
+    }
+
+    if (elements['month'] !== document.activeElement) {
+      elements['month'].value = `${expense.month + 1}`;
+    }
+
+    if (elements['day'] !== document.activeElement) {
+      elements['day'].value = `${expense.day}`;
+    }
+
+    if (elements['expense-description'] !== document.activeElement) {
+      elements['expense-description'].value = `${expense.description}`;
+    }
+
+    if (elements['amount'] !== document.activeElement) {
+      elements['amount'].value = `${formatCurrency(expense.amount)}`;
+    }
+
+    if (document.activeElement.name !== 'category') {
+      const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+      if (categoryInput) {
+        categoryInput.checked = true;
+      }
     }
   };
 
@@ -141,6 +159,7 @@ description: Edit or delete an expense.
       ])
         .then((values) => {
           const [ expense, categories ] = values;
+          cachedCategoriesLoaded = true;
 
           if (!networkCategoriesLoaded) {
             renderCategories(categories);
@@ -190,8 +209,26 @@ description: Edit or delete an expense.
           const [ expense, categories ] = values;
           networkCategoriesLoaded = true;
 
-          renderCategories(categories);
-          populateForm(expense);
+          if (!cachedCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(expense);
+          } else {
+            const form = document.querySelector('form');
+            const category = form.elements['category'].value;
+
+            let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            const isFocused = categoryInput === document.activeElement;
+            renderCategories(categories);
+            categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            if (categoryInput) {
+              categoryInput.checked = true;
+              if (isFocused) {
+                categoryInput.focus();
+              }
+            }
+
+            populateForm(expense);
+          }
         })
         .catch(console.error);
     }

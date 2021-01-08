@@ -138,6 +138,7 @@ description: Edit or delete recurring income. You can also set it to inactive in
   let key;
   const storeName = 'income';
   let networkCategoriesLoaded = false;
+  let cachedCategoriesLoaded = false;
   const renderCategories = (categories) => {
     const categoriesDiv = document.querySelector('[data-category]');
     let categoryTemplate = `
@@ -193,33 +194,57 @@ description: Edit or delete recurring income. You can also set it to inactive in
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = income.key;
-    elements['income-description'].value = `${income.description}`;
-    elements['amount'].value = `${formatCurrency(income.amount)}`;
-    elements['year'].value = `${income.year}`;
-    elements['month'].value = `${income.month + 1}`;
-    elements['day'].value = `${income.day}`;
-    elements['frequency'].value = `${income.frequency}`;
 
-    income.daysOfMonth.forEach((day) => {
-      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
-      dayInput.checked = true;
-    });
-
-    const categoryInput = document.querySelector(`[name=category][value="${income.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
+    if (elements['income-description'] !== document.activeElement) {
+      elements['income-description'].value = `${income.description}`;
     }
 
-    if (income.frequency === 'twice-per-month') {
+    if (elements['amount'] !== document.activeElement) {
+      elements['amount'].value = `${formatCurrency(income.amount)}`;
+    }
+
+    if (elements['year'] !== document.activeElement) {
+      elements['year'].value = `${income.year}`;
+    }
+
+    if (elements['month'] !== document.activeElement) {
+      elements['month'].value = `${income.month + 1}`;
+    }
+
+    if (elements['day'] !== document.activeElement) {
+      elements['day'].value = `${income.day}`;
+    }
+
+    if (document.activeElement.name !== 'frequency') {
+      elements['frequency'].value = `${income.frequency}`;
+    }
+
+    if (document.activeElement.name !== 'days-of-month') {
+      income.daysOfMonth.forEach((day) => {
+        const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+        dayInput.checked = true;
+      });
+    }
+
+    if (document.activeElement.name !== 'category') {
+      const categoryInput = document.querySelector(`[name=category][value="${income.category}"]`);
+      if (categoryInput) {
+        categoryInput.checked = true;
+      }
+    }
+
+    if (elements['frequency'].value === 'twice-per-month') {
       const simpleDatesBlock = document.querySelector('[data-simple-dates]');
       const complexDatesBlock = document.querySelector('[data-complex-dates]');
       simpleDatesBlock.setAttribute('hidden', true);
       complexDatesBlock.removeAttribute('hidden');
     }
 
-    if (!income.active) {
-      const activeInput = document.querySelector('[name=active]');
-      activeInput.checked = false;
+    if (document.activeElement.name !== 'active') {
+      if (!income.active) {
+        const activeInput = document.querySelector('[name=active]');
+        activeInput.checked = false;
+      }
     }
   };
 
@@ -240,6 +265,7 @@ description: Edit or delete recurring income. You can also set it to inactive in
       ])
         .then((values) => {
           const [ income, categories ] = values;
+          cachedCategoriesLoaded = true;
 
           if (!networkCategoriesLoaded) {
             renderCategories(categories);
@@ -289,8 +315,26 @@ description: Edit or delete recurring income. You can also set it to inactive in
           const [ income, categories ] = values;
           networkCategoriesLoaded = true;
 
-          renderCategories(categories);
-          populateForm(income);
+          if (!cachedCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(income);
+          } else {
+            const form = document.querySelector('form');
+            const category = form.elements['category'].value;
+
+            let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            const isFocused = categoryInput === document.activeElement;
+            renderCategories(categories);
+            categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            if (categoryInput) {
+              categoryInput.checked = true;
+              if (isFocused) {
+                categoryInput.focus();
+              }
+            }
+
+            populateForm(income);
+          }
         })
         .catch(console.error);
     }

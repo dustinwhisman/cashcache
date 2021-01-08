@@ -62,6 +62,7 @@ description: Edit or delete savings.
   let key;
   const storeName = 'savings';
   let networkCategoriesLoaded = false;
+  let cachedCategoriesLoaded = false;
   const renderCategories = (categories) => {
     const categoriesDiv = document.querySelector('[data-category]');
     let categoryTemplate = `
@@ -111,14 +112,28 @@ description: Edit or delete savings.
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = savings.key;
-    elements['year'].value = `${savings.year}`;
-    elements['month'].value = `${savings.month + 1}`;
-    elements['savings-description'].value = `${savings.description}`;
-    elements['amount'].value = `${formatCurrency(savings.amount)}`;
 
-    const categoryInput = document.querySelector(`[name=category][value="${savings.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
+    if (elements['year'] !== document.activeElement) {
+      elements['year'].value = `${savings.year}`;
+    }
+
+    if (elements['month'] !== document.activeElement) {
+      elements['month'].value = `${savings.month + 1}`;
+    }
+
+    if (elements['savings-description'] !== document.activeElement) {
+      elements['savings-description'].value = `${savings.description}`;
+    }
+
+    if (elements['amount'] !== document.activeElement) {
+      elements['amount'].value = `${formatCurrency(savings.amount)}`;
+    }
+
+    if (document.activeElement.name !== 'category') {
+      const categoryInput = document.querySelector(`[name=category][value="${savings.category}"]`);
+      if (categoryInput) {
+        categoryInput.checked = true;
+      }
     }
   };
 
@@ -139,6 +154,7 @@ description: Edit or delete savings.
       ])
         .then((values) => {
           const [ savings, categories ] = values;
+          cachedCategoriesLoaded = true;
 
           if (!networkCategoriesLoaded) {
             renderCategories(categories);
@@ -188,8 +204,26 @@ description: Edit or delete savings.
           const [ savings, categories ] = values;
           networkCategoriesLoaded = true;
 
-          renderCategories(categories);
-          populateForm(savings);
+          if (!cachedCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(savings);
+          } else {
+            const form = document.querySelector('form');
+            const category = form.elements['category'].value;
+
+            let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            const isFocused = categoryInput === document.activeElement;
+            renderCategories(categories);
+            categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            if (categoryInput) {
+              categoryInput.checked = true;
+              if (isFocused) {
+                categoryInput.focus();
+              }
+            }
+
+            populateForm(savings);
+          }
         })
         .catch(console.error);
     }

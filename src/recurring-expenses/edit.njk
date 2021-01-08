@@ -138,6 +138,7 @@ description: Edit or delete a recurring expense. You can also set it to inactive
   let key;
   const storeName = 'expenses';
   let networkCategoriesLoaded = false;
+  let cachedCategoriesLoaded = false;
   const renderCategories = (categories) => {
     const categoriesDiv = document.querySelector('[data-category]');
     let categoryTemplate = `
@@ -193,33 +194,58 @@ description: Edit or delete a recurring expense. You can also set it to inactive
     const form = document.querySelector('form');
     const { elements } = form;
     elements['key'].value = expense.key;
-    elements['expense-description'].value = `${expense.description}`;
-    elements['amount'].value = `${formatCurrency(expense.amount)}`;
-    elements['year'].value = `${expense.year}`;
-    elements['month'].value = `${expense.month + 1}`;
-    elements['day'].value = `${expense.day}`;
-    elements['frequency'].value = `${expense.frequency}`;
 
-    expense.daysOfMonth.forEach((day) => {
-      const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
-      dayInput.checked = true;
-    });
-
-    const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
-    if (categoryInput) {
-      categoryInput.checked = true;
+    if (elements['expense-description'] !== document.activeElement) {
+      elements['expense-description'].value = `${expense.description}`;
     }
 
-    if (expense.frequency === 'twice-per-month') {
+    if (elements['amount'] !== document.activeElement) {
+      elements['amount'].value = `${formatCurrency(expense.amount)}`;
+    }
+
+    if (elements['year'] !== document.activeElement) {
+      elements['year'].value = `${expense.year}`;
+    }
+
+    if (elements['month'] !== document.activeElement) {
+      elements['month'].value = `${expense.month + 1}`;
+    }
+
+    if (elements['day'] !== document.activeElement) {
+      elements['day'].value = `${expense.day}`;
+    }
+
+    if (document.activeElement.name !== 'frequency') {
+      elements['frequency'].value = `${expense.frequency}`;
+    }
+
+    if (document.activeElement.name !== 'days-of-month') {
+      expense.daysOfMonth.forEach((day) => {
+        const dayInput = document.querySelector(`[name="days-of-month"][value="${day}"]`);
+        dayInput.checked = true;
+      });
+    }
+
+    if (document.activeElement.name !== 'category') {
+      const categoryInput = document.querySelector(`[name=category][value="${expense.category}"]`);
+      if (categoryInput) {
+        categoryInput.checked = true;
+      }
+    }
+
+
+    if (elements['frequency'].value === 'twice-per-month') {
       const simpleDatesBlock = document.querySelector('[data-simple-dates]');
       const complexDatesBlock = document.querySelector('[data-complex-dates]');
       simpleDatesBlock.setAttribute('hidden', true);
       complexDatesBlock.removeAttribute('hidden');
     }
 
-    if (!expense.active) {
-      const activeInput = document.querySelector('[name=active]');
-      activeInput.checked = false;
+    if (document.activeElement.name !== 'active') {
+      if (!expense.active) {
+        const activeInput = document.querySelector('[name=active]');
+        activeInput.checked = false;
+      }
     }
   };
 
@@ -240,6 +266,7 @@ description: Edit or delete a recurring expense. You can also set it to inactive
       ])
         .then((values) => {
           const [ expense, categories ] = values;
+          cachedCategoriesLoaded = true;
 
           if (!networkCategoriesLoaded) {
             renderCategories(categories);
@@ -289,8 +316,26 @@ description: Edit or delete a recurring expense. You can also set it to inactive
           const [ expense, categories ] = values;
           networkCategoriesLoaded = true;
 
-          renderCategories(categories);
-          populateForm(expense);
+          if (!cachedCategoriesLoaded) {
+            renderCategories(categories);
+            populateForm(expense);
+          } else {
+            const form = document.querySelector('form');
+            const category = form.elements['category'].value;
+
+            let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            const isFocused = categoryInput === document.activeElement;
+            renderCategories(categories);
+            categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+            if (categoryInput) {
+              categoryInput.checked = true;
+              if (isFocused) {
+                categoryInput.focus();
+              }
+            }
+
+            populateForm(expense);
+          }
         })
         .catch(console.error);
     }
