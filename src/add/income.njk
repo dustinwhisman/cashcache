@@ -40,6 +40,7 @@ description: Add income. Categorize it, describe it, and say how much you earned
 
   const storeName = 'income';
   let networkCategoriesLoaded = false;
+  let cachedCategoriesLoaded = false;
   const renderCategories = (categories) => {
     const categoriesDiv = document.querySelector('[data-category]');
     let categoryTemplate = `
@@ -88,6 +89,7 @@ description: Add income. Categorize it, describe it, and say how much you earned
 
   (async () => {
     const categories = await getAllCategories(storeName);
+    cachedCategoriesLoaded = true;
 
     if (!networkCategoriesLoaded) {
       renderCategories(categories);
@@ -99,7 +101,23 @@ description: Add income. Categorize it, describe it, and say how much you earned
       const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
       networkCategoriesLoaded = true;
 
-      renderCategories(categories);
+      if (!cachedCategoriesLoaded) {
+        renderCategories(categories);
+      } else {
+        const form = document.querySelector('form');
+        const category = form.elements['category'].value;
+
+        let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+        const isFocused = categoryInput === document.activeElement;
+        renderCategories(categories);
+        categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+        if (categoryInput) {
+          categoryInput.checked = true;
+          if (isFocused) {
+            categoryInput.focus();
+          }
+        }
+      }
     }
   });
 </script>
