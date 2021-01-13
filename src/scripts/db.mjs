@@ -51,16 +51,12 @@ export const getFromDb = (storeName, key, uid = null) => {
 
 export const getFromCloudDb = async (storeName, key, uid) => {
   try {
-    const request = await fetch('/api/get-from-db', {
-      method: 'POST',
+    const request = await fetch(`/api/get-from-db?storeName=${storeName}&key=${key}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        storeName,
-        key,
-      }),
     });
 
     const data = await request.json();
@@ -98,17 +94,12 @@ export const getAllFromIndex = (storeName, indexName, year, month, uid = null) =
 
 export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
   try {
-    const request = await fetch('/api/get-all-from-index', {
-      method: 'POST',
+    const request = await fetch(`/api/get-all-from-index?storeName=${storeName}&year=${year}&month=${month}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        storeName,
-        year,
-        month,
-      }),
     });
 
     const data = await request.json();
@@ -151,15 +142,12 @@ export const getAllFromObjectStore = (storeName, uid = null) => {
 
 export const getAllFromCloud = async (storeName) => {
   try {
-    const request = await fetch('/api/get-all-from-store', {
-      method: 'POST',
+    const request = await fetch(`/api/get-all-from-store?storeName=${storeName}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        storeName,
-      }),
     });
 
     const data = await request.json();
@@ -210,15 +198,12 @@ export const getAllCategories = (storeName) => {
 
 export const getAllCategoriesFromCloud = async (storeName, uid) => {
   try {
-    const request = await fetch('/api/get-all-categories', {
-      method: 'POST',
+    const request = await fetch(`/api/get-all-categories?storeName=${storeName}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        storeName,
-      }),
     });
 
     const data = await request.json();

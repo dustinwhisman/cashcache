@@ -60,9 +60,9 @@ const handler = async (event, context) => {
 
     context.callbackWaitsForEmptyEventLoop = false;
 
-    const { storeName, year, month } = JSON.parse(event.body);
+    const { storeName, year, month } = event.queryStringParameters;
     const db = await connectToDatabase(uri);
-    return queryDatabase(db, storeName, uid, year, month);
+    return queryDatabase(db, storeName, uid, Number(year), Number(month));
   } catch (error) {
     console.error({ error });
     return {

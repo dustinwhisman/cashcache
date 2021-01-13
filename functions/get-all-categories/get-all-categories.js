@@ -60,7 +60,7 @@ const handler = async (event, context) => {
 
     context.callbackWaitsForEmptyEventLoop = false;
 
-    const { storeName } = JSON.parse(event.body);
+    const { storeName } = event.queryStringParameters;
     const db = await connectToDatabase(uri);
     return queryDatabase(db, storeName, uid);
   } catch (error) {
