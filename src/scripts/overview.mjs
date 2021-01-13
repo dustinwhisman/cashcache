@@ -21,7 +21,26 @@ let inMemoryRecurringIncome;
 let inMemoryLastMonthsSavings;
 let inMemoryLastMonthsDebt;
 
+const fetchExpenses = (shouldRender = false) => {
+  Promise.all([
+    caches.match(`/api/get-all-from-index?storeName=expenses&year=${year}&month=${month}`).then(response => response.json()),
+    caches.match('/api/get-all-from-store?storeName=recurring-expenses').then(response => response.json()),
+  ])
+    .then((values) => {
+      const [ expenses, recurringExpenses ] = values;
+
+      if (!networkExpensesLoaded || shouldRender) {
+        displayExpenses(expenses, recurringExpenses);
+      }
+    })
+    .catch(console.error);
+};
+
 const loadExpenses = (shouldRender = false) => {
+  if (appUser?.uid && isPayingUser) {
+    fetchExpenses(shouldRender);
+  }
+
   Promise.all([
     getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
     getAllFromObjectStore('recurring-expenses', appUser?.uid),
@@ -37,7 +56,26 @@ const loadExpenses = (shouldRender = false) => {
     .catch(console.error);
 };
 
+const fetchIncome = (shouldRender = false) => {
+  Promise.all([
+    caches.match(`/api/get-all-from-index?storeName=income&year=${year}&month=${month}`).then(response => response.json()),
+    caches.match('/api/get-all-from-store?storeName=recurring-income').then(response => response.json()),
+  ])
+    .then((values) => {
+      const [ income, recurringIncome ] = values;
+
+      if (!networkIncomeLoaded || shouldRender) {
+        displayIncome(income, recurringIncome);
+      }
+    })
+    .catch(console.error);
+};
+
 const loadIncome = (shouldRender = false) => {
+  if (appUser?.uid && isPayingUser) {
+    fetchIncome(shouldRender);
+  }
+
   Promise.all([
     getAllFromIndex('income', 'year-month', year, month, appUser?.uid),
     getAllFromObjectStore('recurring-income', appUser?.uid),
@@ -53,7 +91,26 @@ const loadIncome = (shouldRender = false) => {
     .catch(console.error);
 };
 
+const fetchSavings = (shouldRender = false) => {
+  Promise.all([
+    caches.match(`/api/get-all-from-index?storeName=savings&year=${year}&month=${month}`).then(response => response.json()),
+    caches.match(`/api/get-all-from-index?storeName=savings&year=${lastMonthYear}&month=${lastMonth}`).then(response => response.json()),
+  ])
+    .then((values) => {
+      const [ savings, lastMonthsSavings ] = values;
+
+      if (!networkSavingsLoaded || shouldRender) {
+        displaySavings(savings, lastMonthsSavings);
+      }
+    })
+    .catch(console.error);
+};
+
 const loadSavings = (shouldRender = false) => {
+  if (appUser?.uid && isPayingUser) {
+    fetchSavings(shouldRender);
+  }
+
   Promise.all([
     getAllFromIndex('savings', 'year-month', year, month, appUser?.uid),
     getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid),
@@ -69,7 +126,26 @@ const loadSavings = (shouldRender = false) => {
     .catch(console.error);
 };
 
+const fetchDebt = (shouldRender = false) => {
+  Promise.all([
+    caches.match(`/api/get-all-from-index?storeName=debt&year=${year}&month=${month}`).then(response => response.json()),
+    caches.match(`/api/get-all-from-index?storeName=debt&year=${lastMonthYear}&month=${lastMonth}`).then(response => response.json()),
+  ])
+    .then((values) => {
+      const [ debt, lastMonthsDebt ] = values;
+
+      if (!networkDebtLoaded || shouldRender) {
+        displayDebt(debt, lastMonthsDebt);
+      }
+    })
+    .catch(console.error);
+};
+
 const loadDebt = async (shouldRender = false) => {
+  if (appUser?.uid && isPayingUser) {
+    fetchDebt(shouldRender);
+  }
+
   Promise.all([
     getAllFromIndex('debt', 'year-month', year, month, appUser?.uid),
     getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid),
