@@ -8,7 +8,7 @@ description: We need to make sure you are who you say you are and whether you're
   Confirm Login
 </h1>
 
-<div data-status-update aria-live="polite">
+<div class="stack" data-status-update aria-live="polite">
   <p>
     Hang on a moment while we confirm your login.
   </p>
@@ -83,7 +83,7 @@ description: We need to make sure you are who you say you are and whether you're
 
 {% include "scripts/firebase.njk" %}
 <script type="module">
-  import { getAllFromObjectStore, addToDb, bulkAddToDb } from '/scripts/db.mjs';
+  import { getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '/scripts/db.mjs';
 
   const stripe = Stripe('{{ env.stripePublishableKey }}');
 
@@ -146,38 +146,51 @@ description: We need to make sure you are who you say you are and whether you're
   const associateDataToAccount = async (idToken) => {
     const statusUpdate = document.querySelector('[data-status-update]');
 
-    statusUpdate.innerHTML = '<p>Associating existing expenses to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing expenses to your account...</p>';
     const expensesRecords = await getAllFromObjectStore('expenses');
     await associateRecords('expenses', expensesRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing income to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing income to your account...</p>';
     const incomeRecords = await getAllFromObjectStore('income');
     await associateRecords('income', incomeRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing savings to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing savings to your account...</p>';
     const savingsRecords = await getAllFromObjectStore('savings');
     await associateRecords('savings', savingsRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing debt to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing debt to your account...</p>';
     const debtRecords = await getAllFromObjectStore('debt');
     await associateRecords('debt', debtRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing recurring expenses to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing recurring expenses to your account...</p>';
     const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses');
     await associateRecords('recurring-expenses', recurringExpensesRecords);
 
-    statusUpdate.innerHTML = '<p>Associating existing recurring income to your account...</p>';
+    statusUpdate.innerHTML += '<p>Associating existing recurring income to your account...</p>';
     const recurringIncomeRecords = await getAllFromObjectStore('recurring-income');
     await associateRecords('recurring-income', recurringIncomeRecords);
 
     if (await checkIsPayingUser(idToken)) {
-      statusUpdate.innerHTML = `
-        <p>
-          All done! Redirecting you to the <a href="/overview">overview page</a>
-          now.
-        </p>
-      `;
-      window.location.href = '/overview';
+      statusUpdate.innerHTML += '<p>Caching data to make things extra fast...</p>';
+
+      Promise.all([
+        getAllFromCloud('expenses'),
+        getAllFromCloud('income'),
+        getAllFromCloud('savings'),
+        getAllFromCloud('debt'),
+        getAllFromCloud('recurring-expenses'),
+        getAllFromCloud('recurring-income'),
+      ])
+        .catch(console.error)
+        .then(() => {
+          statusUpdate.innerHTML += `
+            <p>
+              All done! Redirecting you to the <a href="/overview">overview page</a>
+              now.
+            </p>
+          `;
+          window.location.href = '/overview';
+        });
     } else {
       saveCustomerId(idToken);
       statusUpdate.setAttribute('hidden', true);
