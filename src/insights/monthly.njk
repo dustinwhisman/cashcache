@@ -504,6 +504,31 @@ description: See how this month went in terms of when and how much you spent or 
     savingsRateBlock.removeAttribute('hidden');
   };
 
+  const fetchMonthlyInsightsData = () => {
+    Promise.all([
+      caches.match(`/api/get-all-from-index?storeName=expenses&year=${year}&month=${month}`).then(response => response.json()),
+      caches.match(`/api/get-all-from-index?storeName=income&year=${year}&month=${month}`).then(response => response.json()),
+      caches.match(`/api/get-all-from-index?storeName=savings&year=${year}&month=${month}`).then(response => response.json()),
+      caches.match(`/api/get-all-from-index?storeName=debt&year=${year}&month=${month}`).then(response => response.json()),
+    ])
+      .then((values) => {
+        const [ expenses, income, savings, debt ] = values;
+
+        const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
+        const totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
+        const totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
+        const totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
+
+        if (!networkDataLoaded) {
+          generateDateGrid(expenses, income, totalExpenses, totalIncome);
+          compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
+          compareToLastYear(totalExpenses, totalIncome, totalSavings, totalDebt);
+          showSavingsRate(totalExpenses, totalIncome);
+        }
+      })
+      .catch(console.error);
+  };
+
   (() => {
     if (!appUser?.uid || !isPayingUser) {
       const monthlyInsights = document.querySelector('[data-monthly-insights]');
@@ -522,6 +547,8 @@ description: See how this month went in terms of when and how much you spent or 
 
       return;
     }
+
+    fetchMonthlyInsightsData();
 
     Promise.all([
       getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
@@ -549,6 +576,11 @@ description: See how this month went in terms of when and how much you spent or 
 
   document.addEventListener('token-confirmed', () => {
     if (appUser?.uid && isPayingUser) {
+      let totalExpenses = 0;
+      let totalIncome = 0;
+      let totalSavings = 0;
+      let totalDebt = 0;
+
       Promise.all([
         getAllFromCloudIndex('expenses', year, month, appUser?.uid),
         getAllFromCloudIndex('income', year, month, appUser?.uid),
@@ -559,10 +591,10 @@ description: See how this month went in terms of when and how much you spent or 
           const [ expenses, income, savings, debt ] = values;
           networkDataLoaded = true;
 
-          const totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
-          const totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
-          const totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
-          const totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
+          totalExpenses = expenses.reduce((acc, expense) => (acc + expense.amount), 0);
+          totalIncome = income.reduce((acc, income) => (acc + income.amount), 0);
+          totalSavings = savings.reduce((acc, fund) => (acc + fund.amount), 0);
+          totalDebt = debt.reduce((acc, loan) => (acc + loan.amount), 0);
 
           generateDateGrid(expenses, income, totalExpenses, totalIncome);
           compareToLastMonth(totalExpenses, totalIncome, totalSavings, totalDebt);
