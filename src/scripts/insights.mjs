@@ -824,6 +824,22 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
   drawRollingSavingsChart(totalExpensesByMonth, totalIncomeByMonth, totalSavingsByMonth);
 };
 
+const fetchInsightsData = () => {
+  Promise.all([
+    caches.match('/api/get-all-from-store?storeName=expenses').then(response => response.json()),
+    caches.match('/api/get-all-from-store?storeName=income').then(response => response.json()),
+    caches.match('/api/get-all-from-store?storeName=savings').then(response => response.json()),
+  ])
+    .then((values) => {
+      const [ allExpenses, allIncome, allSavings ] = values;
+
+      if (!networkDataLoaded) {
+        displayInsights(allExpenses, allIncome, allSavings);
+      }
+    })
+    .catch(console.error);
+};
+
 (() => {
   if (!appUser?.uid || !isPayingUser) {
     const insights = document.querySelector('[data-insights]');
@@ -842,6 +858,8 @@ const displayInsights = (allExpenses, allIncome, allSavings) => {
 
     return;
   }
+
+  fetchInsightsData();
 
   Promise.all([
     getAllFromObjectStore('expenses', appUser?.uid),
