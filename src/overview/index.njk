@@ -23,6 +23,12 @@ description: Your month at a glance. Easily track expenses, income, savings, or 
     height: 100%;
   }
 
+  @media screen and (max-width: 60ch) {
+    .sections {
+      grid-template-columns: repeat(4, minmax(80vw, 1fr));
+    }
+  }
+
   .sections section {
     height: 100%;
     scroll-snap-align: start;
