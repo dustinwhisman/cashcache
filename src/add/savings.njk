@@ -27,7 +27,8 @@ description: Add savings. Categorize it, describe it, and say how much is in the
   </div>
   <input type="hidden" name="key" value="">
   <div>
-    <button type="submit">
+    <span class="visually-hidden" role="status" data-submit-status></span>
+    <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
       Save Savings
     </button>
   </div>
@@ -67,7 +68,7 @@ description: Add savings. Categorize it, describe it, and say how much is in the
     categoriesDiv.innerHTML = categoryTemplate;
   };
 
-  document.addEventListener('submit', (event) => {
+  document.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const { elements } = event.target;
@@ -81,10 +82,30 @@ description: Add savings. Categorize it, describe it, and say how much is in the
       amount: sanitize(elements['amount'].value),
     };
 
-    addToDb('savings', savings);
-  });
+    const statusElement = document.querySelector('[data-submit-status]');
+    const button = event.target.querySelector('button[type=submit]');
+    const savingMessage = button.dataset.labelSaving;
+    const savedMessage = button.dataset.labelSaved;
+    const failedMessage = button.dataset.labelFailed;
 
-  {% include "scripts/item-added-listener.njk" %}
+    try {
+      button.innerHTML = savingMessage;
+      statusElement.innerHTML = savingMessage;
+
+      await addToDb('savings', savings);
+
+      button.innerHTML = savedMessage;
+      statusElement.innerHTML = savedMessage;
+
+      const month = Number(elements['month'].value) - 1;
+      const year = Number(elements['year'].value);
+      window.location.href = `/overview?m=${month}&y=${year}`;
+    } catch (error) {
+      button.innerHTML = failedMessage;
+      statusElement.innerHTML = failedMessage;
+      console.error(error);
+    }
+  });
 
   (async () => {
     const categories = await getAllCategories(storeName);

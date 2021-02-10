@@ -38,7 +38,8 @@ description: Add debt, including the balance, minimum payment, and interest rate
   </div>
   <input type="hidden" name="key" value="">
   <div>
-    <button type="submit">
+    <span class="visually-hidden" role="status" data-submit-status></span>
+    <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
       Save Debt
     </button>
   </div>
@@ -49,7 +50,7 @@ description: Add debt, including the balance, minimum payment, and interest rate
 <script type="module">
   import { addToDb } from '/scripts/db.mjs';
 
-  document.addEventListener('submit', (event) => {
+  document.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const { elements } = event.target;
@@ -64,8 +65,28 @@ description: Add debt, including the balance, minimum payment, and interest rate
       interestRate: sanitize(elements['interest-rate'].value),
     };
 
-    addToDb('debt', debt);
-  });
+    const statusElement = document.querySelector('[data-submit-status]');
+    const button = event.target.querySelector('button[type=submit]');
+    const savingMessage = button.dataset.labelSaving;
+    const savedMessage = button.dataset.labelSaved;
+    const failedMessage = button.dataset.labelFailed;
 
-  {% include "scripts/item-added-listener.njk" %}
+    try {
+      button.innerHTML = savingMessage;
+      statusElement.innerHTML = savingMessage;
+
+      await addToDb('debt', debt);
+
+      button.innerHTML = savedMessage;
+      statusElement.innerHTML = savedMessage;
+
+      const month = Number(elements['month'].value) - 1;
+      const year = Number(elements['year'].value);
+      window.location.href = `/overview?m=${month}&y=${year}`;
+    } catch (error) {
+      button.innerHTML = failedMessage;
+      statusElement.innerHTML = failedMessage;
+      console.error(error);
+    }
+  });
 </script>
