@@ -118,7 +118,8 @@ description: Edit or delete a recurring expense. You can also set it to inactive
     </label>
     <input type="hidden" name="key" value="">
     <div>
-      <button type="submit">
+      <span class="visually-hidden" role="status" data-submit-status></span>
+      <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
         Save Changes
       </button>
     </div>
@@ -165,7 +166,7 @@ description: Edit or delete a recurring expense. You can also set it to inactive
     categoriesDiv.innerHTML = categoryTemplate;
   };
 
-  document.addEventListener('submit', (event) => {
+  document.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const { elements } = event.target;
@@ -183,11 +184,27 @@ description: Edit or delete a recurring expense. You can also set it to inactive
       active: elements['active'].checked,
     };
 
-    addToDb('recurring-expenses', expense);
-  });
+    const statusElement = document.querySelector('[data-submit-status]');
+    const button = event.target.querySelector('button[type=submit]');
+    const savingMessage = button.dataset.labelSaving;
+    const savedMessage = button.dataset.labelSaved;
+    const failedMessage = button.dataset.labelFailed;
 
-  document.addEventListener('item-added', () => {
-    window.location.href = `/recurring-expenses`;
+    try {
+      button.innerHTML = savingMessage;
+      statusElement.innerHTML = savingMessage;
+
+      await addToDb('recurring-expenses', expense);
+
+      button.innerHTML = savedMessage;
+      statusElement.innerHTML = savedMessage;
+
+      window.location.href = `/recurring-expenses`;
+    } catch (error) {
+      button.innerHTML = failedMessage;
+      statusElement.innerHTML = failedMessage;
+      console.error(error);
+    }
   });
 
   const populateForm = (expense) => {

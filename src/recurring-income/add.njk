@@ -99,7 +99,8 @@ description: Add recurring income, such as your paycheck, so you can save time i
   </label>
   <input type="hidden" name="key" value="">
   <div>
-    <button type="submit">
+    <span class="visually-hidden" role="status" data-submit-status></span>
+    <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
       Save Recurring Income
     </button>
   </div>
@@ -143,7 +144,7 @@ description: Add recurring income, such as your paycheck, so you can save time i
     categoriesDiv.innerHTML = categoryTemplate;
   };
 
-  document.addEventListener('submit', (event) => {
+  document.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const { elements } = event.target;
@@ -161,11 +162,27 @@ description: Add recurring income, such as your paycheck, so you can save time i
       active: elements['active'].checked,
     };
 
-    addToDb('recurring-income', income);
-  });
+    const statusElement = document.querySelector('[data-submit-status]');
+    const button = event.target.querySelector('button[type=submit]');
+    const savingMessage = button.dataset.labelSaving;
+    const savedMessage = button.dataset.labelSaved;
+    const failedMessage = button.dataset.labelFailed;
 
-  document.addEventListener('item-added', () => {
-    window.location.href = `/recurring-income`;
+    try {
+      button.innerHTML = savingMessage;
+      statusElement.innerHTML = savingMessage;
+
+      await addToDb('recurring-income', income);
+
+      button.innerHTML = savedMessage;
+      statusElement.innerHTML = savedMessage;
+
+      window.location.href = `/recurring-income`;
+    } catch (error) {
+      button.innerHTML = failedMessage;
+      statusElement.innerHTML = failedMessage;
+      console.error(error);
+    }
   });
 
   (async () => {
