@@ -241,8 +241,6 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
           if (!isPayingUser || !thingToAdd.uid || isBulkAdd) {
-            const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-            document.dispatchEvent(successEvent);
             resolve();
             return;
           }
@@ -260,8 +258,6 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
           })
             .then(response => response.json())
             .then(() => {
-              const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-              document.dispatchEvent(successEvent);
               resolve();
             })
             .catch((error) => {

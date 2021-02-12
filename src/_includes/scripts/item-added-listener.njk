@@ -1,7 +1,0 @@
-document.addEventListener('item-added', () => {
-  const form = document.querySelector('form');
-  const { elements } = form;
-  const month = Number(elements['month'].value) - 1;
-  const year = Number(elements['year'].value);
-  window.location.href = `/overview?m=${month}&y=${year}`;
-});
