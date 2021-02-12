@@ -42,9 +42,10 @@ description: Add savings. Categorize it, describe it, and say how much is in the
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
+  addCategoryEventListener();
 
   const storeName = 'savings';
   let networkCategoriesLoaded = false;

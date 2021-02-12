@@ -135,9 +135,10 @@ description: Edit or delete a recurring expense. You can also set it to inactive
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
+  addCategoryEventListener();
 
   if (!appUser?.uid || !isPayingUser) {
     window.location.href = '/recurring-expenses';

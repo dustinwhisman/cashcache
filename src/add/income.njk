@@ -42,9 +42,10 @@ description: Add income. Categorize it, describe it, and say how much you earned
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
+  addCategoryEventListener();
 
   const storeName = 'income';
   let networkCategoriesLoaded = false;

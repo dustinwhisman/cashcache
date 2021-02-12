@@ -114,9 +114,10 @@ description: Add recurring income, such as your paycheck, so you can save time i
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
+  addCategoryEventListener();
 
   if (!appUser?.uid || !isPayingUser) {
     window.location.href = '/recurring-income';

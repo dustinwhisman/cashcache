@@ -63,9 +63,10 @@ description: Edit or delete an expense.
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
+  addCategoryEventListener();
 
   let key;
   const storeName = 'expenses';
