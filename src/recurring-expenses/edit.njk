@@ -17,7 +17,11 @@ description: Edit or delete a recurring expense. You can also set it to inactive
   Edit Recurring Expense
 </h1>
 
-{% include "components/back-link.njk" %}
+<div>
+  <a href="/recurring-expenses" data-back-link>
+    Go Back
+  </a>
+</div>
 
 <div class="stack" data-access-denied hidden>
   <p>You don't have access to this record.</p>
@@ -131,6 +135,9 @@ description: Edit or delete a recurring expense. You can also set it to inactive
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { updateBackLink } from '/scripts/utilities/index.mjs';
+
+  updateBackLink();
 
   if (!appUser?.uid || !isPayingUser) {
     window.location.href = '/recurring-expenses';

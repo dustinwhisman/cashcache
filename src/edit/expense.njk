@@ -8,7 +8,11 @@ description: Edit or delete an expense.
   Edit Expense
 </h1>
 
-{% include "components/back-link.njk" %}
+<div>
+  <a href="/overview" data-back-link>
+    Go Back
+  </a>
+</div>
 
 <div class="stack" data-access-denied hidden>
   <p>You don't have access to this record.</p>
@@ -59,6 +63,9 @@ description: Edit or delete an expense.
 {% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
+  import { updateBackLink } from '/scripts/utilities/index.mjs';
+
+  updateBackLink();
 
   let key;
   const storeName = 'expenses';

@@ -1,4 +1,7 @@
 import { getAllFromObjectStore, getAllFromCloud } from './db.mjs';
+import { updateBackLink } from './utilities/index.mjs';
+
+updateBackLink();
 
 let networkDataLoaded = false;
 

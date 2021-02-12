@@ -1,4 +1,7 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from './db.mjs';
+import { updateBackLink } from './utilities/index.mjs';
+
+updateBackLink();
 
 const importData = async (data) => {
   const importProgressIndicator = document.querySelector('[data-import-progress]');

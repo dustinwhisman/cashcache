@@ -8,7 +8,11 @@ description: Add savings. Categorize it, describe it, and say how much is in the
   Add Savings
 </h1>
 
-{% include "components/back-link.njk" %}
+<div>
+  <a href="/overview" data-back-link>
+    Go Back
+  </a>
+</div>
 
 <form class="stack">
   {% include "inputs/year-month-inputs.njk" %}
@@ -38,6 +42,9 @@ description: Add savings. Categorize it, describe it, and say how much is in the
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
+  import { updateBackLink } from '/scripts/utilities/index.mjs';
+
+  updateBackLink();
 
   const storeName = 'savings';
   let networkCategoriesLoaded = false;

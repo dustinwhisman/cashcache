@@ -17,7 +17,11 @@ description: Add recurring income, such as your paycheck, so you can save time i
   Add Recurring Income
 </h1>
 
-{% include "components/back-link.njk" %}
+<div>
+  <a href="/recurring-income" data-back-link>
+    Go Back
+  </a>
+</div>
 
 <form class="stack">
   {% include "inputs/category-inputs.njk" %}
@@ -110,6 +114,9 @@ description: Add recurring income, such as your paycheck, so you can save time i
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
+  import { updateBackLink } from '/scripts/utilities/index.mjs';
+
+  updateBackLink();
 
   if (!appUser?.uid || !isPayingUser) {
     window.location.href = '/recurring-income';
