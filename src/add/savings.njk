@@ -40,6 +40,7 @@ description: Add savings. Categorize it, describe it, and say how much is in the
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
+<script src="/scripts/year-month-inputs.js"></script>
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
   import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';

@@ -51,6 +51,7 @@ description: Add debt, including the balance, minimum payment, and interest rate
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
+<script src="/scripts/year-month-inputs.js"></script>
 <script type="module">
   import { addToDb } from '/scripts/db.mjs';
   import { updateBackLink } from '/scripts/utilities/index.mjs';

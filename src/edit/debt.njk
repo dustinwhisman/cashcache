@@ -72,6 +72,7 @@ description: Edit or delete debt.
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
 {% include "scripts/format-currency.njk" %}
+<script src="/scripts/year-month-inputs.js"></script>
 <script type="module">
   import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
   import { updateBackLink } from '/scripts/utilities/index.mjs';
