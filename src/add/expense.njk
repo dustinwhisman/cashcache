@@ -40,6 +40,7 @@ description: Add an expense. Categorize it, describe it, and say how much you sp
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
+<script src="/scripts/date-inputs.js"></script>
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
   import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
