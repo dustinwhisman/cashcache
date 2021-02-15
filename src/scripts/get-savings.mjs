@@ -1,3 +1,5 @@
+import { formatCurrency } from './utilities/index.mjs';
+
 let copySavingsBlock = `
   <div data-copy-savings hidden>
     <button type="button" style="width: 100%">

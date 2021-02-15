@@ -60,11 +60,10 @@ description: Edit or delete savings.
 
 {% include "scripts/firebase.njk" %}
 {% include "scripts/sanitize.njk" %}
-{% include "scripts/format-currency.njk" %}
 <script src="/scripts/year-month-inputs.js"></script>
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
-  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener, formatCurrency } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
   addCategoryEventListener();

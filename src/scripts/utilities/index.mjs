@@ -21,6 +21,10 @@ export const addCategoryEventListener = () => {
   });
 };
 
+export const formatCurrency = (value, locale = 'en-US', currency = 'USD') => new Intl
+  .NumberFormat(locale, { style: 'currency', currency })
+  .format(value);
+
 const checkboxSvg = `
   <svg width="32" height="32" viewBox="-6 -6 44 44" aria-hidden="true" focusable="false" style="height: 1em; width: 1em">
     <rect class="checkbox__bg" width="35" height="35" x="-2" y="-2" stroke="currentColor" fill="none" stroke-width="3" rx="6"

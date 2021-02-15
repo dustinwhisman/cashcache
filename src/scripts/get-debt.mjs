@@ -1,3 +1,5 @@
+import { formatCurrency } from './utilities/index.mjs';
+
 let copyDebtBlock = `
   <div data-copy-debt hidden>
     <button type="button" style="width: 100%">

@@ -60,9 +60,9 @@ description: Here are your recurring expenses – the things that you pay on a r
 </div>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
+  import { formatCurrency } from '/scripts/utilities/index.mjs';
 
   let networkDataLoaded = false;
 

@@ -133,8 +133,8 @@ description: See how this month went in terms of when and how much you spent or 
 </div>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/format-currency.njk" %}
-<script>
+<script type="module">
+  import { formatCurrency } from '/scripts/utilities/index.mjs';
   const today = new Date();
   let month = today.getMonth();
   let year = today.getFullYear();

@@ -58,9 +58,9 @@ description: Here is all of your recurring income – the money you make on a re
 </div>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/format-currency.njk" %}
 <script type="module">
   import { getAllFromObjectStore, getAllFromCloud } from '/scripts/db.mjs';
+  import { formatCurrency } from '/scripts/utilities/index.mjs';
 
   let networkDataLoaded = false;
 

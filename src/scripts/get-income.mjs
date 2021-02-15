@@ -1,3 +1,5 @@
+import { formatCurrency } from './utilities/index.mjs';
+
 let recurringIncomeBlock = `
   <div data-manage-recurring-income hidden>
     <div data-copy-income hidden>
