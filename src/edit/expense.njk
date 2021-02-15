@@ -59,11 +59,10 @@ description: Edit or delete an expense.
 </div>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/sanitize.njk" %}
 <script src="/scripts/date-inputs.js"></script>
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '/scripts/db.mjs';
-  import { updateBackLink, addCategoryEventListener, formatCurrency } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
   addCategoryEventListener();

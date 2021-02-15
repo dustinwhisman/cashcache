@@ -50,11 +50,10 @@ description: Add debt, including the balance, minimum payment, and interest rate
 </form>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/sanitize.njk" %}
 <script src="/scripts/year-month-inputs.js"></script>
 <script type="module">
   import { addToDb } from '/scripts/db.mjs';
-  import { updateBackLink } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, sanitize } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
   document.addEventListener('submit', async (event) => {

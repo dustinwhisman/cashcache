@@ -111,11 +111,10 @@ description: Add a recurring expense so you can save time in the future and won'
 </form>
 
 {% include "scripts/firebase.njk" %}
-{% include "scripts/sanitize.njk" %}
 <script src="/scripts/date-inputs.js"></script>
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink, addCategoryEventListener, initializeComplexDates } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener, initializeComplexDates, sanitize } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
   addCategoryEventListener();

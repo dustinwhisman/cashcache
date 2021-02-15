@@ -29,6 +29,8 @@ export const formatDate = (year, month, day, locale = 'en-US') => new Intl
   .DateTimeFormat(locale, { year: '2-digit', month: 'numeric', day: 'numeric' })
   .format(new Date(year, month, day));
 
+export const sanitize = (value) => Number(value.toString().replace(/[^0-9|.]/g, ''));
+
 const checkboxSvg = `
   <svg width="32" height="32" viewBox="-6 -6 44 44" aria-hidden="true" focusable="false" style="height: 1em; width: 1em">
     <rect class="checkbox__bg" width="35" height="35" x="-2" y="-2" stroke="currentColor" fill="none" stroke-width="3" rx="6"
