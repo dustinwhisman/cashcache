@@ -16,36 +16,3 @@
   <div class="dates-grid" data-calendar>
   </div>
 </fieldset>
-<script>
-  (() => {
-    const calendar = document.querySelector('[data-calendar]');
-
-    for (let i = 1; i <= 31; i += 1) {
-      calendar.innerHTML += `
-        <div>
-          <label class="custom-checkbox" ${i > 28 ? 'style="opacity: 0.5"' : ''}>
-            <input type="checkbox" name="days-of-month" value="${i}">
-            {% include "svgs/checkbox-svg.njk" %}
-            <span>
-              ${i}
-            </span>
-          </label>
-        </div>
-      `;
-    }
-  })();
-
-  document.addEventListener('change', (event) => {
-    if (event.target.matches('[name=frequency]')) {
-      const simpleDatesBlock = document.querySelector('[data-simple-dates]');
-      const complexDatesBlock = document.querySelector('[data-complex-dates]');
-      if (event.target.value === 'twice-per-month') {
-        simpleDatesBlock.setAttribute('hidden', true);
-        complexDatesBlock.removeAttribute('hidden');
-      } else {
-        simpleDatesBlock.removeAttribute('hidden');
-        complexDatesBlock.setAttribute('hidden', true);
-      }
-    }
-  });
-</script>

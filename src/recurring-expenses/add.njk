@@ -114,10 +114,11 @@ description: Add a recurring expense so you can save time in the future and won'
 {% include "scripts/sanitize.njk" %}
 <script type="module">
   import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink, addCategoryEventListener } from '/scripts/utilities/index.mjs';
+  import { updateBackLink, addCategoryEventListener, initializeComplexDates } from '/scripts/utilities/index.mjs';
 
   updateBackLink();
   addCategoryEventListener();
+  initializeComplexDates();
 
   if (!appUser?.uid || !isPayingUser) {
     window.location.href = '/recurring-expenses';
