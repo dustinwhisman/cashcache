@@ -1,299 +1,305 @@
----
-title: Overview
-layout: layouts/app-layout.njk
-description: Your month at a glance. Easily track expenses, income, savings, or debt from here, and look at your totals as the month progresses.
----
+{% extends "layouts/app-layout.njk" %}
 
-<style>
-  article {
-    height: 100%;
-  }
+{% block titleAndDescription %}
+  <title>Overview | Cash Cache</title>
+  <meta name="description" content="Your month at a glance. Easily track expenses, income, savings, or debt from here, and look at your totals as the month progresses.">
+{% endblock %}
 
-  .grid-wrapper {
-    height: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-block-end: 11px;
-  }
-
-  .sections {
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: repeat(4, minmax(calc((var(--max-width) - 3rem) / 4), 1fr));
-    height: 100%;
-  }
-
-  @media screen and (max-width: 60ch) {
-    .sections {
-      grid-template-columns: repeat(4, minmax(80vw, 1fr));
+{% block styles %}
+  <style>
+    article {
+      height: 100%;
     }
-  }
 
-  .sections section {
-    height: 100%;
-    scroll-snap-align: start;
-  }
+    .grid-wrapper {
+      height: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-block-end: 11px;
+    }
 
-  section {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-  }
+    .sections {
+      display: grid;
+      grid-gap: 1rem;
+      grid-template-columns: repeat(4, minmax(calc((var(--max-width) - 3rem) / 4), 1fr));
+      height: 100%;
+    }
 
-  .full-width-button {
-    display: block;
-    width: 100%;
-    padding: 0.5em;
-    border: 0.125em solid var(--text-color);
-    text-decoration: none;
-    text-align: center;
-  }
+    @media screen and (max-width: 60ch) {
+      .sections {
+        grid-template-columns: repeat(4, minmax(80vw, 1fr));
+      }
+    }
 
-  [data-section-heading],
-  .cluster.heading {
-    border-block-end: 0.125em solid var(--text-color);
-  }
+    .sections section {
+      height: 100%;
+      scroll-snap-align: start;
+    }
 
-  .cluster.heading {
-    margin-block-end: 0.5em;
-  }
+    section {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
 
-  [data-section-heading] p,
-  .cluster.heading p {
-    font-weight: var(--heading-font-weight);
-  }
+    .full-width-button {
+      display: block;
+      width: 100%;
+      padding: 0.5em;
+      border: 0.125em solid var(--text-color);
+      text-decoration: none;
+      text-align: center;
+    }
 
-  [data-section-body] {
-    max-height: calc(100vh - 13rem - 11px);
-    overflow-y: auto;
-  }
+    [data-section-heading],
+    .cluster.heading {
+      border-block-end: 0.125em solid var(--text-color);
+    }
 
-  .grid-wrapper::-webkit-scrollbar,
-  [data-section-body]::-webkit-scrollbar {
-    width: 11px;
-  }
+    .cluster.heading {
+      margin-block-end: 0.5em;
+    }
 
-  .grid-wrapper,
-  [data-section-body] {
-    scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-color) transparent;
-  }
+    [data-section-heading] p,
+    .cluster.heading p {
+      font-weight: var(--heading-font-weight);
+    }
 
-  .grid-wrapper::-webkit-scrollbar-track,
-  [data-section-body]::-webkit-scrollbar-track {
-    background: transparent;
-  }
+    [data-section-body] {
+      max-height: calc(100vh - 13rem - 11px);
+      overflow-y: auto;
+    }
 
-  .grid-wrapper::-webkit-scrollbar-thumb,
-  [data-section-body]::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-color);
-    border-radius: 6px;
-    border: 3px solid var(--scrollbar-color);
-  }
-</style>
+    .grid-wrapper::-webkit-scrollbar,
+    [data-section-body]::-webkit-scrollbar {
+      width: 11px;
+    }
 
-<div class="container" style="--max-width: 1200px">
-  <div class="cluster">
-    <div class="justify-content:space-between">
-      <a href="/overview" data-previous-link>Previous</a>
-      <h1 class="h5" data-current-month>Current</h1>
-      <a href="/overview" data-next-link>Next</a>
+    .grid-wrapper,
+    [data-section-body] {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-color) transparent;
+    }
+
+    .grid-wrapper::-webkit-scrollbar-track,
+    [data-section-body]::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .grid-wrapper::-webkit-scrollbar-thumb,
+    [data-section-body]::-webkit-scrollbar-thumb {
+      background-color: var(--scrollbar-color);
+      border-radius: 6px;
+      border: 3px solid var(--scrollbar-color);
+    }
+  </style>
+{% endblock %}
+
+{% block mainContent %}
+  <div class="container" style="--max-width: 1200px">
+    <div class="cluster">
+      <div class="justify-content:space-between">
+        <a href="/overview" data-previous-link>Previous</a>
+        <h1 class="h5" data-current-month>Current</h1>
+        <a href="/overview" data-next-link>Next</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="grid-wrapper">
-  <div class="sections">
-    <section>
-      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
-        <div class="justify-content:space-between">
-          <h2 class="h5">
-            Expenses
-          </h2>
-          <p data-total-expenses>
-            $0.00
-          </p>
-        </div>
-      </div>
-      <div class="stack padding:halfem" data-expenses data-section-body>
-        <div>
-          Loading expenses...
-        </div>
-        <div data-no-expenses hidden>
-          <p>
-            You haven't tracked any expenses yet.
-          </p>
-        </div>
-        <div data-manage-recurring-expenses hidden>
-          <div data-copy-expenses hidden>
-            <button type="button" style="width: 100%; margin-block-end: 1.5rem">
-              Copy Recurring Expenses
-            </button>
+  <div class="grid-wrapper">
+    <div class="sections">
+      <section>
+        <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+          <div class="justify-content:space-between">
+            <h2 class="h5">
+              Expenses
+            </h2>
+            <p data-total-expenses>
+              $0.00
+            </p>
           </div>
-          <a href="/recurring-expenses" class="small">
-            View Recurring Expenses
+        </div>
+        <div class="stack padding:halfem" data-expenses data-section-body>
+          <div>
+            Loading expenses...
+          </div>
+          <div data-no-expenses hidden>
+            <p>
+              You haven't tracked any expenses yet.
+            </p>
+          </div>
+          <div data-manage-recurring-expenses hidden>
+            <div data-copy-expenses hidden>
+              <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+                Copy Recurring Expenses
+              </button>
+            </div>
+            <a href="/recurring-expenses" class="small">
+              View Recurring Expenses
+            </a>
+          </div>
+        </div>
+        <div>
+          <a href="/add/expense" class="full-width-button" data-add-expense-link>
+            Add Expense
           </a>
         </div>
-      </div>
-      <div>
-        <a href="/add/expense" class="full-width-button" data-add-expense-link>
-          Add Expense
-        </a>
-      </div>
-    </section>
-    <section>
-      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
-        <div class="justify-content:space-between">
-          <h2 class="h5">
-            Income
-          </h2>
-          <p data-total-income>
-            $0.00
-          </p>
-        </div>
-      </div>
-      <div class="stack padding:halfem" data-income data-section-body>
-        <div>
-          Loading income...
-        </div>
-        <div data-no-income hidden>
-          <p>
-            You haven't tracked any income yet.
-          </p>
-        </div>
-        <div data-manage-recurring-income hidden>
-          <div data-copy-income hidden>
-            <button type="button" style="width: 100%; margin-block-end: 1.5rem">
-              Copy Recurring Income
-            </button>
+      </section>
+      <section>
+        <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+          <div class="justify-content:space-between">
+            <h2 class="h5">
+              Income
+            </h2>
+            <p data-total-income>
+              $0.00
+            </p>
           </div>
-          <a href="/recurring-income" class="small">
-            View Recurring Income
+        </div>
+        <div class="stack padding:halfem" data-income data-section-body>
+          <div>
+            Loading income...
+          </div>
+          <div data-no-income hidden>
+            <p>
+              You haven't tracked any income yet.
+            </p>
+          </div>
+          <div data-manage-recurring-income hidden>
+            <div data-copy-income hidden>
+              <button type="button" style="width: 100%; margin-block-end: 1.5rem">
+                Copy Recurring Income
+              </button>
+            </div>
+            <a href="/recurring-income" class="small">
+              View Recurring Income
+            </a>
+          </div>
+        </div>
+        <div>
+          <a href="/add/income" class="full-width-button" data-add-income-link>
+            Add Income
           </a>
         </div>
-      </div>
-      <div>
-        <a href="/add/income" class="full-width-button" data-add-income-link>
-          Add Income
-        </a>
-      </div>
-    </section>
-    <section>
-      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
-        <div class="justify-content:space-between">
-          <h2 class="h5">
-            Savings
-          </h2>
-          <p data-total-savings>
-            $0.00
-          </p>
+      </section>
+      <section>
+        <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+          <div class="justify-content:space-between">
+            <h2 class="h5">
+              Savings
+            </h2>
+            <p data-total-savings>
+              $0.00
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="stack padding:halfem" data-savings data-section-body>
+        <div class="stack padding:halfem" data-savings data-section-body>
+          <div>
+            Loading savings...
+          </div>
+          <div data-no-savings hidden>
+            <p>
+              You haven't tracked any savings yet.
+            </p>
+          </div>
+          <div data-copy-savings hidden>
+            <button type="button" style="width: 100%">
+              Copy Last Month's Savings
+            </button>
+          </div>
+        </div>
         <div>
-          Loading savings...
+          <a href="/add/savings" class="full-width-button" data-add-savings-link>
+            Add Savings
+          </a>
         </div>
-        <div data-no-savings hidden>
-          <p>
-            You haven't tracked any savings yet.
-          </p>
+      </section>
+      <section>
+        <div class="cluster overflow:hidden padding:halfem" data-section-heading>
+          <div class="justify-content:space-between">
+            <h2 class="h5">
+              Debt
+            </h2>
+            <p data-total-debt>
+              $0.00
+            </p>
+          </div>
         </div>
-        <div data-copy-savings hidden>
-          <button type="button" style="width: 100%">
-            Copy Last Month's Savings
-          </button>
+        <div class="stack padding:halfem" data-debt data-section-body>
+          <div>
+            Loading debt...
+          </div>
+          <div data-no-debt hidden>
+            <p>
+              You haven't tracked any debt yet.
+            </p>
+          </div>
+          <div data-copy-debt hidden>
+            <button type="button" style="width: 100%">
+              Copy Last Month's Debt
+            </button>
+          </div>
         </div>
-      </div>
-      <div>
-        <a href="/add/savings" class="full-width-button" data-add-savings-link>
-          Add Savings
-        </a>
-      </div>
-    </section>
-    <section>
-      <div class="cluster overflow:hidden padding:halfem" data-section-heading>
-        <div class="justify-content:space-between">
-          <h2 class="h5">
-            Debt
-          </h2>
-          <p data-total-debt>
-            $0.00
-          </p>
-        </div>
-      </div>
-      <div class="stack padding:halfem" data-debt data-section-body>
         <div>
-          Loading debt...
+          <a href="/add/debt" class="full-width-button" data-add-debt-link>
+            Add Debt
+          </a>
         </div>
-        <div data-no-debt hidden>
-          <p>
-            You haven't tracked any debt yet.
-          </p>
-        </div>
-        <div data-copy-debt hidden>
-          <button type="button" style="width: 100%">
-            Copy Last Month's Debt
-          </button>
-        </div>
-      </div>
-      <div>
-        <a href="/add/debt" class="full-width-button" data-add-debt-link>
-          Add Debt
-        </a>
-      </div>
-   </section>
+    </section>
+    </div>
   </div>
-</div>
+{% endblock %}
 
-{% include "scripts/firebase.njk" %}
-<script>
-  const today = new Date();
-  let month = today.getMonth();
-  let year = today.getFullYear();
-  const params = new URLSearchParams(window.location.search);
+{% block scripts %}
+  <script>
+    const today = new Date();
+    let month = today.getMonth();
+    let year = today.getFullYear();
+    const params = new URLSearchParams(window.location.search);
 
-  if (params?.has('m')) {
-    month = Number(params.get('m'));
-  }
+    if (params?.has('m')) {
+      month = Number(params.get('m'));
+    }
 
-  if (params?.has('y')) {
-    year = Number(params.get('y'));
-  }
+    if (params?.has('y')) {
+      year = Number(params.get('y'));
+    }
 
-  const prevMonth = month - 1 >= 0 ? month - 1 : 11;
-  const prevYear = prevMonth === 11 ? year - 1 : year;
+    const prevMonth = month - 1 >= 0 ? month - 1 : 11;
+    const prevYear = prevMonth === 11 ? year - 1 : year;
 
-  const nextMonth = month + 1 <= 11 ? month + 1 : 0;
-  const nextYear = nextMonth === 0 ? year + 1 : year;
+    const nextMonth = month + 1 <= 11 ? month + 1 : 0;
+    const nextYear = nextMonth === 0 ? year + 1 : year;
 
-  const previousLink = document.querySelector('[data-previous-link]');
-  previousLink.href = `/overview?m=${prevMonth}&y=${prevYear}`;
-  previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
+    const previousLink = document.querySelector('[data-previous-link]');
+    previousLink.href = `/overview?m=${prevMonth}&y=${prevYear}`;
+    previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
 
-  const nextLink = document.querySelector('[data-next-link]');
-  nextLink.href = `/overview?m=${nextMonth}&y=${nextYear}`;
-  nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
+    const nextLink = document.querySelector('[data-next-link]');
+    nextLink.href = `/overview?m=${nextMonth}&y=${nextYear}`;
+    nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
 
-  const currentMonth = document.querySelector('[data-current-month]');
-  currentMonth.innerHTML = new Date(year, month, 1).toLocaleString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
-</script>
-<script>
-  const addExpenseLink = document.querySelector('[data-add-expense-link]');
-  const addIncomeLink = document.querySelector('[data-add-income-link]');
-  const addSavingsLink = document.querySelector('[data-add-savings-link]');
-  const addDebtLink = document.querySelector('[data-add-debt-link]');
+    const currentMonth = document.querySelector('[data-current-month]');
+    currentMonth.innerHTML = new Date(year, month, 1).toLocaleString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
+  </script>
+  <script>
+    const addExpenseLink = document.querySelector('[data-add-expense-link]');
+    const addIncomeLink = document.querySelector('[data-add-income-link]');
+    const addSavingsLink = document.querySelector('[data-add-savings-link]');
+    const addDebtLink = document.querySelector('[data-add-debt-link]');
 
-  addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
-  addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
-  addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
-  addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
-</script>
-<script src="/scripts/overview.mjs" type="module"></script>
+    addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
+    addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
+    addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
+    addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
+  </script>
+  <script src="/scripts/overview.mjs" type="module"></script>
+{% endblock %}
