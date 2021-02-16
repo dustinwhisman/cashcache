@@ -1,22 +1,23 @@
----
-title: 404 Not Found
-layout: layouts/simple-layout.njk
-description: I still haven't found what I'm looking for.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  404 Not Found
-</h1>
+{% block titleAndDescription %}
+  <title>404 Not Found | Cash Cache</title>
+  <meta name="description" content="I still haven't found what I'm looking for.">
+{% endblock %}
 
-<p>
-  Well, this is embarrassing. It seems like the page you were looking for isn't
-  there anymore. You can try retracing your steps or go back to your
-  <a href="/overview">overview page</a>.
-</p>
+{% block mainContent %}
+  <h1>
+    404 Not Found
+  </h1>
 
-<p>
-  If you think something is broken, please send us a message at
-  {% include "components/contact-email.njk" %}
-</p>
+  <p>
+    Well, this is embarrassing. It seems like the page you were looking for isn't
+    there anymore. You can try retracing your steps or go back to your
+    <a href="/overview">overview page</a>.
+  </p>
 
-{% include "scripts/firebase.njk" %}
+  <p>
+    If you think something is broken, please send us a message at
+    {% include "components/contact-email.njk" %}
+  </p>
+{% endblock %}

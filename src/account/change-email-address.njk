@@ -1,60 +1,64 @@
----
-title: Change Email Address
-layout: layouts/simple-layout.njk
-description: Finalize changing the email address associated with your account.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Change Email Address
-</h1>
+{% block titleAndDescription %}
+  <title> Change Email Address | Cash Cache</title>
+  <meta name="description" content="Finalize changing the email address associated with your account.">
+{% endblock %}
 
-<form class="stack" data-update-email-form hidden>
-  <div>
-    <label for="new-email">
-      New Email
-    </label>
-    <input id="new-email" type="email" name="new-email" inputmode="email" autocapitalize="off" style="width: 50ch">
+{% block mainContent %}
+  <h1>
+    Change Email Address
+  </h1>
+
+  <form class="stack" data-update-email-form hidden>
+    <div>
+      <label for="new-email">
+        New Email
+      </label>
+      <input id="new-email" type="email" name="new-email" inputmode="email" autocapitalize="off" style="width: 50ch">
+    </div>
+    <div>
+      <button type="submit" data-update-email-button>
+        Save Changes
+      </button>
+    </div>
+  </form>
+
+  <div data-credentials-invalid hidden>
+    <p>
+      We couldn't log you in. You may have already used the link from the email we
+      sent you, or it could have expired. You can try again from the
+      <a href="/account">account page</a>.
+    </p>
   </div>
-  <div>
-    <button type="submit" data-update-email-button>
-      Save Changes
-    </button>
-  </div>
-</form>
+{% endblock %}
 
-<div data-credentials-invalid hidden>
-  <p>
-    We couldn't log you in. You may have already used the link from the email we
-    sent you, or it could have expired. You can try again from the
-    <a href="/account">account page</a>.
-  </p>
-</div>
+{% block scripts %}
+  <script>
+    const credential = firebase.auth.EmailAuthProvider.credentialWithLink(appUser.email, window.location.href);
 
-{% include "scripts/firebase.njk" %}
-<script>
-  const credential = firebase.auth.EmailAuthProvider.credentialWithLink(appUser.email, window.location.href);
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        user.reauthenticateWithCredential(credential)
+          .then(() => {
+            const form = document.querySelector('[data-update-email-form]');
+            form.removeAttribute('hidden');
+          })
+          .catch(() => {
+            const errorMessage = document.querySelector('[data-credentials-invalid]');
+            errorMessage.removeAttribute('hidden');
+          });
+      }
+    });
 
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      user.reauthenticateWithCredential(credential)
-        .then(() => {
-          const form = document.querySelector('[data-update-email-form]');
-          form.removeAttribute('hidden');
+    document.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (event.target.matches('[data-update-email-form]')) {
+        appUser.updateEmail(event.target.elements['new-email'].value).then(() => {
+          window.location.href = '/account';
         })
-        .catch(() => {
-          const errorMessage = document.querySelector('[data-credentials-invalid]');
-          errorMessage.removeAttribute('hidden');
-        });
-    }
-  });
-
-  document.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (event.target.matches('[data-update-email-form]')) {
-      appUser.updateEmail(event.target.elements['new-email'].value).then(() => {
-        window.location.href = '/account';
-      })
-      .catch(console.error);
-    }
-  });
-</script>
+        .catch(console.error);
+      }
+    });
+  </script>
+{% endblock %}

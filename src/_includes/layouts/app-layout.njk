@@ -1,32 +1,15 @@
 <!doctype html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block titleAndDescription %}
       <title>Cash Cache</title>
       <meta name="description" content="Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.">
     {% endblock %}
-    <link rel="shortcut icon" href="/favicon.png" type="image/png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#202020">
-    <link rel="apple-touch-icon" href="/icons/icon_192.png">
-
-    <link rel="preconnect" href="https://www.googleapis.com">
-    <link rel="preconnect" href="https://securetoken.googleapis.com">
-    <link rel="preconnect" href="https://m.stripe.com">
-
-    <script>
-      const brightnessMode = localStorage.getItem('brightness-mode');
-      if (brightnessMode) {
-        document.documentElement.classList.add(brightnessMode);
-      }
-    </script>
     <style>
       {% include "styles.css" %}
     </style>
     {% block styles %}{% endblock %}
-    <script src="https://js.stripe.com/v3/" async></script>
+    {% include "layouts/partials/head.njk" %}
   </head>
   <body>
     <div class="spread">

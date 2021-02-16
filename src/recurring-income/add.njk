@@ -1,230 +1,236 @@
----
-title: Add Recurring Income
-layout: layouts/simple-layout.njk
-description: Add recurring income, such as your paycheck, so you can save time in the future and can plan ahead knowing how much you can expect to earn.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<style>
-  .dates-grid {
-    display: grid;
-    grid-gap: 0.75em;
-    grid-template-columns: repeat(7, max-content);
-    font-size: calc(var(--h6));
-  }
-</style>
+{% block titleAndDescription %}
+  <title>Add Recurring Income | Cash Cache</title>
+  <meta name="description" content="Add recurring income, such as your paycheck, so you can save time in the future and can plan ahead knowing how much you can expect to earn.">
+{% endblock %}
 
-<h1>
-  Add Recurring Income
-</h1>
+{% block styles %}
+  <style>
+    .dates-grid {
+      display: grid;
+      grid-gap: 0.75em;
+      grid-template-columns: repeat(7, max-content);
+      font-size: calc(var(--h6));
+    }
+  </style>
+{% endblock %}
 
-<div>
-  <a href="/recurring-income" data-back-link>
-    Go Back
-  </a>
-</div>
+{% block mainContent %}
+  <h1>
+    Add Recurring Income
+  </h1>
 
-<form class="stack">
-  {% include "inputs/category-inputs.njk" %}
   <div>
-    <label for="income-description">
-      Description
-    </label>
-    <input id="income-description" type="text" name="income-description" required>
+    <a href="/recurring-income" data-back-link>
+      Go Back
+    </a>
   </div>
-  <div>
-    <label for="amount">
-      Amount
-    </label>
-    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
-  </div>
-  <fieldset>
-    <legend>
-      Frequency
-    </legend>
-    <div class="stack" style="--stack-space: 0.5em">
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-month" checked>
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Month
-        </span>
+
+  <form class="stack">
+    {% include "inputs/category-inputs.njk" %}
+    <div>
+      <label for="income-description">
+        Description
       </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="3-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 3 Months
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="6-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 6 Months
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-year">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Year
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="1-week">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every Week
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="2-week">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Every 2 Weeks
-        </span>
-      </label>
-      <label class="custom-checkbox">
-        <input type="radio" name="frequency" value="twice-per-month">
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          Twice per Month
-        </span>
-      </label>
+      <input id="income-description" type="text" name="income-description" required>
     </div>
-  </fieldset>
-  {% include "inputs/complex-dates.njk" %}
-  <label class="custom-checkbox">
-    <input type="checkbox" name="active" checked>
-    {% include "svgs/checkbox-svg.njk" %}
-    <span>
-      This recurring income is currently active
-    </span>
-  </label>
-  <input type="hidden" name="key" value="">
-  <div>
-    <span class="visually-hidden" role="status" data-submit-status></span>
-    <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
-      Save Recurring Income
-    </button>
-  </div>
-</form>
-
-{% include "scripts/firebase.njk" %}
-<script src="/scripts/date-inputs.js"></script>
-<script type="module">
-  import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
-  import { updateBackLink, addCategoryEventListener, initializeComplexDates, sanitize } from '/scripts/utilities/index.mjs';
-
-  updateBackLink();
-  addCategoryEventListener();
-  initializeComplexDates();
-
-  if (!appUser?.uid || !isPayingUser) {
-    window.location.href = '/recurring-income';
-  }
-
-  const storeName = 'income';
-  let networkCategoriesLoaded = false;
-  let cachedCategoriesLoaded = false;
-  const renderCategories = (categories) => {
-    const categoriesDiv = document.querySelector('[data-category]');
-    let categoryTemplate = `
-      <label class="custom-checkbox">
-        <input type="radio" name="category" value="new-category" required>
-        {% include "svgs/radio-svg.njk" %}
-        <span>
-          New Category
-        </span>
+    <div>
+      <label for="amount">
+        Amount
       </label>
-    `;
-    categories?.sort().forEach((category) => {
-      categoryTemplate += `
+      <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+    </div>
+    <fieldset>
+      <legend>
+        Frequency
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
         <label class="custom-checkbox">
-          <input type="radio" name="category" value="${category}" required>
+          <input type="radio" name="frequency" value="1-month" checked>
           {% include "svgs/radio-svg.njk" %}
           <span>
-            ${category}
+            Every Month
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="3-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 3 Months
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="6-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 6 Months
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="1-year">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every Year
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="1-week">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every Week
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="2-week">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Every 2 Weeks
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="frequency" value="twice-per-month">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Twice per Month
+          </span>
+        </label>
+      </div>
+    </fieldset>
+    {% include "inputs/complex-dates.njk" %}
+    <label class="custom-checkbox">
+      <input type="checkbox" name="active" checked>
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        This recurring income is currently active
+      </span>
+    </label>
+    <input type="hidden" name="key" value="">
+    <div>
+      <span class="visually-hidden" role="status" data-submit-status></span>
+      <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
+        Save Recurring Income
+      </button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/date-inputs.js"></script>
+  <script type="module">
+    import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '/scripts/db.mjs';
+    import { updateBackLink, addCategoryEventListener, initializeComplexDates, sanitize } from '/scripts/utilities/index.mjs';
+
+    updateBackLink();
+    addCategoryEventListener();
+    initializeComplexDates();
+
+    if (!appUser?.uid || !isPayingUser) {
+      window.location.href = '/recurring-income';
+    }
+
+    const storeName = 'income';
+    let networkCategoriesLoaded = false;
+    let cachedCategoriesLoaded = false;
+    const renderCategories = (categories) => {
+      const categoriesDiv = document.querySelector('[data-category]');
+      let categoryTemplate = `
+        <label class="custom-checkbox">
+          <input type="radio" name="category" value="new-category" required>
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            New Category
           </span>
         </label>
       `;
+      categories?.sort().forEach((category) => {
+        categoryTemplate += `
+          <label class="custom-checkbox">
+            <input type="radio" name="category" value="${category}" required>
+            {% include "svgs/radio-svg.njk" %}
+            <span>
+              ${category}
+            </span>
+          </label>
+        `;
 
-    });
-    categoriesDiv.innerHTML = categoryTemplate;
-  };
-
-  document.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const { elements } = event.target;
-    const income = {
-      uid: appUser?.uid,
-      key: elements['key'].value || null,
-      category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
-      description: elements['income-description'].value,
-      amount: sanitize(elements['amount'].value),
-      year: Number(elements['year'].value),
-      month: Number(elements['month'].value) - 1,
-      day: Number(elements['day'].value),
-      frequency: elements['frequency'].value,
-      daysOfMonth: Array.from(elements['days-of-month']).filter(checkbox => checkbox.checked).map(checkbox => Number(checkbox.value)),
-      active: elements['active'].checked,
+      });
+      categoriesDiv.innerHTML = categoryTemplate;
     };
 
-    const statusElement = document.querySelector('[data-submit-status]');
-    const button = event.target.querySelector('button[type=submit]');
-    const savingMessage = button.dataset.labelSaving;
-    const savedMessage = button.dataset.labelSaved;
-    const failedMessage = button.dataset.labelFailed;
+    document.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-    try {
-      button.innerHTML = savingMessage;
-      statusElement.innerHTML = savingMessage;
+      const { elements } = event.target;
+      const income = {
+        uid: appUser?.uid,
+        key: elements['key'].value || null,
+        category: elements['category'].value === 'new-category' ? elements['new-category'].value : elements['category'].value,
+        description: elements['income-description'].value,
+        amount: sanitize(elements['amount'].value),
+        year: Number(elements['year'].value),
+        month: Number(elements['month'].value) - 1,
+        day: Number(elements['day'].value),
+        frequency: elements['frequency'].value,
+        daysOfMonth: Array.from(elements['days-of-month']).filter(checkbox => checkbox.checked).map(checkbox => Number(checkbox.value)),
+        active: elements['active'].checked,
+      };
 
-      await addToDb('recurring-income', income);
+      const statusElement = document.querySelector('[data-submit-status]');
+      const button = event.target.querySelector('button[type=submit]');
+      const savingMessage = button.dataset.labelSaving;
+      const savedMessage = button.dataset.labelSaved;
+      const failedMessage = button.dataset.labelFailed;
 
-      button.innerHTML = savedMessage;
-      statusElement.innerHTML = savedMessage;
+      try {
+        button.innerHTML = savingMessage;
+        statusElement.innerHTML = savingMessage;
 
-      window.location.href = `/recurring-income`;
-    } catch (error) {
-      button.innerHTML = failedMessage;
-      statusElement.innerHTML = failedMessage;
-      console.error(error);
-    }
-  });
+        await addToDb('recurring-income', income);
 
-  (async () => {
-    const categories = await getAllCategories(storeName);
-    cachedCategoriesLoaded = true;
+        button.innerHTML = savedMessage;
+        statusElement.innerHTML = savedMessage;
 
-    if (!networkCategoriesLoaded) {
-      renderCategories(categories);
-    }
-  })();
+        window.location.href = `/recurring-income`;
+      } catch (error) {
+        button.innerHTML = failedMessage;
+        statusElement.innerHTML = failedMessage;
+        console.error(error);
+      }
+    });
 
-  document.addEventListener('token-confirmed', async () => {
-    if (appUser?.uid && isPayingUser) {
-      const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
-      networkCategoriesLoaded = true;
+    (async () => {
+      const categories = await getAllCategories(storeName);
+      cachedCategoriesLoaded = true;
 
-      if (!cachedCategoriesLoaded) {
+      if (!networkCategoriesLoaded) {
         renderCategories(categories);
-      } else {
-        const form = document.querySelector('form');
-        const category = form.elements['category'].value;
+      }
+    })();
 
-        let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
-        const isFocused = categoryInput === document.activeElement;
-        renderCategories(categories);
-        categoryInput = document.querySelector(`[name=category][value="${category}"]`);
-        if (categoryInput) {
-          categoryInput.checked = true;
-          if (isFocused) {
-            categoryInput.focus();
+    document.addEventListener('token-confirmed', async () => {
+      if (appUser?.uid && isPayingUser) {
+        const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
+        networkCategoriesLoaded = true;
+
+        if (!cachedCategoriesLoaded) {
+          renderCategories(categories);
+        } else {
+          const form = document.querySelector('form');
+          const category = form.elements['category'].value;
+
+          let categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+          const isFocused = categoryInput === document.activeElement;
+          renderCategories(categories);
+          categoryInput = document.querySelector(`[name=category][value="${category}"]`);
+          if (categoryInput) {
+            categoryInput.checked = true;
+            if (isFocused) {
+              categoryInput.focus();
+            }
           }
         }
       }
-    }
-  });
-</script>
+    });
+  </script>
+{% endblock %}

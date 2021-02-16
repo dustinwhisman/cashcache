@@ -1,69 +1,73 @@
----
-title: Payment Success
-layout: layouts/simple-layout.njk
-description: Payment was successful. You will now be granted access to premium features.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Payment Success
-</h1>
+{% block titleAndDescription %}
+  <title>Payment Success | Cash Cache</title>
+  <meta name="description" content="Payment was successful. You will now be granted access to premium features.">
+{% endblock %}
 
-<p>
-  Thank you for subscribing to Cash Cache! Your data is now backed up on the
-  cloud, and you now have access to premium features. If you ever want to change
-  your subscription type or delete your account, you may do so from the
-  <a href="/account">account page</a>.
-</p>
-<p>
-  Continue to <a href="/overview">overview page</a>.
-</p>
+{% block mainContent %}
+  <h1>
+    Payment Success
+  </h1>
 
-{% include "scripts/firebase.njk" %}
-<script type="module">
-  (async () => {
-    let sessionId;
-    let customerId;
-    const params = new URLSearchParams(window.location.search);
+  <p>
+    Thank you for subscribing to Cash Cache! Your data is now backed up on the
+    cloud, and you now have access to premium features. If you ever want to change
+    your subscription type or delete your account, you may do so from the
+    <a href="/account">account page</a>.
+  </p>
+  <p>
+    Continue to <a href="/overview">overview page</a>.
+  </p>
+{% endblock %}
 
-    if (params?.has('sessionId')) {
-      sessionId = params.get('sessionId');
-    }
+{% block scripts %}
+  <script type="module">
+    (async () => {
+      let sessionId;
+      let customerId;
+      const params = new URLSearchParams(window.location.search);
 
-    if (sessionId) {
-      try {
-        const customerRequest = await fetch('/api/get-checkout-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ sessionId }),
-        });
-        const customerData = await customerRequest.json();
-        customerId = customerData?.customer?.id;
-
-        if (appUser?.uid) {
-          fetch('/api/save-customer-id', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                customerId,
-              }),
-            })
-              .then(response => response.json())
-              .then(() => {
-                console.log('Customer ID saved');
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-        }
-      } catch (error) {
-        console.error(error);
+      if (params?.has('sessionId')) {
+        sessionId = params.get('sessionId');
       }
-    }
-  })();
-</script>
+
+      if (sessionId) {
+        try {
+          const customerRequest = await fetch('/api/get-checkout-session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+          const customerData = await customerRequest.json();
+          customerId = customerData?.customer?.id;
+
+          if (appUser?.uid) {
+            fetch('/api/save-customer-id', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  customerId,
+                }),
+              })
+                .then(response => response.json())
+                .then(() => {
+                  console.log('Customer ID saved');
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })();
+  </script>
+{% endblock %}

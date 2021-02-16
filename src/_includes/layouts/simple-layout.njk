@@ -1,11 +1,16 @@
----
-title: Cash Cache
-description: Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.
----
-
 <!doctype html>
 <html lang="en" dir="ltr">
-  {% include "layouts/partials/head.njk" %}
+  <head>
+    {% block titleAndDescription %}
+      <title>Cash Cache</title>
+      <meta name="description" content="Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.">
+    {% endblock %}
+    <style>
+      {% include "styles.css" %}
+    </style>
+    {% block styles %}{% endblock %}
+    {% include "layouts/partials/head.njk" %}
+  </head>
   <body>
     <div class="spread">
       <header class="container">
@@ -13,11 +18,21 @@ description: Simplify your personal finance routine. Forget the spreadsheets and
       </header>
       <main>
         <article class="container stack">
-          {{ content | safe }}
+          {% block mainContent %}
+            <p>
+              If you're seeing this, something has gone terribly wrong. Please
+              inform us at
+              <a href="mailto:help@cashcache.io">help@cashcache.io</a>, and we
+              will get to the bottom of what happened here.
+            </p>
+          {% endblock %}
         </article>
       </main>
       {% include "layouts/partials/footer.njk" %}
     </div>
+    {% include "scripts/firebase.njk" %}
+    {% block scripts %}{% endblock %}
+    {% include "layouts/partials/service-worker.njk" %}
     {% include "layouts/partials/service-worker.njk" %}
   </body>
 </html>

@@ -1,98 +1,102 @@
----
-title: Add Debt
-layout: layouts/simple-layout.njk
-description: Add debt, including the balance, minimum payment, and interest rate.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Add Debt
-</h1>
+{% block titleAndDescription %}
+  <title>Add Debt | Cash Cache</title>
+  <meta name="description" content="Add debt, including the balance, minimum payment, and interest rate.">
+{% endblock %}
 
-<div>
-  <a href="/overview" data-back-link>
-    Go Back
-  </a>
-</div>
+{% block mainContent %}
+  <h1>
+    Add Debt
+  </h1>
 
-<form class="stack">
-  {% include "inputs/year-month-inputs.njk" %}
   <div>
-    <label for="debt-description">
-      Description
-    </label>
-    <input id="debt-description" type="text" name="debt-description" required>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
   </div>
-  <div>
-    <label for="amount">
-      Balance
-    </label>
-    <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
-  </div>
-  <div>
-    <label for="minimum-payment">
-      Minimum Payment
-    </label>
-    <input id="minimum-payment" type="text" name="minimum-payment" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
-  </div>
-  <div>
-    <label for="interest-rate">
-      Interest Rate
-    </label>
-    <input id="interest-rate" type="text" name="interest-rate" inputmode="numeric" pattern="^(\s{1,})?\d{1,2}(\.\d+)?(%)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
-  </div>
-  <input type="hidden" name="key" value="">
-  <div>
-    <span class="visually-hidden" role="status" data-submit-status></span>
-    <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
-      Save Debt
-    </button>
-  </div>
-</form>
 
-{% include "scripts/firebase.njk" %}
-<script src="/scripts/year-month-inputs.js"></script>
-<script type="module">
-  import { addToDb } from '/scripts/db.mjs';
-  import { updateBackLink, sanitize } from '/scripts/utilities/index.mjs';
+  <form class="stack">
+    {% include "inputs/year-month-inputs.njk" %}
+    <div>
+      <label for="debt-description">
+        Description
+      </label>
+      <input id="debt-description" type="text" name="debt-description" required>
+    </div>
+    <div>
+      <label for="amount">
+        Balance
+      </label>
+      <input id="amount" type="text" name="amount" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+    </div>
+    <div>
+      <label for="minimum-payment">
+        Minimum Payment
+      </label>
+      <input id="minimum-payment" type="text" name="minimum-payment" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+    </div>
+    <div>
+      <label for="interest-rate">
+        Interest Rate
+      </label>
+      <input id="interest-rate" type="text" name="interest-rate" inputmode="numeric" pattern="^(\s{1,})?\d{1,2}(\.\d+)?(%)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+    </div>
+    <input type="hidden" name="key" value="">
+    <div>
+      <span class="visually-hidden" role="status" data-submit-status></span>
+      <button type="submit" data-label-saving="Saving..." data-label-saved="Saved!" data-label-failed="Failed to Save. Try Again?">
+        Save Debt
+      </button>
+    </div>
+  </form>
+{% endblock %}
 
-  updateBackLink();
-  document.addEventListener('submit', async (event) => {
-    event.preventDefault();
+{% block scripts %}
+  <script src="/scripts/year-month-inputs.js"></script>
+  <script type="module">
+    import { addToDb } from '/scripts/db.mjs';
+    import { updateBackLink, sanitize } from '/scripts/utilities/index.mjs';
 
-    const { elements } = event.target;
-    const debt = {
-      uid: appUser?.uid,
-      key: elements['key'].value || null,
-      year: Number(elements['year'].value),
-      month: Number(elements['month'].value) - 1,
-      description: elements['debt-description'].value,
-      amount: sanitize(elements['amount'].value),
-      minimumPayment: sanitize(elements['minimum-payment'].value),
-      interestRate: sanitize(elements['interest-rate'].value),
-    };
+    updateBackLink();
+    document.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-    const statusElement = document.querySelector('[data-submit-status]');
-    const button = event.target.querySelector('button[type=submit]');
-    const savingMessage = button.dataset.labelSaving;
-    const savedMessage = button.dataset.labelSaved;
-    const failedMessage = button.dataset.labelFailed;
+      const { elements } = event.target;
+      const debt = {
+        uid: appUser?.uid,
+        key: elements['key'].value || null,
+        year: Number(elements['year'].value),
+        month: Number(elements['month'].value) - 1,
+        description: elements['debt-description'].value,
+        amount: sanitize(elements['amount'].value),
+        minimumPayment: sanitize(elements['minimum-payment'].value),
+        interestRate: sanitize(elements['interest-rate'].value),
+      };
 
-    try {
-      button.innerHTML = savingMessage;
-      statusElement.innerHTML = savingMessage;
+      const statusElement = document.querySelector('[data-submit-status]');
+      const button = event.target.querySelector('button[type=submit]');
+      const savingMessage = button.dataset.labelSaving;
+      const savedMessage = button.dataset.labelSaved;
+      const failedMessage = button.dataset.labelFailed;
 
-      await addToDb('debt', debt);
+      try {
+        button.innerHTML = savingMessage;
+        statusElement.innerHTML = savingMessage;
 
-      button.innerHTML = savedMessage;
-      statusElement.innerHTML = savedMessage;
+        await addToDb('debt', debt);
 
-      const month = Number(elements['month'].value) - 1;
-      const year = Number(elements['year'].value);
-      window.location.href = `/overview?m=${month}&y=${year}`;
-    } catch (error) {
-      button.innerHTML = failedMessage;
-      statusElement.innerHTML = failedMessage;
-      console.error(error);
-    }
-  });
-</script>
+        button.innerHTML = savedMessage;
+        statusElement.innerHTML = savedMessage;
+
+        const month = Number(elements['month'].value) - 1;
+        const year = Number(elements['year'].value);
+        window.location.href = `/overview?m=${month}&y=${year}`;
+      } catch (error) {
+        button.innerHTML = failedMessage;
+        statusElement.innerHTML = failedMessage;
+        console.error(error);
+      }
+    });
+  </script>
+{% endblock %}

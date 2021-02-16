@@ -1,46 +1,50 @@
----
-title: Log In or Sign Up
-layout: layouts/simple-layout.njk
-description: Log in or sign up. We'll send you a link and either log you in or set up an account for you when you click it.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Log In or Sign Up
-</h1>
+{% block titleAndDescription %}
+  <title>Log In or Sign Up | Cash Cache</title>
+  <meta name="description" content="Log in or sign up. We'll send you a link and either log you in or set up an account for you when you click it.">
+{% endblock %}
 
-<p>
-  We don't use passwords here. Enter your email, and we will send you a link to
-  confirm your login. If you don't have an account yet, one will be created for
-  you when you click the link in your email.
-</p>
+{% block mainContent %}
+  <h1>
+    Log In or Sign Up
+  </h1>
 
-<form class="stack">
-  <div>
-    <label for="email">
-      Email
-    </label>
-    <input id="email" type="email" inputmode="email" autocapitalize="off" name="email" style="width: 50ch">
-  </div>
-  <div>
-    <button type="submit">
-      Request Email
-    </button>
-  </div>
-</form>
+  <p>
+    We don't use passwords here. Enter your email, and we will send you a link to
+    confirm your login. If you don't have an account yet, one will be created for
+    you when you click the link in your email.
+  </p>
 
-{% include "scripts/firebase.njk" %}
-<script>
-  document.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const email = event.target.elements.email.value;
-    firebase.auth().sendSignInLinkToEmail(email, {
-      url: `${window.location.origin}/login/confirm`,
-      handleCodeInApp: true,
-    })
-      .then(() => {
-        localStorage.setItem('emailForSignIn', email);
-        window.location.href = '/login/awaiting-login-confirmation';
+  <form class="stack">
+    <div>
+      <label for="email">
+        Email
+      </label>
+      <input id="email" type="email" inputmode="email" autocapitalize="off" name="email" style="width: 50ch">
+    </div>
+    <div>
+      <button type="submit">
+        Request Email
+      </button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    document.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const email = event.target.elements.email.value;
+      firebase.auth().sendSignInLinkToEmail(email, {
+        url: `${window.location.origin}/login/confirm`,
+        handleCodeInApp: true,
       })
-      .catch(console.error);
-  });
-</script>
+        .then(() => {
+          localStorage.setItem('emailForSignIn', email);
+          window.location.href = '/login/awaiting-login-confirmation';
+        })
+        .catch(console.error);
+    });
+  </script>
+{% endblock %}
