@@ -250,56 +250,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    const today = new Date();
-    let month = today.getMonth();
-    let year = today.getFullYear();
-    const params = new URLSearchParams(window.location.search);
-
-    if (params?.has('m')) {
-      month = Number(params.get('m'));
-    }
-
-    if (params?.has('y')) {
-      year = Number(params.get('y'));
-    }
-
-    const prevMonth = month - 1 >= 0 ? month - 1 : 11;
-    const prevYear = prevMonth === 11 ? year - 1 : year;
-
-    const nextMonth = month + 1 <= 11 ? month + 1 : 0;
-    const nextYear = nextMonth === 0 ? year + 1 : year;
-
-    const previousLink = document.querySelector('[data-previous-link]');
-    previousLink.href = `/overview?m=${prevMonth}&y=${prevYear}`;
-    previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
-
-    const nextLink = document.querySelector('[data-next-link]');
-    nextLink.href = `/overview?m=${nextMonth}&y=${nextYear}`;
-    nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
-
-    const currentMonth = document.querySelector('[data-current-month]');
-    currentMonth.innerHTML = new Date(year, month, 1).toLocaleString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
-  </script>
-  <script>
-    const addExpenseLink = document.querySelector('[data-add-expense-link]');
-    const addIncomeLink = document.querySelector('[data-add-income-link]');
-    const addSavingsLink = document.querySelector('[data-add-savings-link]');
-    const addDebtLink = document.querySelector('[data-add-debt-link]');
-
-    addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
-    addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
-    addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
-    addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
-  </script>
-  <script src="/scripts/overview.mjs" type="module"></script>
+  <script src="/scripts/overview/index.mjs" type="module"></script>
 {% endblock %}

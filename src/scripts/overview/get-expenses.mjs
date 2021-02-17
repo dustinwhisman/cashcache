@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from './utilities/index.mjs';
+import { formatCurrency, formatDate } from '../utilities/index.mjs';
 
 let recurringExpensesBlock = `
   <div data-manage-recurring-expenses hidden>
