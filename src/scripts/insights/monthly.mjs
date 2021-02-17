@@ -1,4 +1,4 @@
-import { getAllFromIndex, getAllFromCloudIndex } from '../db.mjs';
+import { getAllFromIndex, getAllFromCloudIndex } from '../db/index.mjs';
 import { formatCurrency } from '../helpers/index.mjs';
 
 const today = new Date();

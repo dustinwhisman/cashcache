@@ -1,4 +1,4 @@
-import { getAllFromObjectStore, addToDb, deleteAllCloudRecords } from '../db.mjs';
+import { getAllFromObjectStore, addToDb, deleteAllCloudRecords } from '../db/index.mjs';
 
 const credential = firebase.auth.EmailAuthProvider.credentialWithLink(appUser.email, window.location.href);
 

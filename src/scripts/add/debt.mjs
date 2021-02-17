@@ -1,4 +1,4 @@
-import { addToDb } from '../db.mjs';
+import { addToDb } from '../db/index.mjs';
 import { updateBackLink, sanitize } from '../helpers/index.mjs';
 
 updateBackLink();

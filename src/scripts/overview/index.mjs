@@ -1,4 +1,4 @@
-import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db.mjs';
+import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db/index.mjs';
 import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
 import { displaySavings } from './get-savings.mjs';

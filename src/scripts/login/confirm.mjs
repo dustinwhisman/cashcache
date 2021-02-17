@@ -1,4 +1,4 @@
-import { getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db.mjs';
+import { getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db/index.mjs';
 
 const checkIsPayingUser = async (idToken) => {
   if (!idToken) {

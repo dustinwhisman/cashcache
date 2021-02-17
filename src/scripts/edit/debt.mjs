@@ -1,4 +1,4 @@
-import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db.mjs';
+import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
 import { updateBackLink, formatCurrency, sanitize } from '../helpers/index.mjs';
 
 updateBackLink();

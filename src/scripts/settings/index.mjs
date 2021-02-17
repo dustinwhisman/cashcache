@@ -1,4 +1,4 @@
-import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from '../db.mjs';
+import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from '../db/index.mjs';
 import { updateBackLink, sanitize } from '../helpers/index.mjs';
 
 updateBackLink();
