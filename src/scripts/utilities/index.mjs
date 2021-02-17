@@ -31,11 +31,18 @@ export const formatDate = (year, month, day, locale = 'en-US') => new Intl
 
 export const sanitize = (value) => Number(value.toString().replace(/[^0-9|.]/g, ''));
 
-const checkboxSvg = `
+export const checkboxSvg = `
   <svg width="32" height="32" viewBox="-6 -6 44 44" aria-hidden="true" focusable="false" style="height: 1em; width: 1em">
     <rect class="checkbox__bg" width="35" height="35" x="-2" y="-2" stroke="currentColor" fill="none" stroke-width="3" rx="6"
         ry="6"></rect>
     <polyline class="checkbox__checkmark" points="4,14 12,23 28,5" stroke="transparent" stroke-width="4" fill="none"></polyline>
+  </svg>
+`;
+
+export const radioSvg = `
+  <svg width="32" height="32" viewBox="-4 -4 39 39" aria-hidden="true" focusable="false" style="height: 1em; width: 1em">
+    <circle class="checkbox__bg" cx="16" cy="16" r="16" stroke="currentColor" fill="none" stroke-width="3" />
+    <circle class="checkbox__checkmark" cx="16" cy="16" r="6" stroke="transparent" fill="none" stroke-width="4" />
   </svg>
 `;
 
