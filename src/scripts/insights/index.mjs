@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from './db.mjs';
-import { updateBackLink, formatCurrency } from './utilities/index.mjs';
+import { updateBackLink, formatCurrency } from './helpers/index.mjs';
 
 updateBackLink();
 

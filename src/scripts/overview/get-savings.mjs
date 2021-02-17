@@ -1,4 +1,4 @@
-import { formatCurrency } from '../utilities/index.mjs';
+import { formatCurrency } from '../helpers/index.mjs';
 
 let copySavingsBlock = `
   <div data-copy-savings hidden>

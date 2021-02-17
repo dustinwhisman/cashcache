@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from '../db.mjs';
-import { formatCurrency } from '../utilities/index.mjs';
+import { formatCurrency } from '../helpers/index.mjs';
 
 let networkDataLoaded = false;
 

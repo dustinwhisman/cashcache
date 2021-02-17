@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '../db.mjs';
-import { updateBackLink, addCategoryEventListener, sanitize, radioSvg } from '../utilities/index.mjs';
+import { updateBackLink, addCategoryEventListener, sanitize, radioSvg } from '../helpers/index.mjs';
 
 updateBackLink();
 addCategoryEventListener();

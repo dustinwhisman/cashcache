@@ -1,5 +1,5 @@
 import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db.mjs';
-import { updateBackLink, formatCurrency, sanitize } from '../utilities/index.mjs';
+import { updateBackLink, formatCurrency, sanitize } from '../helpers/index.mjs';
 
 updateBackLink();
 
