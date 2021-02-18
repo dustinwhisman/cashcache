@@ -84,3 +84,82 @@ export const initializeComplexDates = () => {
     }
   });
 };
+
+export const getCurrentSpecifiedDate = (params = null) => {
+  const today = new Date();
+  let month = today.getMonth();
+  let year = today.getFullYear();
+  let day = today.getDate();
+
+  if (params?.has('m')) {
+    month = Number(params.get('m'));
+  }
+
+  if (params?.has('y')) {
+    year = Number(params.get('y'));
+  }
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  if (day > daysInMonth) {
+    day = daysInMonth;
+  }
+
+  return {
+    month,
+    year,
+    day,
+  };
+};
+
+export const updateDateInputs = (year, month, day) => {
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const yearInput = document.querySelector('#year');
+  yearInput.value = year;
+
+  const monthInput = document.querySelector('#month');
+  monthInput.value = month + 1;
+
+  const dayInput = document.querySelector('#day');
+  dayInput.value = day;
+
+  if (daysInMonth === 31) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d|3[01])$';
+  } else if (daysInMonth === 30) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d|3[0])$';
+  } else if (daysInMonth === 29) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d)$';
+  } else {
+    dayInput.pattern = '^(0?[1-9]|1\\d|[12][0-8])$';
+  }
+};
+
+const recalculateDays = () => {
+  const yearInput = document.querySelector('#year');
+  const monthInput = document.querySelector('#month');
+  const dayInput = document.querySelector('#day');
+
+  const daysInMonth = new Date(Number(yearInput.value), Number(monthInput.value), 0).getDate();
+
+  if (dayInput.value > daysInMonth) {
+    dayInput.value = daysInMonth;
+  }
+
+  if (daysInMonth === 31) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d|3[01])$';
+  } else if (daysInMonth === 30) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d|3[0])$';
+  } else if (daysInMonth === 29) {
+    dayInput.pattern = '^(0?[1-9]|[12]\\d)$';
+  } else {
+    dayInput.pattern = '^(0?[1-9]|1\\d|[12][0-8])$';
+  }
+};
+
+export const initializeDateChangeListeners = () => {
+  const yearInput = document.querySelector('#year');
+  const monthInput = document.querySelector('#month');
+
+  monthInput.addEventListener('change', recalculateDays);
+  yearInput.addEventListener('change', recalculateDays);
+};
