@@ -1,5 +1,7 @@
 import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, sanitize, radioSvg } from '../helpers/index.mjs';
+import { updateBackLink, addCategoryEventListener, sanitize, radioSvg, initializeYearMonthInputs } from '../helpers/index.mjs';
+
+initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
 updateBackLink();
 addCategoryEventListener();

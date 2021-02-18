@@ -1,5 +1,7 @@
 import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, sanitize } from '../helpers/index.mjs';
+import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs } from '../helpers/index.mjs';
+
+initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
 updateBackLink();
 

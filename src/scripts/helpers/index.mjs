@@ -163,3 +163,23 @@ export const initializeDateChangeListeners = () => {
   monthInput.addEventListener('change', recalculateDays);
   yearInput.addEventListener('change', recalculateDays);
 };
+
+export const initializeYearMonthInputs = (params = null) => {
+  const today = new Date();
+  let month = today.getMonth();
+  let year = today.getFullYear();
+
+  if (params?.has('m')) {
+    month = Number(params.get('m'));
+  }
+
+  if (params?.has('y')) {
+    year = Number(params.get('y'));
+  }
+
+  const yearInput = document.querySelector('#year');
+  yearInput.value = year;
+
+  const monthInput = document.querySelector('#month');
+  monthInput.value = month + 1;
+};
