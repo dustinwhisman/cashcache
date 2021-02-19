@@ -183,3 +183,33 @@ export const initializeYearMonthInputs = (params = null) => {
   const monthInput = document.querySelector('#month');
   monthInput.value = month + 1;
 };
+
+export const getCustomerId = (token) => {
+  fetch('/api/get-is-paying-user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data?.isPayingUser) {
+        localStorage.setItem('isPayingUser', 'true');
+        const isPayingCustomerEvent = new CustomEvent('is-paying-customer', { detail: data?.customerId });
+        document.dispatchEvent(isPayingCustomerEvent);
+      } else {
+        localStorage.removeItem('isPayingUser');
+        const notPayingCustomerEvent = new CustomEvent('not-paying-customer');
+        document.dispatchEvent(notPayingCustomerEvent);
+      }
+    })
+    .catch(console.error);
+};
+
+
+export const uid = () => localStorage.getItem('uid') || null;
+
+export const isPayingUser = () => !!localStorage.getItem('isPayingUser');
+
+export const token = () => localStorage.getItem('token') || null;
