@@ -1,5 +1,5 @@
 import { addToDb } from '../db/index.mjs';
-import { updateBackLink, sanitize, initializeYearMonthInputs } from '../helpers/index.mjs';
+import { updateBackLink, sanitize, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
@@ -9,7 +9,7 @@ document.addEventListener('submit', async (event) => {
 
   const { elements } = event.target;
   const debt = {
-    uid: appUser?.uid,
+    uid: uid(),
     key: elements['key'].value || null,
     year: Number(elements['year'].value),
     month: Number(elements['month'].value) - 1,

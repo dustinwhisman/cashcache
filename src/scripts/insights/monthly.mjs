@@ -1,5 +1,5 @@
 import { getAllFromIndex, getAllFromCloudIndex } from '../db/index.mjs';
-import { formatCurrency } from '../helpers/index.mjs';
+import { formatCurrency, uid } from '../helpers/index.mjs';
 
 const today = new Date();
 let month = today.getMonth();
@@ -240,11 +240,12 @@ const compareMonthlyDebt = (lastMonthsDebt, totalDebt) => {
 };
 
 const compareToLastMonth = (totalExpenses, totalIncome, totalSavings, totalDebt) => {
+  const userId = uid();
   Promise.all([
-    getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, appUser?.uid),
-    getAllFromIndex('income', 'year-month', prevYear, prevMonth, appUser?.uid),
-    getAllFromIndex('savings', 'year-month', prevYear, prevMonth, appUser?.uid),
-    getAllFromIndex('debt', 'year-month', prevYear, prevMonth, appUser?.uid),
+    getAllFromIndex('expenses', 'year-month', prevYear, prevMonth, userId),
+    getAllFromIndex('income', 'year-month', prevYear, prevMonth, userId),
+    getAllFromIndex('savings', 'year-month', prevYear, prevMonth, userId),
+    getAllFromIndex('debt', 'year-month', prevYear, prevMonth, userId),
   ])
     .then((values) => {
       const [lastMonthsExpenses, lastMonthsIncome, lastMonthsSavings, lastMonthsDebt] = values;
@@ -385,11 +386,12 @@ const compareYearlyDebt = (lastYearsDebt, totalDebt) => {
 };
 
 const compareToLastYear = (totalExpenses, totalIncome, totalSavings, totalDebt) => {
+  const userId = uid();
   Promise.all([
-    getAllFromIndex('expenses', 'year-month', year - 1, month, appUser?.uid),
-    getAllFromIndex('income', 'year-month', year - 1, month, appUser?.uid),
-    getAllFromIndex('savings', 'year-month', year - 1, month, appUser?.uid),
-    getAllFromIndex('debt', 'year-month', year - 1, month, appUser?.uid),
+    getAllFromIndex('expenses', 'year-month', year - 1, month, userId),
+    getAllFromIndex('income', 'year-month', year - 1, month, userId),
+    getAllFromIndex('savings', 'year-month', year - 1, month, userId),
+    getAllFromIndex('debt', 'year-month', year - 1, month, userId),
   ])
     .then((values) => {
       const [lastYearsExpenses, lastYearsIncome, lastYearsSavings, lastYearsDebt] = values;
@@ -447,14 +449,15 @@ const fetchMonthlyInsightsData = () => {
 };
 
 (() => {
-  if (!appUser?.uid || !isPayingUser) {
+  const userId = uid();
+  if (!userId || !isPayingUser) {
     const monthlyInsights = document.querySelector('[data-monthly-insights]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
     monthlyInsights.setAttribute('hidden', true);
     paywallMessage.removeAttribute('hidden');
 
-    if (!appUser?.uid) {
+    if (!userId) {
       const ctaLogIn = document.querySelector('[data-cta-log-in]');
       ctaLogIn.removeAttribute('hidden');
     } else {
@@ -468,10 +471,10 @@ const fetchMonthlyInsightsData = () => {
   fetchMonthlyInsightsData();
 
   Promise.all([
-    getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
-    getAllFromIndex('income', 'year-month', year, month, appUser?.uid),
-    getAllFromIndex('savings', 'year-month', year, month, appUser?.uid),
-    getAllFromIndex('debt', 'year-month', year, month, appUser?.uid),
+    getAllFromIndex('expenses', 'year-month', year, month, userId),
+    getAllFromIndex('income', 'year-month', year, month, userId),
+    getAllFromIndex('savings', 'year-month', year, month, userId),
+    getAllFromIndex('debt', 'year-month', year, month, userId),
   ])
     .then((values) => {
       const [expenses, income, savings, debt] = values;
@@ -492,17 +495,18 @@ const fetchMonthlyInsightsData = () => {
 })();
 
 document.addEventListener('token-confirmed', () => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser) {
     let totalExpenses = 0;
     let totalIncome = 0;
     let totalSavings = 0;
     let totalDebt = 0;
 
     Promise.all([
-      getAllFromCloudIndex('expenses', year, month, appUser?.uid),
-      getAllFromCloudIndex('income', year, month, appUser?.uid),
-      getAllFromCloudIndex('savings', year, month, appUser?.uid),
-      getAllFromCloudIndex('debt', year, month, appUser?.uid),
+      getAllFromCloudIndex('expenses', year, month, userId),
+      getAllFromCloudIndex('income', year, month, userId),
+      getAllFromCloudIndex('savings', year, month, userId),
+      getAllFromCloudIndex('debt', year, month, userId),
     ])
       .then((values) => {
         const [expenses, income, savings, debt] = values;
@@ -521,10 +525,10 @@ document.addEventListener('token-confirmed', () => {
       .catch(console.error);
 
     Promise.all([
-      getAllFromCloudIndex('expenses', prevYear, prevMonth, appUser?.uid),
-      getAllFromCloudIndex('income', prevYear, prevMonth, appUser?.uid),
-      getAllFromCloudIndex('savings', prevYear, prevMonth, appUser?.uid),
-      getAllFromCloudIndex('debt', prevYear, prevMonth, appUser?.uid),
+      getAllFromCloudIndex('expenses', prevYear, prevMonth, userId),
+      getAllFromCloudIndex('income', prevYear, prevMonth, userId),
+      getAllFromCloudIndex('savings', prevYear, prevMonth, userId),
+      getAllFromCloudIndex('debt', prevYear, prevMonth, userId),
     ])
       .then((values) => {
         const [lastMonthsExpenses, lastMonthsIncome, lastMonthsSavings, lastMonthsDebt] = values;
@@ -538,10 +542,10 @@ document.addEventListener('token-confirmed', () => {
       .catch(console.error);
 
     Promise.all([
-      getAllFromCloudIndex('expenses', year - 1, month, appUser?.uid),
-      getAllFromCloudIndex('income', year - 1, month, appUser?.uid),
-      getAllFromCloudIndex('savings', year - 1, month, appUser?.uid),
-      getAllFromCloudIndex('debt', year - 1, month, appUser?.uid),
+      getAllFromCloudIndex('expenses', year - 1, month, userId),
+      getAllFromCloudIndex('income', year - 1, month, userId),
+      getAllFromCloudIndex('savings', year - 1, month, userId),
+      getAllFromCloudIndex('debt', year - 1, month, userId),
     ])
       .then((values) => {
         const [lastYearsExpenses, lastYearsIncome, lastYearsSavings, lastYearsDebt] = values;

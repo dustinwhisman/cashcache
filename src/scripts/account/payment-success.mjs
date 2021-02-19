@@ -1,3 +1,5 @@
+import { uid } from '../helpers/index.mjs';
+
 (async () => {
   let sessionId;
   let customerId;
@@ -20,7 +22,7 @@
       const customerData = await customerRequest.json();
       customerId = customerData?.customer?.id;
 
-      if (appUser?.uid) {
+      if (uid()) {
         fetch('/api/save-customer-id', {
           method: 'POST',
           headers: {

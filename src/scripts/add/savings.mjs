@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, sanitize, radioSvg, initializeYearMonthInputs } from '../helpers/index.mjs';
+import { updateBackLink, addCategoryEventListener, sanitize, radioSvg, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
@@ -40,7 +40,7 @@ document.addEventListener('submit', async (event) => {
 
   const { elements } = event.target;
   const savings = {
-    uid: appUser?.uid,
+    uid: uid(),
     key: elements['key'].value || null,
     year: Number(elements['year'].value),
     month: Number(elements['month'].value) - 1,
@@ -84,8 +84,9 @@ document.addEventListener('submit', async (event) => {
 })();
 
 document.addEventListener('token-confirmed', async () => {
-  if (appUser?.uid && isPayingUser) {
-    const categories = await getAllCategoriesFromCloud(storeName, appUser?.uid);
+  const userId = uid();
+  if (userId && isPayingUser) {
+    const categories = await getAllCategoriesFromCloud(storeName, userId);
     networkCategoriesLoaded = true;
 
     if (!cachedCategoriesLoaded) {

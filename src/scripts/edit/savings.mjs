@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, initializeYearMonthInputs } from '../helpers/index.mjs';
+import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
@@ -41,7 +41,7 @@ document.addEventListener('submit', async (event) => {
 
   const { elements } = event.target;
   const savings = {
-    uid: appUser?.uid,
+    uid: uid(),
     key: elements['key'].value || null,
     year: Number(elements['year'].value),
     month: Number(elements['month'].value) - 1,
@@ -116,7 +116,7 @@ const populateForm = (savings) => {
 
   try {
     Promise.all([
-      getFromDb(storeName, key, appUser?.uid),
+      getFromDb(storeName, key, uid()),
       getAllCategories(storeName),
     ])
       .then((values) => {
@@ -131,7 +131,7 @@ const populateForm = (savings) => {
   } catch (error) {
     const typicalState = document.querySelector('[data-typical-state]');
     const accessDenied = document.querySelector('[data-access-denied]');
-    if (appUser) {
+    if (uid()) {
       const belongsToNobody = document.querySelector('[data-belongs-to-nobody]');
       belongsToNobody.removeAttribute('hidden');
     } else {
@@ -148,7 +148,7 @@ document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-delete]')) {
     if (window.confirm('Are you sure you want to delete these savings?')) {
       try {
-        await deleteFromDb('savings', event.target.dataset.key, appUser?.uid);
+        await deleteFromDb('savings', event.target.dataset.key, uid());
         if (document.referrer) {
           window.location.href = document.referrer;
         } else {
@@ -162,10 +162,11 @@ document.addEventListener('click', async (event) => {
 });
 
 document.addEventListener('token-confirmed', async () => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser) {
     Promise.all([
-      getFromCloudDb(storeName, key, appUser?.uid),
-      getAllCategoriesFromCloud(storeName, appUser?.uid),
+      getFromCloudDb(storeName, key, userId),
+      getAllCategoriesFromCloud(storeName, userId),
     ])
       .then((values) => {
         const [ savings, categories ] = values;

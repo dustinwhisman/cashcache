@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
-import { formatCurrency } from '../helpers/index.mjs';
+import { formatCurrency, uid } from '../helpers/index.mjs';
 
 let networkDataLoaded = false;
 
@@ -196,14 +196,15 @@ const displayRecurringIncome = (income) => {
 };
 
 (async () => {
-  if (!appUser?.uid || !isPayingUser) {
+  const userId = uid();
+  if (!userId || !isPayingUser) {
     const recurringIncomeContainer = document.querySelector('[data-recurring-income-container]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
     recurringIncomeContainer.setAttribute('hidden', true);
     paywallMessage.removeAttribute('hidden');
 
-    if (!appUser?.uid) {
+    if (!userId) {
       const ctaLogIn = document.querySelector('[data-cta-log-in]');
       ctaLogIn.removeAttribute('hidden');
     } else {
@@ -214,7 +215,7 @@ const displayRecurringIncome = (income) => {
     return;
   }
 
-  const recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
+  const recurringIncome = await getAllFromObjectStore('recurring-income', userId;
 
   if (!networkDataLoaded) {
     displayRecurringIncome(recurringIncome);
@@ -222,7 +223,7 @@ const displayRecurringIncome = (income) => {
 })();
 
 document.addEventListener('token-confirmed', async () => {
-  if (appUser?.uid && isPayingUser) {
+  if (uid() && isPayingUser) {
     const recurringIncome = await getAllFromCloud('recurring-income');
     networkDataLoaded = true;
 

@@ -1,5 +1,5 @@
 import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs } from '../helpers/index.mjs';
+import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
@@ -13,7 +13,7 @@ document.addEventListener('submit', async (event) => {
 
   const { elements } = event.target;
   const debt = {
-    uid: appUser?.uid,
+    uid: uid(),
     key: elements['key'].value || null,
     year: Number(elements['year'].value),
     month: Number(elements['month'].value) - 1,
@@ -89,7 +89,7 @@ const populateForm = (debt) => {
   deleteButton.dataset.key = key;
 
   try {
-    const debt = await getFromDb('debt', key, appUser?.uid);
+    const debt = await getFromDb('debt', key, uid());
     cachedDataLoaded = true;
 
     if (!networkDataLoaded) {
@@ -99,7 +99,7 @@ const populateForm = (debt) => {
     console.error(error);
     const typicalState = document.querySelector('[data-typical-state]');
     const accessDenied = document.querySelector('[data-access-denied]');
-    if (appUser) {
+    if (uid()) {
       const belongsToNobody = document.querySelector('[data-belongs-to-nobody]');
       belongsToNobody.removeAttribute('hidden');
     } else {
@@ -116,7 +116,7 @@ document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-delete]')) {
     if (window.confirm('Are you sure you want to delete this debt?')) {
       try {
-        await deleteFromDb('debt', event.target.dataset.key, appUser?.uid);
+        await deleteFromDb('debt', event.target.dataset.key, uid());
         if (document.referrer) {
           window.location.href = document.referrer;
         } else {
@@ -130,8 +130,9 @@ document.addEventListener('click', async (event) => {
 });
 
 document.addEventListener('token-confirmed', async () => {
-  if (appUser?.uid && isPayingUser) {
-    const debt = await getFromCloudDb('debt', key, appUser?.uid);
+  const userId = uid();
+  if (userId && isPayingUser) {
+    const debt = await getFromCloudDb('debt', key, userId);
     networkDataLoaded = true;
 
     populateForm(debt);

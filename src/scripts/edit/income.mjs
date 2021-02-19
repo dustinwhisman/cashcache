@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners } from '../helpers/index.mjs';
+import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners, uid } from '../helpers/index.mjs';
 
 const { year, month, day } = getCurrentSpecifiedDate(new URLSearchParams(window.location.search));
 updateDateInputs(year, month, day);
@@ -43,7 +43,7 @@ document.addEventListener('submit', async (event) => {
 
   const { elements } = event.target;
   const income = {
-    uid: appUser?.uid,
+    uid: uid(),
     key: elements['key'].value || null,
     year: Number(elements['year'].value),
     month: Number(elements['month'].value) - 1,
@@ -123,7 +123,7 @@ const populateForm = (income) => {
 
   try {
     Promise.all([
-      getFromDb(storeName, key, appUser?.uid),
+      getFromDb(storeName, key, uid()),
       getAllCategories(storeName),
     ])
       .then((values) => {
@@ -138,7 +138,7 @@ const populateForm = (income) => {
   } catch (error) {
     const typicalState = document.querySelector('[data-typical-state]');
     const accessDenied = document.querySelector('[data-access-denied]');
-    if (appUser) {
+    if (uid()) {
       const belongsToNobody = document.querySelector('[data-belongs-to-nobody]');
       belongsToNobody.removeAttribute('hidden');
     } else {
@@ -155,7 +155,7 @@ document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-delete]')) {
     if (window.confirm('Are you sure you want to delete this income?')) {
       try {
-        await deleteFromDb('income', event.target.dataset.key, appUser?.uid);
+        await deleteFromDb('income', event.target.dataset.key, uid());
         if (document.referrer) {
           window.location.href = document.referrer;
         } else {
@@ -169,10 +169,11 @@ document.addEventListener('click', async (event) => {
 });
 
 document.addEventListener('token-confirmed', async () => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser) {
     Promise.all([
-      getFromCloudDb(storeName, key, appUser?.uid),
-      getAllCategoriesFromCloud(storeName, appUser?.uid),
+      getFromCloudDb(storeName, key, userId),
+      getAllCategoriesFromCloud(storeName, userId),
     ])
       .then((values) => {
         const [ income, categories ] = values;

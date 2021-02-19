@@ -1,4 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db/index.mjs';
+import { uid } from '../helpers/index.mjs';
 
 const checkIsPayingUser = async (idToken) => {
   if (!idToken) {
@@ -40,7 +41,7 @@ const createCheckoutSession = (priceId) => {
 const associateRecords = async (storeName, records) => {
   const recordsToUpdate = records.map((record) => ({
     ...record,
-    uid: appUser?.uid,
+    uid: uid(),
   }));
 
   await Promise.all(recordsToUpdate.map(async (record) => {

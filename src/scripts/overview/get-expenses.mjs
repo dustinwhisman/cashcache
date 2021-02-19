@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from '../helpers/index.mjs';
+import { formatCurrency, formatDate, uid } from '../helpers/index.mjs';
 
 let recurringExpensesBlock = `
   <div data-manage-recurring-expenses hidden>
@@ -13,7 +13,7 @@ let recurringExpensesBlock = `
   </div>
 `;
 
-if (!appUser?.uid) {
+if (!uid()) {
   recurringExpensesBlock = `
     <div data-manage-recurring-expenses hidden>
       <p class="small font-style:italic">

@@ -1,9 +1,10 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from '../db/index.mjs';
-import { updateBackLink, sanitize } from '../helpers/index.mjs';
+import { updateBackLink, sanitize, uid } from '../helpers/index.mjs';
 
 updateBackLink();
 
 const importData = async (data) => {
+  const userId = uid();
   const importProgressIndicator = document.querySelector('[data-import-progress]');
   const {
     expenses = [],
@@ -17,84 +18,84 @@ const importData = async (data) => {
   importProgressIndicator.innerHTML = '<p>Importing expenses...</p>';
   const expensesToUpdate = expenses.map((expense) => ({
     ...expense,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(expensesToUpdate.map(async (expense) => {
     await addToDb('expenses', expense, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('expenses', expensesToUpdate);
   }
 
   importProgressIndicator.innerHTML = '<p>Importing income...</p>';
   const incomeToUpdate = income.map((income) => ({
     ...income,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(incomeToUpdate.map(async (income) => {
     await addToDb('income', income, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('income', incomeToUpdate);
   }
 
   importProgressIndicator.innerHTML = '<p>Importing savings...</p>';
   const savingsToUpdate = savings.map((savings) => ({
     ...savings,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(savingsToUpdate.map(async (savings) => {
     await addToDb('savings', savings, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('savings', savingsToUpdate);
   }
 
   importProgressIndicator.innerHTML = '<p>Importing debt...</p>';
   const debtToUpdate = debt.map((debt) => ({
     ...debt,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(debtToUpdate.map(async (debt) => {
     await addToDb('debt', debt, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('debt', debtToUpdate);
   }
 
   importProgressIndicator.innerHTML = '<p>Importing recurring expenses...</p>';
   const recurringExpensesToUpdate = recurringExpenses.map((expense) => ({
     ...expense,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(recurringExpensesToUpdate.map(async (expense) => {
     await addToDb('recurring-expenses', expense, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('recurring-expenses', recurringExpensesToUpdate);
   }
 
   importProgressIndicator.innerHTML = '<p>Importing recurring income...</p>';
   const recurringIncomeToUpdate = recurringIncome.map((income) => ({
     ...income,
-    uid: appUser?.uid,
+    uid: userId,
   }));
   await Promise.all(recurringIncomeToUpdate.map(async (income) => {
     await addToDb('recurring-income', income, true);
     return Promise.resolve();
   }));
 
-  if (appUser?.uid && isPayingUser) {
+  if (userId && isPayingUser) {
     await bulkAddToDb('recurring-income', recurringIncomeToUpdate);
   }
 
@@ -317,6 +318,7 @@ document.addEventListener('change', (event) => {
   }
 
   if (event.target.matches('[data-import-expenses-data]')) {
+    const userId = uid();
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -329,7 +331,7 @@ document.addEventListener('change', (event) => {
         const expensesToImport = expensesData.map((expense) => {
           const date = new Date(expense['Date']);
           return {
-            uid: appUser?.uid,
+            uid: userId,
             year: date.getFullYear(),
             month: date.getMonth(),
             day: date.getDate(),
@@ -344,8 +346,8 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (appUser?.uid && isPayingUser) {
-          const allExpenses = await getAllFromObjectStore('expenses', appUser?.uid);
+        if (userId && isPayingUser) {
+          const allExpenses = await getAllFromObjectStore('expenses', userId);
           await bulkAddToDb('expenses', allExpenses);
         }
 
@@ -375,6 +377,7 @@ document.addEventListener('change', (event) => {
   }
 
   if (event.target.matches('[data-import-income-data]')) {
+    const userId = uid();
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -387,7 +390,7 @@ document.addEventListener('change', (event) => {
         const incomeToImport = incomeData.map((income) => {
           const date = new Date(income['Date']);
           return {
-            uid: appUser?.uid,
+            uid: userId,
             year: date.getFullYear(),
             month: date.getMonth(),
             day: date.getDate(),
@@ -402,8 +405,8 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (appUser?.uid && isPayingUser) {
-          const allIncome = await getAllFromObjectStore('income', appUser?.uid);
+        if (userId && isPayingUser) {
+          const allIncome = await getAllFromObjectStore('income', userId);
           await bulkAddToDb('income', allIncome);
         }
 
@@ -433,6 +436,7 @@ document.addEventListener('change', (event) => {
   }
 
   if (event.target.matches('[data-import-savings-data]')) {
+    const userId = uid();
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -445,7 +449,7 @@ document.addEventListener('change', (event) => {
         const savingsToImport = savingsData.map((savings) => {
           const date = new Date(savings['Date']);
           return {
-            uid: appUser?.uid,
+            uid: userId,
             year: date.getFullYear(),
             month: date.getMonth(),
             category: savings['Category'],
@@ -459,8 +463,8 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (appUser?.uid && isPayingUser) {
-          const allSavings = await getAllFromObjectStore('savings', appUser?.uid);
+        if (userId && isPayingUser) {
+          const allSavings = await getAllFromObjectStore('savings', userId);
           await bulkAddToDb('savings', allSavings);
         }
 
@@ -490,6 +494,7 @@ document.addEventListener('change', (event) => {
   }
 
   if (event.target.matches('[data-import-debt-data]')) {
+    const userId = uid();
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -502,7 +507,7 @@ document.addEventListener('change', (event) => {
         const debtToImport = debtData.map((debt) => {
           const date = new Date(debt['Date']);
           return {
-            uid: appUser?.uid,
+            uid: userId,
             year: date.getFullYear(),
             month: date.getMonth(),
             description: debt['Description'],
@@ -517,8 +522,8 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (appUser?.uid && isPayingUser) {
-          const allDebt = await getAllFromObjectStore('debt', appUser?.uid);
+        if (userId && isPayingUser) {
+          const allDebt = await getAllFromObjectStore('debt', userId);
           await bulkAddToDb('debt', allDebt);
         }
 
@@ -614,9 +619,10 @@ const triggerDownload = (event, data) => {
 };
 
 document.addEventListener('click', async (event) => {
+  const userId = uid();
   if (event.target.matches('[data-export-data]')) {
     event.target.innerHTML = 'Exporting...';
-    if (appUser?.uid && isPayingUser) {
+    if (userId && isPayingUser) {
       Promise.all([
         getAllFromCloud('expenses'),
         getAllFromCloud('income'),
@@ -641,12 +647,12 @@ document.addEventListener('click', async (event) => {
         .catch(console.error);
     } else {
       Promise.all([
-        getAllFromObjectStore('expenses', appUser?.uid),
-        getAllFromObjectStore('income', appUser?.uid),
-        getAllFromObjectStore('savings', appUser?.uid),
-        getAllFromObjectStore('debt', appUser?.uid),
-        getAllFromObjectStore('recurring-expenses', appUser?.uid),
-        getAllFromObjectStore('recurring-income', appUser?.uid),
+        getAllFromObjectStore('expenses', userId),
+        getAllFromObjectStore('income', userId),
+        getAllFromObjectStore('savings', userId),
+        getAllFromObjectStore('debt', userId),
+        getAllFromObjectStore('recurring-expenses', userId),
+        getAllFromObjectStore('recurring-income', userId),
       ])
         .then((values) => {
           const [ expenses, income, savings, debt, recurringExpenses, recurringIncome ] = values;
@@ -670,28 +676,28 @@ document.addEventListener('click', async (event) => {
       const deleteDataProgressBlock = document.querySelector('[data-delete-progress]');
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all expenses...</p>';
-      const expensesRecords = await getAllFromObjectStore('expenses', appUser?.uid);
-      await deleteAllRecords('expenses', expensesRecords, appUser?.uid);
+      const expensesRecords = await getAllFromObjectStore('expenses', userId);
+      await deleteAllRecords('expenses', expensesRecords, userId);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all income...</p>';
-      const incomeRecords = await getAllFromObjectStore('income', appUser?.uid);
-      await deleteAllRecords('income', incomeRecords, appUser?.uid);
+      const incomeRecords = await getAllFromObjectStore('income', userId);
+      await deleteAllRecords('income', incomeRecords, userId);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all savings...</p>';
-      const savingsRecords = await getAllFromObjectStore('savings', appUser?.uid);
-      await deleteAllRecords('savings', savingsRecords, appUser?.uid);
+      const savingsRecords = await getAllFromObjectStore('savings', userId);
+      await deleteAllRecords('savings', savingsRecords, userId);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all debt...</p>';
-      const debtRecords = await getAllFromObjectStore('debt', appUser?.uid);
-      await deleteAllRecords('debt', debtRecords, appUser?.uid);
+      const debtRecords = await getAllFromObjectStore('debt', userId);
+      await deleteAllRecords('debt', debtRecords, userId);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring expenses...</p>';
-      const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
-      await deleteAllRecords('recurring-expenses', recurringExpensesRecords, appUser?.uid);
+      const recurringExpensesRecords = await getAllFromObjectStore('recurring-expenses', userId);
+      await deleteAllRecords('recurring-expenses', recurringExpensesRecords, userId);
 
       deleteDataProgressBlock.innerHTML = '<p>Deleting all recurring income...</p>';
-      const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', appUser?.uid);
-      await deleteAllRecords('recurring-income', recurringIncomeRecords, appUser?.uid);
+      const recurringIncomeRecords = await getAllFromObjectStore('recurring-income', userId);
+      await deleteAllRecords('recurring-income', recurringIncomeRecords, userId);
 
       deleteDataProgressBlock.innerHTML = `
         <p>
