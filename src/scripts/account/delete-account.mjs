@@ -1,9 +1,9 @@
 import { getAllFromObjectStore, addToDb, deleteAllCloudRecords } from '../db/index.mjs';
-
-const credential = firebase.auth.EmailAuthProvider.credentialWithLink(appUser.email, window.location.href);
+import { uid } from '../helpers/index.mjs';
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+    const credential = firebase.auth.EmailAuthProvider.credentialWithLink(user.email, window.location.href);
     user.reauthenticateWithCredential(credential)
       .then(() => {
         const deleteAccountBlock = document.querySelector('[data-delete-account]');
@@ -91,11 +91,15 @@ document.addEventListener('submit', async (event) => {
       console.error(error);
     }
 
-    const uid = appUser.uid;
-    appUser.delete()
-      .then(async () => {
-        await disassociateDataFromAccount(uid);
-      })
-      .catch(console.error);
+    const user = firebase.auth().currentUser;
+    if (user) {
+      user.delete()
+        .then(async () => {
+          await disassociateDataFromAccount(uid());
+        })
+        .catch(console.error);
+    } else {
+      console.error('There was no logged in user with which to delete their account.');
+    }
   }
 });

@@ -51,18 +51,24 @@ document.addEventListener('click', async (event) => {
   }
 
   if (event.target.matches('[data-change-email-button]')) {
-    firebase.auth().sendSignInLinkToEmail(appUser.email, {
-      url: `${window.location.origin}/account/change-email-address`,
-      handleCodeInApp: true,
-    })
-      .then(() => {
-        event.target.innerHTML = 'Email Sent';
+    const user = firebase.auth().currentUser;
+    if (user) {
+      firebase.auth().sendSignInLinkToEmail(user.email, {
+        url: `${window.location.origin}/account/change-email-address`,
+        handleCodeInApp: true,
       })
-      .catch(console.error);
+        .then(() => {
+          event.target.innerHTML = 'Email Sent';
+        })
+        .catch(console.error);
+    } else {
+      console.error('There was no logged in user with which to change their email.');
+    }
   }
 
   if (event.target.matches('[data-delete-account-button]')) {
-    firebase.auth().sendSignInLinkToEmail(appUser.email, {
+    const user = firebase.auth().currentUser;
+    firebase.auth().sendSignInLinkToEmail(user.email, {
       url: `${window.location.origin}/account/delete-account`,
       handleCodeInApp: true,
     })
