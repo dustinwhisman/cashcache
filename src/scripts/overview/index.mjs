@@ -83,7 +83,9 @@ const fetchExpenses = (shouldRender = false) => {
         displayExpenses(expenses, recurringExpenses);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadExpenses = (shouldRender = false) => {
@@ -119,7 +121,9 @@ const fetchIncome = (shouldRender = false) => {
         displayIncome(income, recurringIncome);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadIncome = (shouldRender = false) => {
@@ -155,7 +159,9 @@ const fetchSavings = (shouldRender = false) => {
         displaySavings(savings, lastMonthsSavings);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadSavings = (shouldRender = false) => {
@@ -191,7 +197,9 @@ const fetchDebt = (shouldRender = false) => {
         displayDebt(debt, lastMonthsDebt);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadDebt = async (shouldRender = false) => {

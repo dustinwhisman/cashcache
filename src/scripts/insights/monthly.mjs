@@ -445,7 +445,9 @@ const fetchMonthlyInsightsData = () => {
         showSavingsRate(totalExpenses, totalIncome);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - nobody cares about cache errors
+    });
 };
 
 (() => {

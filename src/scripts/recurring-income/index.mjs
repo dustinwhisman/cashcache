@@ -215,7 +215,7 @@ const displayRecurringIncome = (income) => {
     return;
   }
 
-  const recurringIncome = await getAllFromObjectStore('recurring-income', userId;
+  const recurringIncome = await getAllFromObjectStore('recurring-income', userId);
 
   if (!networkDataLoaded) {
     displayRecurringIncome(recurringIncome);
