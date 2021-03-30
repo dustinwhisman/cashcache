@@ -1,5 +1,5 @@
 import { schemaVersion, schemaName, updateSchema, uuid } from './db-utilities.mjs';
-import { isPayingUser } from '../helpers/index.mjs';
+import { isPayingUser, token } from '../helpers/index.mjs';
 
 const keepLocalCurrent = (storeName, record) => {
   return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ export const getFromCloudDb = async (storeName, key, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -99,7 +99,7 @@ export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -147,7 +147,7 @@ export const getAllFromCloud = async (storeName) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -203,7 +203,7 @@ export const getAllCategoriesFromCloud = async (storeName, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -250,7 +250,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${token()}`,
             },
             body: JSON.stringify({
               storeName,
@@ -279,7 +279,7 @@ export const bulkAddToDb = async (storeName, records) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
         body: JSON.stringify({
           storeName,
@@ -332,7 +332,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${token()}`,
             },
             body: JSON.stringify({
               storeName,
@@ -394,7 +394,7 @@ export const deleteAllRecords = async (storeName, records, uid = null) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
         body: JSON.stringify({
           storeName,
@@ -418,7 +418,7 @@ export const deleteAllCloudRecords = async (storeName, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
       body: JSON.stringify({
         storeName,

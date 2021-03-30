@@ -114,5 +114,5 @@
   <script>
     const stripe = Stripe('{{ env.stripePublishableKey }}');
   </script>
-  <script src="/scripts/account/index.js"></script>
+  <script src="/scripts/account/index.mjs" type="module"></script>
 {% endblock %}

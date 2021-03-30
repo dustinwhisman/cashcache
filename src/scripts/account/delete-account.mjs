@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, addToDb, deleteAllCloudRecords } from '../db/index.mjs';
-import { uid } from '../helpers/index.mjs';
+import { uid, token } from '../helpers/index.mjs';
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
@@ -83,7 +83,7 @@ document.addEventListener('submit', async (event) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
       });
       const result = await request.json();

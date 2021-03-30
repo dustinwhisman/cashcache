@@ -1,9 +1,11 @@
+import { token } from '../helpers/index.mjs';
+
 const createCheckoutSession = (priceId) => {
   return fetch('/api/create-checkout-session', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token()}`,
     },
     body: JSON.stringify({ priceId }),
   })
@@ -97,7 +99,7 @@ document.addEventListener('submit', async (event) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
       body: JSON.stringify({
         customerId: event.target.elements['customer-id'].value,

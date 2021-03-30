@@ -1,4 +1,4 @@
-import { uid } from '../helpers/index.mjs';
+import { uid, token } from '../helpers/index.mjs';
 
 (async () => {
   let sessionId;
@@ -15,7 +15,7 @@ import { uid } from '../helpers/index.mjs';
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
         body: JSON.stringify({ sessionId }),
       });
@@ -27,7 +27,7 @@ import { uid } from '../helpers/index.mjs';
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token()}`,
           },
           body: JSON.stringify({
             customerId,

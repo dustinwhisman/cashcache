@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db/index.mjs';
-import { uid } from '../helpers/index.mjs';
+import { uid, token } from '../helpers/index.mjs';
 
 const checkIsPayingUser = async (idToken) => {
   if (!idToken) {
@@ -28,7 +28,7 @@ const createCheckoutSession = (priceId) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token()}`,
     },
     body: JSON.stringify({ priceId }),
   })
