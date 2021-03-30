@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, uid } from '../helpers/index.mjs';
+import { formatCurrency, formatDate, uid, isPayingUser } from '../helpers/index.mjs';
 
 let recurringIncomeBlock = `
   <div data-manage-recurring-income hidden>
@@ -22,7 +22,7 @@ if (!uid()) {
       </p>
     </div>
   `;
-} else if (!isPayingUser) {
+} else if (!isPayingUser()) {
   recurringIncomeBlock = `
     <div data-manage-recurring-income hidden>
       <p class="small font-style:italic">

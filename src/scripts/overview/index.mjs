@@ -3,7 +3,7 @@ import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
 import { displaySavings } from './get-savings.mjs';
 import { displayDebt } from './get-debt.mjs';
-import { uid } from '../helpers/index.mjs';
+import { uid, isPayingUser } from '../helpers/index.mjs';
 
 const today = new Date();
 let month = today.getMonth();
@@ -88,7 +88,7 @@ const fetchExpenses = (shouldRender = false) => {
 
 const loadExpenses = (shouldRender = false) => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     fetchExpenses(shouldRender);
   }
 
@@ -124,7 +124,7 @@ const fetchIncome = (shouldRender = false) => {
 
 const loadIncome = (shouldRender = false) => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     fetchIncome(shouldRender);
   }
 
@@ -160,7 +160,7 @@ const fetchSavings = (shouldRender = false) => {
 
 const loadSavings = (shouldRender = false) => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     fetchSavings(shouldRender);
   }
 
@@ -196,7 +196,7 @@ const fetchDebt = (shouldRender = false) => {
 
 const loadDebt = async (shouldRender = false) => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     fetchDebt(shouldRender);
   }
 
@@ -230,7 +230,7 @@ const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
 
 document.addEventListener('token-confirmed', () => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     Promise.all([
       getAllFromCloudIndex('expenses', year, month, userId),
       getAllFromCloud('recurring-expenses'),
@@ -306,7 +306,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (userId && isPayingUser) {
+    if (userId && isPayingUser()) {
       const savingsToAdd = await getAllFromIndex('savings', 'year-month', year, month, userId);
       await bulkAddToDb('savings', savingsToAdd);
     }
@@ -333,7 +333,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (userId && isPayingUser) {
+    if (userId && isPayingUser()) {
       const debtToAdd = await getAllFromIndex('debt', 'year-month', year, month, userId);
       await bulkAddToDb('debt', debtToAdd);
     }
@@ -347,7 +347,7 @@ document.addEventListener('click', async (event) => {
     let recurringExpenses = inMemoryRecurringExpenses;
 
     if (!recurringExpenses) {
-      if (userId && isPayingUser) {
+      if (userId && isPayingUser()) {
         recurringExpenses = await getAllFromCloud('recurring-expenses');
       } else {
         recurringExpenses = await getAllFromObjectStore('recurring-expenses', userId);
@@ -520,7 +520,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (userId && isPayingUser) {
+    if (userId && isPayingUser()) {
       const expensesToAdd = await getAllFromIndex('expenses', 'year-month', year, month, userId);
       await bulkAddToDb('expenses', expensesToAdd);
     }
@@ -533,7 +533,7 @@ document.addEventListener('click', async (event) => {
     let recurringIncome = inMemoryRecurringIncome;
 
     if (!recurringIncome) {
-      if (userId && isPayingUser) {
+      if (userId && isPayingUser()) {
         recurringIncome = await getAllFromObjectStore('recurring-income', userId);
       } else {
         recurringIncome = await getAllFromCloud('recurring-income');
@@ -706,7 +706,7 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (userId && isPayingUser) {
+    if (userId && isPayingUser()) {
       const incomeToAdd = await getAllFromIndex('income', 'year-month', year, month, userId);
       await bulkAddToDb('income', incomeToAdd);
     }

@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners, uid } from '../helpers/index.mjs';
+import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners, uid, isPayingUser } from '../helpers/index.mjs';
 
 const { year, month, day } = getCurrentSpecifiedDate(new URLSearchParams(window.location.search));
 updateDateInputs(year, month, day);
@@ -170,7 +170,7 @@ document.addEventListener('click', async (event) => {
 
 document.addEventListener('token-confirmed', async () => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     Promise.all([
       getFromCloudDb(storeName, key, userId),
       getAllCategoriesFromCloud(storeName, userId),

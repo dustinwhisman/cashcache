@@ -1,4 +1,5 @@
 import { schemaVersion, schemaName, updateSchema, uuid } from './db-utilities.mjs';
+import { isPayingUser } from '../helpers/index.mjs';
 
 const keepLocalCurrent = (storeName, record) => {
   return new Promise((resolve, reject) => {
@@ -240,7 +241,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
 
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
-          if (!isPayingUser || !thingToAdd.uid || isBulkAdd) {
+          if (!isPayingUser() || !thingToAdd.uid || isBulkAdd) {
             resolve();
             return;
           }
@@ -320,7 +321,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
         data.isDeleted = true;
         const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
-          if (!isPayingUser || !uid) {
+          if (!isPayingUser() || !uid) {
             const successEvent = new CustomEvent('item-deleted');
             document.dispatchEvent(successEvent);
             resolve();

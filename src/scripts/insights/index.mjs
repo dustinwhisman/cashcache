@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, uid } from '../helpers/index.mjs';
+import { updateBackLink, formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 updateBackLink();
 
@@ -845,7 +845,7 @@ const fetchInsightsData = () => {
 
 (() => {
   const userId = uid();
-  if (!userId || !isPayingUser) {
+  if (!userId || !isPayingUser()) {
     const insights = document.querySelector('[data-insights]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
@@ -881,7 +881,7 @@ const fetchInsightsData = () => {
 })();
 
 document.addEventListener('token-confirmed', () => {
-  if (uid() && isPayingUser) {
+  if (uid() && isPayingUser()) {
     Promise.all([
       getAllFromCloud('expenses'),
       getAllFromCloud('income'),

@@ -1,4 +1,4 @@
-import { formatCurrency, uid } from '../helpers/index.mjs';
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 let copySavingsBlock = `
   <div data-copy-savings hidden>
@@ -17,7 +17,7 @@ if (!uid()) {
       </p>
     </div>
   `;
-} else if (!isPayingUser) {
+} else if (!isPayingUser()) {
   copySavingsBlock = `
     <div data-copy-savings hidden>
       <p class="small font-style:italic">

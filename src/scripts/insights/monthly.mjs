@@ -1,5 +1,5 @@
 import { getAllFromIndex, getAllFromCloudIndex } from '../db/index.mjs';
-import { formatCurrency, uid } from '../helpers/index.mjs';
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 const today = new Date();
 let month = today.getMonth();
@@ -450,7 +450,7 @@ const fetchMonthlyInsightsData = () => {
 
 (() => {
   const userId = uid();
-  if (!userId || !isPayingUser) {
+  if (!userId || !isPayingUser()) {
     const monthlyInsights = document.querySelector('[data-monthly-insights]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
@@ -496,7 +496,7 @@ const fetchMonthlyInsightsData = () => {
 
 document.addEventListener('token-confirmed', () => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     let totalExpenses = 0;
     let totalIncome = 0;
     let totalSavings = 0;

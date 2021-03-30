@@ -1,5 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
-import { formatCurrency, uid } from '../helpers/index.mjs';
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 let networkDataLoaded = false;
 
@@ -197,7 +197,7 @@ const displayRecurringIncome = (income) => {
 
 (async () => {
   const userId = uid();
-  if (!userId || !isPayingUser) {
+  if (!userId || !isPayingUser()) {
     const recurringIncomeContainer = document.querySelector('[data-recurring-income-container]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
@@ -223,7 +223,7 @@ const displayRecurringIncome = (income) => {
 })();
 
 document.addEventListener('token-confirmed', async () => {
-  if (uid() && isPayingUser) {
+  if (uid() && isPayingUser()) {
     const recurringIncome = await getAllFromCloud('recurring-income');
     networkDataLoaded = true;
 

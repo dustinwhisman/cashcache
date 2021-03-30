@@ -1,5 +1,5 @@
 import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
+import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
@@ -131,7 +131,7 @@ document.addEventListener('click', async (event) => {
 
 document.addEventListener('token-confirmed', async () => {
   const userId = uid();
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     const debt = await getFromCloudDb('debt', key, userId);
     networkDataLoaded = true;
 

@@ -1,5 +1,5 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from '../db/index.mjs';
-import { updateBackLink, sanitize, uid } from '../helpers/index.mjs';
+import { updateBackLink, sanitize, uid, isPayingUser } from '../helpers/index.mjs';
 
 updateBackLink();
 
@@ -25,7 +25,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('expenses', expensesToUpdate);
   }
 
@@ -39,7 +39,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('income', incomeToUpdate);
   }
 
@@ -53,7 +53,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('savings', savingsToUpdate);
   }
 
@@ -67,7 +67,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('debt', debtToUpdate);
   }
 
@@ -81,7 +81,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('recurring-expenses', recurringExpensesToUpdate);
   }
 
@@ -95,7 +95,7 @@ const importData = async (data) => {
     return Promise.resolve();
   }));
 
-  if (userId && isPayingUser) {
+  if (userId && isPayingUser()) {
     await bulkAddToDb('recurring-income', recurringIncomeToUpdate);
   }
 
@@ -346,7 +346,7 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (userId && isPayingUser) {
+        if (userId && isPayingUser()) {
           const allExpenses = await getAllFromObjectStore('expenses', userId);
           await bulkAddToDb('expenses', allExpenses);
         }
@@ -405,7 +405,7 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (userId && isPayingUser) {
+        if (userId && isPayingUser()) {
           const allIncome = await getAllFromObjectStore('income', userId);
           await bulkAddToDb('income', allIncome);
         }
@@ -463,7 +463,7 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (userId && isPayingUser) {
+        if (userId && isPayingUser()) {
           const allSavings = await getAllFromObjectStore('savings', userId);
           await bulkAddToDb('savings', allSavings);
         }
@@ -522,7 +522,7 @@ document.addEventListener('change', (event) => {
           Promise.resolve();
         }));
 
-        if (userId && isPayingUser) {
+        if (userId && isPayingUser()) {
           const allDebt = await getAllFromObjectStore('debt', userId);
           await bulkAddToDb('debt', allDebt);
         }
@@ -622,7 +622,7 @@ document.addEventListener('click', async (event) => {
   const userId = uid();
   if (event.target.matches('[data-export-data]')) {
     event.target.innerHTML = 'Exporting...';
-    if (userId && isPayingUser) {
+    if (userId && isPayingUser()) {
       Promise.all([
         getAllFromCloud('expenses'),
         getAllFromCloud('income'),
