@@ -31,6 +31,9 @@
     </div>
     {% include "scripts/firebase.njk" %}
     {% block scripts %}{% endblock %}
+
+    <script src="https://js.stripe.com/v3/"></script>
+    {% block stripeScripts %}{% endblock %}
     {% include "layouts/partials/service-worker.njk" %}
   </body>
 </html>
