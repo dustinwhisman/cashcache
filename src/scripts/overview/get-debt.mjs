@@ -1,3 +1,5 @@
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
+
 let copyDebtBlock = `
   <div data-copy-debt hidden>
     <button type="button" style="width: 100%">
@@ -6,7 +8,7 @@ let copyDebtBlock = `
   </div>
 `;
 
-if (!appUser?.uid) {
+if (!uid()) {
   copyDebtBlock = `
     <div data-copy-debt hidden>
       <p class="small font-style:italic">
@@ -15,7 +17,7 @@ if (!appUser?.uid) {
       </p>
     </div>
   `;
-} else if (!isPayingUser) {
+} else if (!isPayingUser()) {
   copyDebtBlock = `
     <div data-copy-debt hidden>
       <p class="small font-style:italic">

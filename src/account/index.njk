@@ -1,221 +1,118 @@
----
-title: Account
-layout: layouts/simple-layout.njk
-description: Manage your account settings. Check who's logged in, log out, change your subscription, change your email, or delete your account.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Account
-</h1>
+{% block titleAndDescription %}
+  <title>Account | Cash Cache</title>
+  <meta name="description" content="">
+{% endblock %}
 
-<div class="stack" data-not-signed-in>
-  <p>
-    Wait a second while we check if you're signed in.
-  </p>
-  <p>
-    If you are not signed in, you may do so on the
-    <a href="/login">login page</a>.
-  </p>
-</div>
-<div class="stack" data-is-signed-in hidden>
-  <div data-signed-in-as></div>
+{% block mainContent %}
+  <h1>
+    Account
+  </h1>
 
-  <div>
-    <button type="button" data-log-out>
-      Log Out
-    </button>
-  </div>
-
-  <h2>
-    Subscription Details
-  </h2>
-  <div class="stack" data-subscription-details hidden>
-    <form data-manage-subscription-form>
-      <input type="hidden" name="customer-id" value="">
-      <div>
-        <button type="submit">
-          Manage Subscription
-        </button>
-      </div>
-    </form>
-  </div>
-  <div data-not-subscribed hidden>
+  <div class="stack" data-not-signed-in>
     <p>
-      You have not completed payment. Subscribe to unlock premium features.
+      Wait a second while we check if you're signed in.
     </p>
-    <form class="stack" data-subscription-form>
-      <fieldset>
-        <legend>
-          Subscription Options
-        </legend>
-        <div class="stack" style="--stack-space: 0.5em">
-          <label class="custom-checkbox">
-            <input type="radio" name="price-id" value="{{ env.monthlyPlanId }}" checked>
-            {% include "svgs/radio-svg.njk" %}
-            <span>
-              $5.00/month
-            </span>
-          </label>
-          <label class="custom-checkbox">
-            <input type="radio" name="price-id" value="{{ env.yearlyPlanId }}">
-            {% include "svgs/radio-svg.njk" %}
-            <span>
-              $50.00/year
-            </span>
-          </label>
+    <p>
+      If you are not signed in, you may do so on the
+      <a href="/login">login page</a>.
+    </p>
+  </div>
+  <div class="stack" data-is-signed-in hidden>
+    <div data-signed-in-as></div>
+
+    <div>
+      <button type="button" data-log-out>
+        Log Out
+      </button>
+    </div>
+
+    <h2>
+      Subscription Details
+    </h2>
+    <div class="stack" data-subscription-details hidden>
+      <form data-manage-subscription-form>
+        <input type="hidden" name="customer-id" value="">
+        <div>
+          <button type="submit">
+            Manage Subscription
+          </button>
         </div>
-      </fieldset>
-      <div>
-        <button type="submit">
-          Subscribe
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <h2>
-    Change Email Address
-  </h2>
-  <p>
-    To change your email address, you will need to sign in again before making
-    the change. We'll send you an email with a link that will take you to a page
-    where you can update your email address.
-  </p>
-  <div>
-    <button type="button" data-change-email-button>
-      Change Email Address
-    </button>
-  </div>
-
-  <h2>
-    Delete Account
-  </h2>
-  <p>
-    Deleting your account will cancel your subscription and delete all data
-    associated with your account from the cloud. All of your data will still be
-    saved in your browser, so you can still access it as a free user.
-  </p>
-  <p>
-    To delete your account, you will need to sign in again before deleting your
-    account. We'll send you an email with a link that will take you to a page
-    where you can delete your account.
-  </p>
-  <div>
-    <button type="button" data-delete-account-button>
-      Delete Account
-    </button>
-  </div>
-</div>
-
-<script>
-  document.addEventListener('user-logged-in', ({ detail }) => {
-    const signedInAs = document.querySelector('[data-signed-in-as]');
-    signedInAs.innerHTML = `
+      </form>
+    </div>
+    <div data-not-subscribed hidden>
       <p>
-        Signed in as ${detail.email}.
+        You have not completed payment. Subscribe to unlock premium features.
       </p>
-    `;
+      <form class="stack" data-subscription-form>
+        <fieldset>
+          <legend>
+            Subscription Options
+          </legend>
+          <div class="stack" style="--stack-space: 0.5em">
+            <label class="custom-checkbox">
+              <input type="radio" name="price-id" value="{{ env.monthlyPlanId }}" checked>
+              {% include "svgs/radio-svg.njk" %}
+              <span>
+                $5.00/month
+              </span>
+            </label>
+            <label class="custom-checkbox">
+              <input type="radio" name="price-id" value="{{ env.yearlyPlanId }}">
+              {% include "svgs/radio-svg.njk" %}
+              <span>
+                $50.00/year
+              </span>
+            </label>
+          </div>
+        </fieldset>
+        <div>
+          <button type="submit">
+            Subscribe
+          </button>
+        </div>
+      </form>
+    </div>
 
-    const isSignedInBlock = document.querySelector('[data-is-signed-in]');
-    const notSignedInBlock = document.querySelector('[data-not-signed-in]');
-    isSignedInBlock.removeAttribute('hidden');
-    notSignedInBlock.setAttribute('hidden', true);
-  });
+    <h2>
+      Change Email Address
+    </h2>
+    <p>
+      To change your email address, you will need to sign in again before making
+      the change. We'll send you an email with a link that will take you to a page
+      where you can update your email address.
+    </p>
+    <div>
+      <button type="button" data-change-email-button>
+        Change Email Address
+      </button>
+    </div>
 
-  document.addEventListener('is-paying-customer', ({ detail }) => {
-    const subscriptionDetails = document.querySelector('[data-subscription-details]');
-    const customerIdInput = document.querySelector('[name="customer-id"]');
-    customerIdInput.value = detail;
-    subscriptionDetails.removeAttribute('hidden');
-  });
+    <h2>
+      Delete Account
+    </h2>
+    <p>
+      Deleting your account will cancel your subscription and delete all data
+      associated with your account from the cloud. All of your data will still be
+      saved in your browser, so you can still access it as a free user.
+    </p>
+    <p>
+      To delete your account, you will need to sign in again before deleting your
+      account. We'll send you an email with a link that will take you to a page
+      where you can delete your account.
+    </p>
+    <div>
+      <button type="button" data-delete-account-button>
+        Delete Account
+      </button>
+    </div>
+  </div>
+{% endblock %}
 
-  document.addEventListener('not-paying-customer', () => {
-    const subscriptionForm = document.querySelector('[data-not-subscribed]');
-    subscriptionForm.removeAttribute('hidden');
-  });
-</script>
-{% include "scripts/firebase.njk" %}
-<script>
-  const stripe = Stripe('{{ env.stripePublishableKey }}');
-
-  const createCheckoutSession = (priceId) => {
-    return fetch('/api/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ priceId }),
-    })
-      .then((result) => {
-        return result.json();
-      })
-      .catch(console.error);
-  };
-
-  document.addEventListener('click', async (event) => {
-    if (event.target.matches('[data-log-out]')) {
-      firebase.auth().signOut()
-        .then(() => {
-          localStorage.removeItem('user');
-          localStorage.removeItem('customerId');
-          window.location.href = '/';
-        })
-        .catch(console.error);
-    }
-
-    if (event.target.matches('[data-change-email-button]')) {
-      firebase.auth().sendSignInLinkToEmail(appUser.email, {
-        url: `${window.location.origin}/account/change-email-address`,
-        handleCodeInApp: true,
-      })
-        .then(() => {
-          event.target.innerHTML = 'Email Sent';
-        })
-        .catch(console.error);
-    }
-
-    if (event.target.matches('[data-delete-account-button]')) {
-      firebase.auth().sendSignInLinkToEmail(appUser.email, {
-        url: `${window.location.origin}/account/delete-account`,
-        handleCodeInApp: true,
-      })
-        .then(() => {
-          event.target.innerHTML = 'Email Sent';
-        })
-        .catch(console.error);
-    }
-  });
-
-  document.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    if (event.target.matches('[data-subscription-form]')) {
-      const priceId = event.target.elements['price-id'].value;
-      createCheckoutSession(priceId).then((data) => {
-        stripe.redirectToCheckout({
-          sessionId: data.sessionId,
-        });
-      })
-      .catch(console.error);
-    }
-
-    if (event.target.matches('[data-manage-subscription-form]')) {
-      fetch('/api/customer-portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          customerId: event.target.elements['customer-id'].value,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          window.location.href = data.url;
-        })
-        .catch(console.error);
-    }
-  });
-</script>
+{% block stripeScripts %}
+  <script>
+    const stripe = Stripe('{{ env.stripePublishableKey }}');
+  </script>
+  <script src="/scripts/account/index.mjs" type="module"></script>
+{% endblock %}

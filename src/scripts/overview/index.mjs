@@ -1,8 +1,58 @@
-import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from './db.mjs';
+import { getAllFromIndex, getAllFromCloudIndex, getAllFromObjectStore, getAllFromCloud, addToDb, bulkAddToDb } from '../db/index.mjs';
 import { displayExpenses } from './get-expenses.mjs';
 import { displayIncome } from './get-income.mjs';
 import { displaySavings } from './get-savings.mjs';
 import { displayDebt } from './get-debt.mjs';
+import { uid, isPayingUser } from '../helpers/index.mjs';
+
+const today = new Date();
+let month = today.getMonth();
+let year = today.getFullYear();
+const params = new URLSearchParams(window.location.search);
+
+if (params?.has('m')) {
+  month = Number(params.get('m'));
+}
+
+if (params?.has('y')) {
+  year = Number(params.get('y'));
+}
+
+const prevMonth = month - 1 >= 0 ? month - 1 : 11;
+const prevYear = prevMonth === 11 ? year - 1 : year;
+
+const nextMonth = month + 1 <= 11 ? month + 1 : 0;
+const nextYear = nextMonth === 0 ? year + 1 : year;
+
+const previousLink = document.querySelector('[data-previous-link]');
+previousLink.href = `/overview?m=${prevMonth}&y=${prevYear}`;
+previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
+  month: 'short',
+  year: 'numeric',
+});
+
+const nextLink = document.querySelector('[data-next-link]');
+nextLink.href = `/overview?m=${nextMonth}&y=${nextYear}`;
+nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
+  month: 'short',
+  year: 'numeric',
+});
+
+const currentMonth = document.querySelector('[data-current-month]');
+currentMonth.innerHTML = new Date(year, month, 1).toLocaleString('en-US', {
+  month: 'short',
+  year: 'numeric',
+});
+
+const addExpenseLink = document.querySelector('[data-add-expense-link]');
+const addIncomeLink = document.querySelector('[data-add-income-link]');
+const addSavingsLink = document.querySelector('[data-add-savings-link]');
+const addDebtLink = document.querySelector('[data-add-debt-link]');
+
+addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
+addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
+addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
+addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
 
 let lastMonth = month - 1;
 let lastMonthYear = year;
@@ -33,17 +83,20 @@ const fetchExpenses = (shouldRender = false) => {
         displayExpenses(expenses, recurringExpenses);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadExpenses = (shouldRender = false) => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser()) {
     fetchExpenses(shouldRender);
   }
 
   Promise.all([
-    getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid),
-    getAllFromObjectStore('recurring-expenses', appUser?.uid),
+    getAllFromIndex('expenses', 'year-month', year, month, userId),
+    getAllFromObjectStore('recurring-expenses', userId),
   ])
     .then((values) => {
       const [ expenses, recurringExpenses ] = values;
@@ -68,17 +121,20 @@ const fetchIncome = (shouldRender = false) => {
         displayIncome(income, recurringIncome);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadIncome = (shouldRender = false) => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser()) {
     fetchIncome(shouldRender);
   }
 
   Promise.all([
-    getAllFromIndex('income', 'year-month', year, month, appUser?.uid),
-    getAllFromObjectStore('recurring-income', appUser?.uid),
+    getAllFromIndex('income', 'year-month', year, month, userId),
+    getAllFromObjectStore('recurring-income', userId),
   ])
     .then((values) => {
       const [ income, recurringIncome ] = values;
@@ -103,17 +159,20 @@ const fetchSavings = (shouldRender = false) => {
         displaySavings(savings, lastMonthsSavings);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadSavings = (shouldRender = false) => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser()) {
     fetchSavings(shouldRender);
   }
 
   Promise.all([
-    getAllFromIndex('savings', 'year-month', year, month, appUser?.uid),
-    getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid),
+    getAllFromIndex('savings', 'year-month', year, month, userId),
+    getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, userId),
   ])
     .then((values) => {
       const [ savings, lastMonthsSavings ] = values;
@@ -138,17 +197,20 @@ const fetchDebt = (shouldRender = false) => {
         displayDebt(debt, lastMonthsDebt);
       }
     })
-    .catch(console.error);
+    .catch(() => {
+      // swallow error - we don't care about cache failures here
+    });
 };
 
 const loadDebt = async (shouldRender = false) => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser()) {
     fetchDebt(shouldRender);
   }
 
   Promise.all([
-    getAllFromIndex('debt', 'year-month', year, month, appUser?.uid),
-    getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid),
+    getAllFromIndex('debt', 'year-month', year, month, userId),
+    getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, userId),
   ])
     .then((values) => {
       const [ debt, lastMonthsDebt ] = values;
@@ -175,9 +237,10 @@ const isMonthOnInterval = (startingMonth, currentMonth, interval) => {
 };
 
 document.addEventListener('token-confirmed', () => {
-  if (appUser?.uid && isPayingUser) {
+  const userId = uid();
+  if (userId && isPayingUser()) {
     Promise.all([
-      getAllFromCloudIndex('expenses', year, month, appUser?.uid),
+      getAllFromCloudIndex('expenses', year, month, userId),
       getAllFromCloud('recurring-expenses'),
     ])
       .then((values) => {
@@ -190,7 +253,7 @@ document.addEventListener('token-confirmed', () => {
       .catch(console.error);
 
     Promise.all([
-      getAllFromCloudIndex('income', year, month, appUser?.uid),
+      getAllFromCloudIndex('income', year, month, userId),
       getAllFromCloud('recurring-income'),
     ])
       .then((values) => {
@@ -203,8 +266,8 @@ document.addEventListener('token-confirmed', () => {
       .catch(console.error);
 
     Promise.all([
-      getAllFromCloudIndex('savings', year, month, appUser?.uid),
-      getAllFromCloudIndex('savings', lastMonthYear, lastMonth, appUser?.uid),
+      getAllFromCloudIndex('savings', year, month, userId),
+      getAllFromCloudIndex('savings', lastMonthYear, lastMonth, userId),
     ])
       .then((values) => {
         const [ savings, lastMonthsSavings ] = values;
@@ -216,8 +279,8 @@ document.addEventListener('token-confirmed', () => {
       .catch(console.error);
 
     Promise.all([
-      getAllFromCloudIndex('debt', year, month, appUser?.uid),
-      getAllFromCloudIndex('debt', lastMonthYear, lastMonth, appUser?.uid),
+      getAllFromCloudIndex('debt', year, month, userId),
+      getAllFromCloudIndex('debt', lastMonthYear, lastMonth, userId),
     ])
       .then((values) => {
         const [ debt, lastMonthsDebt ] = values;
@@ -231,11 +294,12 @@ document.addEventListener('token-confirmed', () => {
 });
 
 document.addEventListener('click', async (event) => {
+  const userId = uid();
   if (event.target.matches('[data-copy-savings] button')) {
     event.target.innerHTML = 'Copying...';
     let lastMonthsSavings = inMemoryLastMonthsSavings;
     if (!lastMonthsSavings) {
-      lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+      lastMonthsSavings = await getAllFromIndex('savings', 'year-month', lastMonthYear, lastMonth, userId);
     }
 
     await Promise.all(lastMonthsSavings.map(async (fund) => {
@@ -250,8 +314,8 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid && isPayingUser) {
-      const savingsToAdd = await getAllFromIndex('savings', 'year-month', year, month, appUser?.uid);
+    if (userId && isPayingUser()) {
+      const savingsToAdd = await getAllFromIndex('savings', 'year-month', year, month, userId);
       await bulkAddToDb('savings', savingsToAdd);
     }
 
@@ -262,7 +326,7 @@ document.addEventListener('click', async (event) => {
     event.target.innerHTML = 'Copying...';
     let lastMonthsDebt = inMemoryLastMonthsDebt;
     if (!lastMonthsDebt) {
-      lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, appUser?.uid);
+      lastMonthsDebt = await getAllFromIndex('debt', 'year-month', lastMonthYear, lastMonth, userId);
     }
 
     await Promise.all(lastMonthsDebt.map(async (loan) => {
@@ -277,8 +341,8 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid && isPayingUser) {
-      const debtToAdd = await getAllFromIndex('debt', 'year-month', year, month, appUser?.uid);
+    if (userId && isPayingUser()) {
+      const debtToAdd = await getAllFromIndex('debt', 'year-month', year, month, userId);
       await bulkAddToDb('debt', debtToAdd);
     }
 
@@ -291,10 +355,10 @@ document.addEventListener('click', async (event) => {
     let recurringExpenses = inMemoryRecurringExpenses;
 
     if (!recurringExpenses) {
-      if (appUser?.uid && isPayingUser) {
+      if (userId && isPayingUser()) {
         recurringExpenses = await getAllFromCloud('recurring-expenses');
       } else {
-        recurringExpenses = await getAllFromObjectStore('recurring-expenses', appUser?.uid);
+        recurringExpenses = await getAllFromObjectStore('recurring-expenses', userId);
       }
     }
 
@@ -305,7 +369,7 @@ document.addEventListener('click', async (event) => {
 
       if (expense.frequency === '1-month') {
         const newExpense = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -325,7 +389,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -345,7 +409,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -365,7 +429,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newExpense = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: expense.day > daysInMonth ? daysInMonth : expense.day,
@@ -393,7 +457,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newExpense = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
@@ -424,7 +488,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newExpense = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: expenseDay.getDate() > daysInMonth ? daysInMonth : expenseDay.getDate(),
@@ -444,7 +508,7 @@ document.addEventListener('click', async (event) => {
       if (expense.frequency === 'twice-per-month') {
         await Promise.all(expense.daysOfMonth.map(async (day) => {
           const newExpense = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: day > daysInMonth ? daysInMonth : day,
@@ -464,8 +528,8 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid && isPayingUser) {
-      const expensesToAdd = await getAllFromIndex('expenses', 'year-month', year, month, appUser?.uid);
+    if (userId && isPayingUser()) {
+      const expensesToAdd = await getAllFromIndex('expenses', 'year-month', year, month, userId);
       await bulkAddToDb('expenses', expensesToAdd);
     }
 
@@ -477,8 +541,8 @@ document.addEventListener('click', async (event) => {
     let recurringIncome = inMemoryRecurringIncome;
 
     if (!recurringIncome) {
-      if (appUser?.uid && isPayingUser) {
-        recurringIncome = await getAllFromObjectStore('recurring-income', appUser?.uid);
+      if (userId && isPayingUser()) {
+        recurringIncome = await getAllFromObjectStore('recurring-income', userId);
       } else {
         recurringIncome = await getAllFromCloud('recurring-income');
       }
@@ -491,7 +555,7 @@ document.addEventListener('click', async (event) => {
 
       if (income.frequency === '1-month') {
         const newIncome = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -511,7 +575,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -531,7 +595,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -551,7 +615,7 @@ document.addEventListener('click', async (event) => {
         }
 
         const newIncome = {
-          uid: appUser?.uid,
+          uid: userId,
           year,
           month,
           day: income.day > daysInMonth ? daysInMonth : income.day,
@@ -579,7 +643,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newIncome = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
@@ -610,7 +674,7 @@ document.addEventListener('click', async (event) => {
           }
 
           const newIncome = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: incomeDay.getDate() > daysInMonth ? daysInMonth : incomeDay.getDate(),
@@ -630,7 +694,7 @@ document.addEventListener('click', async (event) => {
       if (income.frequency === 'twice-per-month') {
         await Promise.all(income.daysOfMonth.map(async (day) => {
           const newIncome = {
-            uid: appUser?.uid,
+            uid: userId,
             year,
             month,
             day: day > daysInMonth ? daysInMonth : day,
@@ -650,8 +714,8 @@ document.addEventListener('click', async (event) => {
       return Promise.resolve();
     }));
 
-    if (appUser?.uid && isPayingUser) {
-      const incomeToAdd = await getAllFromIndex('income', 'year-month', year, month, appUser?.uid);
+    if (userId && isPayingUser()) {
+      const incomeToAdd = await getAllFromIndex('income', 'year-month', year, month, userId);
       await bulkAddToDb('income', incomeToAdd);
     }
 

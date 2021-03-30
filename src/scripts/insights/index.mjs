@@ -1,4 +1,7 @@
-import { getAllFromObjectStore, getAllFromCloud } from './db.mjs';
+import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
+import { updateBackLink, formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
+
+updateBackLink();
 
 let networkDataLoaded = false;
 
@@ -841,14 +844,15 @@ const fetchInsightsData = () => {
 };
 
 (() => {
-  if (!appUser?.uid || !isPayingUser) {
+  const userId = uid();
+  if (!userId || !isPayingUser()) {
     const insights = document.querySelector('[data-insights]');
     const paywallMessage = document.querySelector('[data-paywall-message]');
 
     insights.setAttribute('hidden', true);
     paywallMessage.removeAttribute('hidden');
 
-    if (!appUser?.uid) {
+    if (!userId) {
       const ctaLogIn = document.querySelector('[data-cta-log-in]');
       ctaLogIn.removeAttribute('hidden');
     } else {
@@ -862,9 +866,9 @@ const fetchInsightsData = () => {
   fetchInsightsData();
 
   Promise.all([
-    getAllFromObjectStore('expenses', appUser?.uid),
-    getAllFromObjectStore('income', appUser?.uid),
-    getAllFromObjectStore('savings', appUser?.uid),
+    getAllFromObjectStore('expenses', userId),
+    getAllFromObjectStore('income', userId),
+    getAllFromObjectStore('savings', userId),
   ])
     .then((values) => {
       const [ allExpenses, allIncome, allSavings ] = values;
@@ -877,7 +881,7 @@ const fetchInsightsData = () => {
 })();
 
 document.addEventListener('token-confirmed', () => {
-  if (appUser?.uid && isPayingUser) {
+  if (uid() && isPayingUser()) {
     Promise.all([
       getAllFromCloud('expenses'),
       getAllFromCloud('income'),

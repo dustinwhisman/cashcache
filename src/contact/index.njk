@@ -1,16 +1,17 @@
----
-title: Contact Us
-layout: layouts/simple-layout.njk
-description: If you need help, have problems, or want to get in touch, contact us.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Contact Us
-</h1>
-<p>
-  If you need help with anything, want to report a problem, or just want to get
-  in touch with us, you can email us at
-  {% include "components/contact-email.njk" %}
-</p>
+{% block titleAndDescription %}
+  <title>Contact Us | Cash Cache</title>
+  <meta name="description" content="If you need help, have problems, or want to get in touch, contact us.">
+{% endblock %}
 
-{% include "scripts/firebase.njk" %}
+{% block mainContent %}
+  <h1>
+    Contact Us
+  </h1>
+  <p>
+    If you need help with anything, want to report a problem, or just want to get
+    in touch with us, you can email us at
+    {% include "components/contact-email.njk" %}
+  </p>
+{% endblock %}

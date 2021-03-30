@@ -1,24 +1,27 @@
----
-title: Payment Canceled
-layout: layouts/simple-layout.njk
-decription: Payment was not completed, and thus, the website will be in a limbo state, where you do have an account, but there's not much you can do with it.
----
+{% extends "layouts/simple-layout.njk" %}
 
-<h1>
-  Payment Canceled
-</h1>
+{% block titleAndDescription %}
+  <title>Payment Canceled | Cash Cache</title>
+  <meta name="description" content="Payment was not completed, and thus, the website will be in a limbo state, where you do have an account, but there's not much you can do with it.">
+{% endblock %}
 
-<p>
-  You did not finish setting up your payment information. You may continue to
-  use the site as a free user, but you will not be able to access cloud data,
-  and you won't be able to use premium features until you've completed a
-  payment.
-</p>
-<p>
-  You will be prompted to provide payment every time you log in, but otherwise,
-  the site will work as it would for a free user.
-</p>
-<p>
-  Continue to the <a href="/overview">overview page</a>, or manage your
-  <a href="/account">account</a>.
-</p>
+{% block mainContent %}
+  <h1>
+    Payment Canceled
+  </h1>
+
+  <p>
+    You did not finish setting up your payment information. You may continue to
+    use the site as a free user, but you will not be able to access cloud data,
+    and you won't be able to use premium features until you've completed a
+    payment.
+  </p>
+  <p>
+    You will be prompted to provide payment every time you log in, but otherwise,
+    the site will work as it would for a free user.
+  </p>
+  <p>
+    Continue to the <a href="/overview">overview page</a>, or manage your
+    <a href="/account">account</a>.
+  </p>
+{% endblock %}

@@ -1,4 +1,5 @@
 import { schemaVersion, schemaName, updateSchema, uuid } from './db-utilities.mjs';
+import { isPayingUser, token } from '../helpers/index.mjs';
 
 const keepLocalCurrent = (storeName, record) => {
   return new Promise((resolve, reject) => {
@@ -55,7 +56,7 @@ export const getFromCloudDb = async (storeName, key, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -98,7 +99,7 @@ export const getAllFromCloudIndex = async (storeName, year, month, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -146,7 +147,7 @@ export const getAllFromCloud = async (storeName) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -202,7 +203,7 @@ export const getAllCategoriesFromCloud = async (storeName, uid) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
     });
 
@@ -240,9 +241,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
 
         const result = objectStore.put(thingToAdd);
         result.onsuccess = () => {
-          if (!isPayingUser || !thingToAdd.uid || isBulkAdd) {
-            const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-            document.dispatchEvent(successEvent);
+          if (!isPayingUser() || !thingToAdd.uid || isBulkAdd) {
             resolve();
             return;
           }
@@ -251,7 +250,7 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${token()}`,
             },
             body: JSON.stringify({
               storeName,
@@ -260,8 +259,6 @@ export const addToDb = (storeName, thingToAdd, isBulkAdd = false) => {
           })
             .then(response => response.json())
             .then(() => {
-              const successEvent = new CustomEvent('item-added', { detail: thingToAdd.key });
-              document.dispatchEvent(successEvent);
               resolve();
             })
             .catch((error) => {
@@ -282,7 +279,7 @@ export const bulkAddToDb = async (storeName, records) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
         body: JSON.stringify({
           storeName,
@@ -324,7 +321,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
         data.isDeleted = true;
         const endResult = objectStore.put(data);
         endResult.onsuccess = () => {
-          if (!isPayingUser || !uid) {
+          if (!isPayingUser() || !uid) {
             const successEvent = new CustomEvent('item-deleted');
             document.dispatchEvent(successEvent);
             resolve();
@@ -335,7 +332,7 @@ export const deleteFromDb = (storeName, key, uid = null) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${token()}`,
             },
             body: JSON.stringify({
               storeName,
@@ -397,7 +394,7 @@ export const deleteAllRecords = async (storeName, records, uid = null) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token()}`,
         },
         body: JSON.stringify({
           storeName,
@@ -421,7 +418,7 @@ export const deleteAllCloudRecords = async (storeName, uid) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token()}`,
       },
       body: JSON.stringify({
         storeName,

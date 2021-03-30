@@ -1,85 +1,40 @@
----
-title: Cash Cache
-description: Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.
----
-
 <!doctype html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ renderData.title or title }} | Cash Cache</title>
-    <meta name="description" content="{{ renderData.description or description }}">
-    <link rel="shortcut icon" href="/favicon.png" type="image/png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#202020">
-    <link rel="apple-touch-icon" href="/icons/icon_192.png">
-
-    <link rel="preconnect" href="https://www.googleapis.com">
-    <link rel="preconnect" href="https://securetoken.googleapis.com">
-    <link rel="preconnect" href="https://m.stripe.com">
-
-    {% include "scripts/set-dark-mode.njk" %}
+    {% block titleAndDescription %}
+      <title>Cash Cache</title>
+      <meta name="description" content="Simplify your personal finance routine. Forget the spreadsheets and inflexible budgets. Just track your money as it flows in and out.">
+    {% endblock %}
     <style>
       {% include "styles.css" %}
     </style>
-    <script src="https://js.stripe.com/v3/" async></script>
+    {% block styles %}{% endblock %}
+    {% include "layouts/partials/head.njk" %}
   </head>
   <body>
     <div class="spread">
       <header class="container">
-        <nav class="cluster">
-          <div class="justify-content:space-between">
-            <a href="/overview" class="nav-link">
-              Cash Cache
-            </a>
-            <div class="cluster">
-              <div>
-                <a href="/insights" class="nav-link">
-                  Insights
-                </a>
-                <a href="/settings" class="nav-link">
-                  Settings
-                </a>
-                <a href="/login" class="nav-link" data-login-link>
-                  Log In
-                </a>
-                <a href="/account" class="nav-link" data-account-link hidden>
-                  Account
-                </a>
-              </div>
-            </div>
-          </div>
-        </nav>
+        {% include "layouts/partials/nav.njk" %}
       </header>
       <main>
         <article class="container stack">
-          {{ content | safe }}
+          {% block mainContent %}
+            <p>
+              If you're seeing this, something has gone terribly wrong. Please
+              inform us at
+              <a href="mailto:help@cashcache.io">help@cashcache.io</a>, and we
+              will get to the bottom of what happened here.
+            </p>
+          {% endblock %}
         </article>
       </main>
-      <footer class="container" style="margin-block-start: 2rem">
-        <div class="cluster small">
-          <div>
-            <a href="/privacy-policy">
-              Privacy Policy
-            </a>
-            <a href="/terms-of-service">
-              Terms and Conditions
-            </a>
-            <a href="/contact">
-              Contact Us
-            </a>
-          </div>
-        </div>
-      </footer>
+      {% include "layouts/partials/footer.njk" %}
     </div>
+    {% include "scripts/firebase.njk" %}
+    {% block scripts %}{% endblock %}
 
-    {% if env.environment == 'production' %}
-      <script>
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js');
-        }
-      </script>
-    {% endif %}
+    <script src="https://js.stripe.com/v3/"></script>
+    {% block stripeScripts %}{% endblock %}
+    {% include "layouts/partials/service-worker.njk" %}
   </body>
 </html>
