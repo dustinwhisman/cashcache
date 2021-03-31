@@ -1,39 +1,38 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore } from '../db/index.mjs';
-import { sanitize, uid, isPayingUser } from '../helpers/index.mjs';
+import { sanitize, uid, isPayingUser, csvStringToArray } from '../helpers/index.mjs';
 
 document.addEventListener('change', (event) => {
-  if (event.target.matches('[data-import-debt-data]')) {
+  if (event.target.matches('[data-import-savings-data]')) {
     const userId = uid();
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = async (e) => {
-      const importProgressIndicator = document.querySelector('[data-import-debt-progress]');
+      const importProgressIndicator = document.querySelector('[data-import-savings-progress]');
       importProgressIndicator.innerHTML = '<p>Loading file...</p>';
       try {
-        const debtData = csvStringToArray(e.target.result);
-        importProgressIndicator.innerHTML = '<p>Uploading Debt...</p>';
+        const savingsData = csvStringToArray(e.target.result);
+        importProgressIndicator.innerHTML = '<p>Uploading Savings...</p>';
 
-        const debtToImport = debtData.map((debt) => {
-          const date = new Date(debt['Date']);
+        const savingsToImport = savingsData.map((savings) => {
+          const date = new Date(savings['Date']);
           return {
             uid: userId,
             year: date.getFullYear(),
             month: date.getMonth(),
-            description: debt['Description'],
-            amount: sanitize(debt['Balance']),
-            minimumPayment: sanitize(debt['Minimum Payment']),
-            interestRate: sanitize(debt['Interest Rate']),
+            category: savings['Category'],
+            description: savings['Description'],
+            amount: sanitize(savings['Balance']),
             key: null,
           };
         });
-        await Promise.all(debtToImport.map(async (debt) => {
-          await addToDb('debt', debt, true);
+        await Promise.all(savingsToImport.map(async (savings) => {
+          await addToDb('savings', savings, true);
           Promise.resolve();
         }));
 
         if (userId && isPayingUser()) {
-          const allDebt = await getAllFromObjectStore('debt', userId);
-          await bulkAddToDb('debt', allDebt);
+          const allSavings = await getAllFromObjectStore('savings', userId);
+          await bulkAddToDb('savings', allSavings);
         }
 
         importProgressIndicator.innerHTML = `

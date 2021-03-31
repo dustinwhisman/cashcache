@@ -15,8 +15,20 @@
       Go Back
     </a>
   </div>
+
+  <div>
+    <a href="/static/savings-template.csv" download="savings.csv">
+      Savings CSV Template
+    </a>
+  </div>
+
+  <div>
+    <label for="importSavingsFile" class="button">Upload Savings</label>
+    <input id="importSavingsFile" type="file" name="import-savings-file" class="visually-hidden" data-import-savings-data>
+  </div>
+  <div data-import-savings-progress aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-  <script src="/scripts/settings/upload-savings.js"></script>
+  <script src="/scripts/settings/upload-savings.mjs" type="module"></script>
 {% endblock %}
