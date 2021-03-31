@@ -51,9 +51,6 @@ document.addEventListener('change', (event) => {
             <a href="mailto:help@cashcache.io">
               help@cashcache.io
             </a>
-            <button type="button" class="tiny" data-copy-link-button>
-              Copy
-            </button>
           </p>
         `;
       }
