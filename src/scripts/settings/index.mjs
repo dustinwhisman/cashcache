@@ -141,23 +141,7 @@ const currentDateSpan = document.querySelector('[data-current-date]');
 const today = new Date();
 currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-// debt sorting preferences
-(() => {
-  const preferences = localStorage.getItem('debt-preferences') || '{}';
-  const {
-    method = 'avalanche'
-  } = JSON.parse(preferences);
-
-  const methodInput = document.querySelector(`[name=debt-method][value=${method}]`);
-  methodInput.checked = true;
-})();
-
 document.addEventListener('change', (event) => {
-  if (event.target.matches('[data-debt-preferences-form] *')) {
-    const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
-    savePreferencesButton.innerHTML = 'Save Preferences';
-  }
-
   if (event.target.matches('[data-import-data]')) {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -419,21 +403,6 @@ document.addEventListener('change', (event) => {
       }
     };
     reader.readAsText(file);
-  }
-});
-
-document.addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  if (event.target.matches('[data-debt-preferences-form]')) {
-    const { elements } = event.target;
-    const preferences = {
-      method: elements['debt-method'].value,
-    };
-
-    localStorage.setItem('debt-preferences', JSON.stringify(preferences));
-    const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
-    savePreferencesButton.innerHTML = 'Saved!';
   }
 });
 
