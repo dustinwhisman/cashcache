@@ -137,15 +137,11 @@ const csvStringToArray = (strData, header = true) => {
   return arrData;
 };
 
-if (brightnessMode) {
-  const brightnessInput = document.querySelector(`[name=brightness-mode][value=${brightnessMode}]`);
-  brightnessInput.checked = true;
-}
-
 const currentDateSpan = document.querySelector('[data-current-date]');
 const today = new Date();
 currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
+// expenses sorting preferences
 (() => {
   const preferences = localStorage.getItem('expenses-preferences') || '{}';
   const {
@@ -175,6 +171,7 @@ currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${to
   }
 })();
 
+// income sorting preferences
 (() => {
   const preferences = localStorage.getItem('income-preferences') || '{}';
   const {
@@ -204,6 +201,7 @@ currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${to
   }
 })();
 
+// savings sorting preferences
 (() => {
   const preferences = localStorage.getItem('savings-preferences') || '{}';
   const {
@@ -220,6 +218,7 @@ currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${to
   orderInput.checked = true;
 })();
 
+// debt sorting preferences
 (() => {
   const preferences = localStorage.getItem('debt-preferences') || '{}';
   const {
@@ -231,18 +230,6 @@ currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${to
 })();
 
 document.addEventListener('change', (event) => {
-  if (event.target.matches('[name=brightness-mode]')) {
-    const rootElement = document.documentElement;
-    const preference = event.target.value;
-    rootElement.classList.remove(...rootElement.classList);
-    if (preference) {
-      rootElement.classList.add(preference);
-      localStorage.setItem('brightness-mode', preference);
-    } else {
-      localStorage.removeItem('brightness-mode');
-    }
-  }
-
   if (event.target.matches('[name=sort-expenses-by]')) {
     const descendingLabel = document.querySelector('[data-expenses-descending-label]');
     const ascendingLabel = document.querySelector('[data-expenses-ascending-label]');
@@ -603,6 +590,7 @@ document.addEventListener('submit', (event) => {
   }
 });
 
+// export data
 const triggerDownload = (event, data) => {
   const today = new Date();
   const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
