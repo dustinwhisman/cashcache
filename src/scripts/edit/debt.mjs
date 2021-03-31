@@ -1,9 +1,7 @@
 import { getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, sanitize, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
+import { formatCurrency, sanitize, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
-
-updateBackLink();
 
 let key;
 let networkDataLoaded = false;

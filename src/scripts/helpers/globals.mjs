@@ -1,4 +1,4 @@
-import { getCustomerId, uid } from './index.mjs';
+import { getCustomerId, uid, updateBackLink } from './index.mjs';
 
 (() => {
   const loginLink = document.querySelector('[data-login-link]');
@@ -53,4 +53,6 @@ import { getCustomerId, uid } from './index.mjs';
       }
     }
   });
+
+  updateBackLink();
 })();

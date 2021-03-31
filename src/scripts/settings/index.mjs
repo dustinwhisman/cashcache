@@ -1,7 +1,5 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore, getAllFromCloud, deleteAllRecords } from '../db/index.mjs';
-import { updateBackLink, sanitize, uid, isPayingUser } from '../helpers/index.mjs';
-
-updateBackLink();
+import { sanitize, uid, isPayingUser } from '../helpers/index.mjs';
 
 const importData = async (data) => {
   const userId = uid();

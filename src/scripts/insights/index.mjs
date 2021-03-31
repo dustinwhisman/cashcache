@@ -1,7 +1,5 @@
 import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
-import { updateBackLink, formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
-
-updateBackLink();
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 let networkDataLoaded = false;
 
