@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>CSV Uploads: Expenses | Cash Cache</title>
+  <meta name="description" content="Upload expenses from a CSV to save time entering data.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    CSV Uploads: Expenses
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/upload-expenses.js"></script>
+{% endblock %}

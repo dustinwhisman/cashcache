@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Expenses Sorting Preferences | Cash Cache</title>
+  <meta name="description" content="Manage sorting and grouping preferences for expenses.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Expenses Sorting Preferences
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/sorting-preferences-expenses.js"></script>
+{% endblock %}

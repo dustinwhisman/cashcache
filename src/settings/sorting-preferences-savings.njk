@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Savings Sorting Preferences | Cash Cache</title>
+  <meta name="description" content="Manage sorting and grouping preferences for savings.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Savings Sorting Preferences
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/sorting-preferences-savings.js"></script>
+{% endblock %}

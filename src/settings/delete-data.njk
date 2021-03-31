@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Delete Data | Cash Cache</title>
+  <meta name="description" content="Delete all of your data. Proceed at your own risk.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Delete Data
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/delete-data.js"></script>
+{% endblock %}

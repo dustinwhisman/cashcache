@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Export Data | Cash Cache</title>
+  <meta name="description" content="Export your data so it can be imported onto another device.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Export Data
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/export-data.js"></script>
+{% endblock %}

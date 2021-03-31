@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Debt Sorting Preferences | Cash Cache</title>
+  <meta name="description" content="Manage sorting preferences for debt and plan for how to pay it off.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Debt Sorting Preferences
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/sorting-preferences-debt.js"></script>
+{% endblock %}

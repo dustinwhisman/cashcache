@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Import Data | Cash Cache</title>
+  <meta name="description" content="Import data from another device.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Import Data
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/import-data.js"></script>
+{% endblock %}
