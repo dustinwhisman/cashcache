@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Totals Over Time | Cash Cache</title>
+  <meta name="description" content="Compare your debt and savings to previous months and analyze the total income and expenses over different time periods.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Totals Over Time
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/totals-over-time.mjs" type="module"></script>
+{% endblock %}

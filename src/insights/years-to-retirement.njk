@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Years to Retirement | Cash Cache</title>
+  <meta name="description" content="Find out how long it might take for you to reach retirement, given your typical savings rate.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Years to Retirement
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/years-to-retirement.mjs" type="module"></script>
+{% endblock %}

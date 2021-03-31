@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Emergency Runway | Cash Cache</title>
+  <meta name="description" content="See how long your saving would last you in an emergency, given your average expenses.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Emergency Runway
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/emergency-runway.mjs" type="module"></script>
+{% endblock %}

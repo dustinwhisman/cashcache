@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Net Worth Chart | Cash Cache</title>
+  <meta name="description" content="">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Net Worth Chart
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/net-worth-chart.mjs" type="module"></script>
+{% endblock %}

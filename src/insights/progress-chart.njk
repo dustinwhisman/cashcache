@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Progress Chart | Cash Cache</title>
+  <meta name="description" content="View your income, expenses, and safe withdrawal amount for each month of your history on this site.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Progress Chart
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/progress-chart.mjs" type="module"></script>
+{% endblock %}

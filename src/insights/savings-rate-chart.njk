@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Savings Rate Chart | Cash Cache</title>
+  <meta name="description" content="Monitor how your savings rate changes over time. Higher is better.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Savings Rate Chart
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/savings-rate-chart.mjs" type="module"></script>
+{% endblock %}

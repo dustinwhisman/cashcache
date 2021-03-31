@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Expenses Heat Map | Cash Cache</title>
+  <meta name="description" content="Find patterns in your spending that you can try to change.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Expenses Heat Map
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/expenses-heat-map.mjs" type="module"></script>
+{% endblock %}
