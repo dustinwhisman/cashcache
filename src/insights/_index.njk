@@ -1,0 +1,135 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights | Cash Cache</title>
+  <meta name="description" content="See how well you're doing based on all of the data that you've recorded. See how close you are to retirement and how well you've been saving your money.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights
+  </h1>
+
+  <div class="stack" data-paywall-message hidden>
+    <p>
+      Insights are a premium feature, but here's a breakdown of what you're
+      missing.
+    </p>
+    <ul class="stack" style="--stack-space: 0.75em">
+      <li>
+        A chart of your financial progress based on all of the data you've
+        entered. It shows your total expenses and income by month, as well as how
+        much money you could safely withdraw from your savings each month without
+        depleting them.
+      </li>
+      <li>
+        A measure of how long your savings would last if you suddenly had no
+        income, based on your expenses.
+      </li>
+      <li>
+        An estimate of how much money you will need to retire, as well as how long
+        it will take to get there, based on your average expenses and your savings
+        rate.
+      </li>
+      <li>
+        A chart of your savings rate by month, including a rolling average. The
+        higher the better and the sooner you'll be able to retire.
+      </li>
+    </ul>
+    <div data-cta-log-in hidden>
+      <a href="/login" class="button">
+        Sign Up to Gain Access
+      </a>
+    </div>
+    <div data-cta-subscribe hidden>
+      <a href="/account" class="button">
+        Subscribe to Gain Access
+      </a>
+    </div>
+  </div>
+
+  <div class="stack" data-insights>
+    <p>
+      Here are the key takeaways from your entire backlog of data. Keep in mind that
+      this is not financial advice, and assumptions factor heavily into the
+      calculations that drive these estimates.
+    </p>
+
+    <div>
+      <a href="/overview" data-back-link>
+        Go Back
+      </a>
+    </div>
+
+    <div>
+      <a href="/insights/monthly">
+        Insights by Month
+      </a>
+    </div>
+
+    <div data-progress-chart class="stack" hidden>
+      <h2>
+        Progress Chart
+      </h2>
+      <details>
+        <summary>
+          Details
+        </summary>
+        <div class="stack">
+          <p>
+            This is your progress chart. It shows your expenses and income along with
+            the amount that you could safely withdraw each month (assuming you spend no
+            more than 4% of your total savings per year and your savings are invested).
+          </p>
+          <p>
+            Once the safe withdrawal amount is consistently higher than expenses, you
+            have "enough" and could consider retirement.
+          </p>
+        </div>
+      </details>
+      <div data-progress-chart-details></div>
+    </div>
+
+    <div data-runway class="stack" hidden>
+      <h2>
+        Runway
+      </h2>
+      <div class="stack" data-runway-details></div>
+    </div>
+
+    <div data-retirement class="stack" hidden>
+      <h2>
+        Retirement
+      </h2>
+      <div data-retirement-summary class="stack"></div>
+      <div data-retirement-details class="stack"></div>
+    </div>
+
+    <div data-savings-rate class="stack" hidden>
+      <h2>
+        Savings Rate
+      </h2>
+      <details>
+        <summary>
+          Details
+        </summary>
+        <div class="stack">
+          <p>
+            Your savings rate is an indicator of how much money you saved compared
+            to your total income. The closer you are to 100%, the better. If you
+            have a negative percentage, that means you spent more than you earned.
+          </p>
+          <p>
+            This chart breaks your savings rate down by month and shows a 12 month
+            rolling average.
+          </p>
+        </div>
+      </details>
+      <div data-savings-rate-details></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/index.mjs" type="module"></script>
+{% endblock %}
