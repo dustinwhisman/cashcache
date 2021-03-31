@@ -141,23 +141,6 @@ const currentDateSpan = document.querySelector('[data-current-date]');
 const today = new Date();
 currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-// savings sorting preferences
-(() => {
-  const preferences = localStorage.getItem('savings-preferences') || '{}';
-  const {
-    groupByCategory = true,
-    order = 'descending'
-  } = JSON.parse(preferences);
-
-  if (groupByCategory) {
-    const groupByCategoryInput = document.querySelector('[name=group-savings-by-category]');
-    groupByCategoryInput.checked = true;
-  }
-
-  const orderInput = document.querySelector(`[name=savings-sort-order][value=${order}]`);
-  orderInput.checked = true;
-})();
-
 // debt sorting preferences
 (() => {
   const preferences = localStorage.getItem('debt-preferences') || '{}';
@@ -170,11 +153,6 @@ currentDateSpan.innerHTML = `${today.getFullYear()}-${today.getMonth() + 1}-${to
 })();
 
 document.addEventListener('change', (event) => {
-  if (event.target.matches('[data-savings-preferences-form] *')) {
-    const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
-    savePreferencesButton.innerHTML = 'Save Preferences';
-  }
-
   if (event.target.matches('[data-debt-preferences-form] *')) {
     const savePreferencesButton = document.querySelector('[data-save-debt-preferences]');
     savePreferencesButton.innerHTML = 'Save Preferences';
@@ -446,18 +424,6 @@ document.addEventListener('change', (event) => {
 
 document.addEventListener('submit', (event) => {
   event.preventDefault();
-
-  if (event.target.matches('[data-savings-preferences-form]')) {
-    const { elements } = event.target;
-    const preferences = {
-      groupByCategory: elements['group-savings-by-category'].checked,
-      order: elements['savings-sort-order'].value,
-    };
-
-    localStorage.setItem('savings-preferences', JSON.stringify(preferences));
-    const savePreferencesButton = document.querySelector('[data-save-savings-preferences]');
-    savePreferencesButton.innerHTML = 'Saved!';
-  }
 
   if (event.target.matches('[data-debt-preferences-form]')) {
     const { elements } = event.target;

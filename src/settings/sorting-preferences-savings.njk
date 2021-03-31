@@ -15,6 +15,44 @@
       Go Back
     </a>
   </div>
+
+  <form class="stack" data-savings-preferences-form>
+    <label class="custom-checkbox">
+      <input type="checkbox" name="group-savings-by-category">
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        Group By Category
+      </span>
+    </label>
+
+    <fieldset>
+      <legend>
+        Sort Order
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="savings-sort-order" value="descending">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Largest to Smallest
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="savings-sort-order" value="ascending">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Smallest to Largest
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-savings-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
 {% endblock %}
 
 {% block scripts %}
