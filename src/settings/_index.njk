@@ -1,0 +1,381 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings | Cash Cache</title>
+  <meta name="description" content="Manage your display, sorting, and data preferences here, as well as handle importing and exporting data.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <h2>
+    Display Settings
+  </h2>
+
+  <fieldset>
+    <legend>
+      Brightness
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="light-mode">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Light Mode
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="dark-mode">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Dark Mode
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="" checked>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Use System Settings
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <h2>
+    Sorting Preferences: Expenses
+  </h2>
+  <form class="stack" data-expenses-preferences-form>
+    <label class="custom-checkbox">
+      <input type="checkbox" name="group-expenses-by-category">
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        Group By Category
+      </span>
+    </label>
+
+    <fieldset>
+      <legend>
+        Sort By
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="sort-expenses-by" value="amount">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Amount
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="sort-expenses-by" value="day">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Date
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        Sort Order
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="expenses-sort-order" value="descending">
+          {% include "svgs/radio-svg.njk" %}
+          <span data-expenses-descending-label>
+            Descending
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="expenses-sort-order" value="ascending">
+          {% include "svgs/radio-svg.njk" %}
+          <span data-expenses-ascending-label>
+            Ascending
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-expenses-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
+
+  <h2>
+    Sorting Preferences: Income
+  </h2>
+  <form class="stack" data-income-preferences-form>
+    <label class="custom-checkbox">
+      <input type="checkbox" name="group-income-by-category">
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        Group By Category
+      </span>
+    </label>
+
+    <fieldset>
+      <legend>
+        Sort By
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="sort-income-by" value="amount">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Amount
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="sort-income-by" value="day">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Date
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>
+        Sort Order
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="income-sort-order" value="descending">
+          {% include "svgs/radio-svg.njk" %}
+          <span data-income-descending-label>
+            Descending
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="income-sort-order" value="ascending">
+          {% include "svgs/radio-svg.njk" %}
+          <span data-income-ascending-label>
+            Ascending
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-income-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
+
+  <h2>
+    Sorting Preferences: Savings
+  </h2>
+  <form class="stack" data-savings-preferences-form>
+    <label class="custom-checkbox">
+      <input type="checkbox" name="group-savings-by-category">
+      {% include "svgs/checkbox-svg.njk" %}
+      <span>
+        Group By Category
+      </span>
+    </label>
+
+    <fieldset>
+      <legend>
+        Sort Order
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="savings-sort-order" value="descending">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Largest to Smallest
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="savings-sort-order" value="ascending">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Smallest to Largest
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-savings-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
+
+  <h2>
+    Sorting Preferences: Debt
+  </h2>
+
+  <p class="small">
+    There are two popular methods for paying off debt. The mathematically best
+    method is called the Avalanche method, and it has you pay the minimum amount
+    for all debts, then throw as much money as possible at the one with the
+    highest interest rate. This method saves you the most money over time, as it
+    minimizes the amount of interest you have to pay.
+  </p>
+
+  <p class="small">
+    The other method is called the Snowball method. Similar to the Avalanche
+    method, you pay the minimum amount for all debts, but instead of paying off
+    the highest interest, you focus on the debt with the smallest balance. This
+    has the benefit of getting rid of smaller debts quickly, which can help with
+    motivation. However, it allows higher-interest loans to accumulate interest,
+    which can lead to paying more in the long run.
+  </p>
+
+  <form class="stack" data-debt-preferences-form>
+    <fieldset>
+      <legend>
+        Debt Payment Strategy
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="debt-method" value="avalanche">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Avalanche (Recommended)
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="debt-method" value="snowball">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Snowball
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-debt-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
+
+  <h2>
+    Manage Data
+  </h2>
+  <p>
+    If you use this site for free, your data is completely private. However, that
+    means it isn't backed up in the cloud. If you want to access your data from
+    multiple devices or keep backups, you'll need to export or import data from
+    here.
+  </p>
+
+  <h3>
+    Export Data
+  </h3>
+  <p>
+    In case you drop your phone in the toilet, it's a good idea to back up your
+    data regularly. You can export a file with all your data from here, then use
+    whatever other system you like for saving backups.
+  </p>
+  <div>
+    <button type="button" data-export-data>
+      Export Data
+    </button>
+  </div>
+
+  <h3>
+    Import Data
+  </h3>
+  <p>
+    If you've exported data from another device or browser, you can import it
+    here. It should have a name similar to
+    "cash-cache.<span data-current-date></span>.json".
+  </p>
+  <div>
+    <label for="importFile" class="button">Choose a File</label>
+    <input id="importFile" type="file" name="import-file" class="visually-hidden" data-import-data>
+  </div>
+  <div data-import-progress aria-live="polite"></div>
+
+  <h3>
+    Delete Data
+  </h3>
+  <p>
+    If you want to delete all your data, you can do that. Just be warned, this is
+    irreversible, so you may want to export your data first, just in case you
+    change your mind later.
+  </p>
+  <div>
+    <button type="button" data-delete-data>
+      Delete All Data
+    </button>
+  </div>
+  <div data-delete-progress aria-live="polite"></div>
+
+  <h3>
+    Bulk Upload from CSV
+  </h3>
+  <p>
+    If you have loads of historical data stored somewhere, it would be cumbersome
+    to fill out a form for every record. If you want to bulk upload your old data,
+    you can use CSVs for expenses, income, savings, and debt.
+  </p>
+  <p class="small font-style:italic">
+    Please note that the formatting matters, so you'll probably need to do some
+    conversion on your end. If you need help with that process, you can contact us
+    at {% include "components/contact-email.njk" %}
+  </p>
+
+  <div class="cluster small">
+    <div>
+      <a href="/static/expenses-template.csv" download="expenses.csv">
+        Expenses CSV Template
+      </a>
+      <a href="/static/income-template.csv" download="income.csv">
+        Income CSV Template
+      </a>
+      <a href="/static/savings-template.csv" download="savings.csv">
+        Savings CSV Template
+      </a>
+      <a href="/static/debt-template.csv" download="debt.csv">
+        Debt CSV Template
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <label for="importExpensesFile" class="button">Upload Expenses</label>
+    <input id="importExpensesFile" type="file" name="import-expenses-file" class="visually-hidden" data-import-expenses-data>
+  </div>
+  <div data-import-expenses-progress aria-live="polite"></div>
+
+  <div>
+    <label for="importIncomeFile" class="button">Upload Income</label>
+    <input id="importIncomeFile" type="file" name="import-income-file" class="visually-hidden" data-import-income-data>
+  </div>
+  <div data-import-income-progress aria-live="polite"></div>
+
+  <div>
+    <label for="importSavingsFile" class="button">Upload Savings</label>
+    <input id="importSavingsFile" type="file" name="import-savings-file" class="visually-hidden" data-import-savings-data>
+  </div>
+  <div data-import-savings-progress aria-live="polite"></div>
+
+  <div>
+    <label for="importDebtFile" class="button">Upload Debt</label>
+    <input id="importDebtFile" type="file" name="import-debt-file" class="visually-hidden" data-import-debt-data>
+  </div>
+  <div data-import-debt-progress aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/index.mjs" type="module"></script>
+{% endblock %}
