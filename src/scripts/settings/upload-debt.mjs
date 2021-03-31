@@ -1,5 +1,5 @@
 import { addToDb, bulkAddToDb, getAllFromObjectStore } from '../db/index.mjs';
-import { sanitize, uid, isPayingUser } from '../helpers/index.mjs';
+import { sanitize, uid, isPayingUser, csvStringToArray } from '../helpers/index.mjs';
 
 document.addEventListener('change', (event) => {
   if (event.target.matches('[data-import-debt-data]')) {

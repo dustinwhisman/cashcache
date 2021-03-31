@@ -15,8 +15,20 @@
       Go Back
     </a>
   </div>
+
+  <div>
+    <a href="/static/debt-template.csv" download="debt.csv">
+      Debt CSV Template
+    </a>
+  </div>
+
+  <div>
+    <label for="importDebtFile" class="button">Upload Debt</label>
+    <input id="importDebtFile" type="file" name="import-debt-file" class="visually-hidden" data-import-debt-data>
+  </div>
+  <div data-import-debt-progress aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-  <script src="/scripts/settings/upload-debt.js"></script>
+  <script src="/scripts/settings/upload-debt.mjs" type="module"></script>
 {% endblock %}
