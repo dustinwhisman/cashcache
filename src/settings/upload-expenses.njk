@@ -15,8 +15,20 @@
       Go Back
     </a>
   </div>
+
+  <div>
+    <a href="/static/expenses-template.csv" download="expenses.csv">
+      Expenses CSV Template
+    </a>
+  </div>
+
+  <div>
+    <label for="importExpensesFile" class="button">Upload Expenses</label>
+    <input id="importExpensesFile" type="file" name="import-expenses-file" class="visually-hidden" data-import-expenses-data>
+  </div>
+  <div data-import-expenses-progress aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-  <script src="/scripts/settings/upload-expenses.js"></script>
+  <script src="/scripts/settings/upload-expenses.mjs" type="module"></script>
 {% endblock %}

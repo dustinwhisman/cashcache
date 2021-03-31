@@ -15,30 +15,8 @@
       Go Back
     </a>
   </div>
-
-  <h2>
-    Manage Data
-  </h2>
-
-  <h3>
-    Bulk Upload from CSV
-  </h3>
-  <p>
-    If you have loads of historical data stored somewhere, it would be cumbersome
-    to fill out a form for every record. If you want to bulk upload your old data,
-    you can use CSVs for expenses, income, savings, and debt.
-  </p>
-  <p class="small font-style:italic">
-    Please note that the formatting matters, so you'll probably need to do some
-    conversion on your end. If you need help with that process, you can contact us
-    at {% include "components/contact-email.njk" %}
-  </p>
-
   <div class="cluster small">
     <div>
-      <a href="/static/expenses-template.csv" download="expenses.csv">
-        Expenses CSV Template
-      </a>
       <a href="/static/income-template.csv" download="income.csv">
         Income CSV Template
       </a>
@@ -50,12 +28,6 @@
       </a>
     </div>
   </div>
-
-  <div>
-    <label for="importExpensesFile" class="button">Upload Expenses</label>
-    <input id="importExpensesFile" type="file" name="import-expenses-file" class="visually-hidden" data-import-expenses-data>
-  </div>
-  <div data-import-expenses-progress aria-live="polite"></div>
 
   <div>
     <label for="importIncomeFile" class="button">Upload Income</label>
