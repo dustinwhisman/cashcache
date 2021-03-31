@@ -1,4 +1,4 @@
-import { getCustomerId, uid } from './index.mjs';
+import { getCustomerId, uid, updateBackLink } from './index.mjs';
 
 (() => {
   const loginLink = document.querySelector('[data-login-link]');
@@ -36,21 +36,5 @@ import { getCustomerId, uid } from './index.mjs';
     }
   });
 
-  document.addEventListener('click', (event) => {
-    if (event.target.matches('[data-copy-link-button]')) {
-      const textarea = document.createElement('textarea');
-      textarea.textContent = 'help@cashcache.io';
-      textarea.style.position = 'fixed';
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        event.target.innerHTML = 'Copied';
-      } catch (error) {
-        console.error(error);
-      } finally {
-        document.body.removeChild(textarea);
-      }
-    }
-  });
+  updateBackLink();
 })();

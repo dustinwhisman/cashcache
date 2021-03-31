@@ -1,0 +1,33 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Export Data | Cash Cache</title>
+  <meta name="description" content="Export your data so it can be imported onto another device.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Export Data
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <p>
+    In case you drop your phone in the toilet, it's a good idea to back up your
+    data regularly. You can export a file with all your data from here, then use
+    whatever other system you like for saving backups.
+  </p>
+  <div>
+    <button type="button" data-export-data>
+      Export Data
+    </button>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/export-data.mjs" type="module"></script>
+{% endblock %}

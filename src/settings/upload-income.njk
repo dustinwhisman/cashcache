@@ -1,0 +1,34 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>CSV Uploads: Income | Cash Cache</title>
+  <meta name="description" content="Upload income from a CSV to save time entering data.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    CSV Uploads: Income
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <div>
+    <a href="/static/income-template.csv" download="income.csv">
+      Income CSV Template
+    </a>
+  </div>
+
+  <div>
+    <label for="importIncomeFile" class="button">Upload Income</label>
+    <input id="importIncomeFile" type="file" name="import-income-file" class="visually-hidden" data-import-income-data>
+  </div>
+  <div data-import-income-progress aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/upload-income.mjs" type="module"></script>
+{% endblock %}

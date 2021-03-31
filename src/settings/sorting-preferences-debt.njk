@@ -1,0 +1,69 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Debt Sorting Preferences | Cash Cache</title>
+  <meta name="description" content="Manage sorting preferences for debt and plan for how to pay it off.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Debt Sorting Preferences
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <p class="small">
+    There are two popular methods for paying off debt. The mathematically best
+    method is called the Avalanche method, and it has you pay the minimum amount
+    for all debts, then throw as much money as possible at the one with the
+    highest interest rate. This method saves you the most money over time, as it
+    minimizes the amount of interest you have to pay.
+  </p>
+
+  <p class="small">
+    The other method is called the Snowball method. Similar to the Avalanche
+    method, you pay the minimum amount for all debts, but instead of paying off
+    the highest interest, you focus on the debt with the smallest balance. This
+    has the benefit of getting rid of smaller debts quickly, which can help with
+    motivation. However, it allows higher-interest loans to accumulate interest,
+    which can lead to paying more in the long run.
+  </p>
+
+  <form class="stack" data-debt-preferences-form>
+    <fieldset>
+      <legend>
+        Debt Payment Strategy
+      </legend>
+      <div class="stack" style="--stack-space: 0.5em">
+        <label class="custom-checkbox">
+          <input type="radio" name="debt-method" value="avalanche">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Avalanche (Recommended)
+          </span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="radio" name="debt-method" value="snowball">
+          {% include "svgs/radio-svg.njk" %}
+          <span>
+            Snowball
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <button type="submit" data-save-debt-preferences>
+        Save Preferences
+      </button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/sorting-preferences-debt.js"></script>
+{% endblock %}

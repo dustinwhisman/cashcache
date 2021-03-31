@@ -1,9 +1,8 @@
 import { getAllCategories, getAllCategoriesFromCloud, addToDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, sanitize, radioSvg, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
+import { addCategoryEventListener, sanitize, radioSvg, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
-updateBackLink();
 addCategoryEventListener();
 
 const storeName = 'savings';

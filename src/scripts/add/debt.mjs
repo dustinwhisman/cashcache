@@ -1,9 +1,8 @@
 import { addToDb } from '../db/index.mjs';
-import { updateBackLink, sanitize, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
+import { sanitize, initializeYearMonthInputs, uid } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
-updateBackLink();
 document.addEventListener('submit', async (event) => {
   event.preventDefault();
 

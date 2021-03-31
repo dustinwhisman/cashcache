@@ -1,0 +1,35 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Delete Data | Cash Cache</title>
+  <meta name="description" content="Delete all of your data. Proceed at your own risk.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Delete Data
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <p>
+    If you want to delete all your data, you can do that. Just be warned, this
+    is irreversible, so you may want to
+    <a href="/settings/export-data">export your data</a>
+    first, just in case you change your mind later.
+  </p>
+  <div>
+    <button type="button" data-delete-data>
+      Delete All Data
+    </button>
+  </div>
+  <div data-delete-progress aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/delete-data.mjs" type="module"></script>
+{% endblock %}

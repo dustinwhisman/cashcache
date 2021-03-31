@@ -1,9 +1,8 @@
 import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { updateBackLink, addCategoryEventListener, formatCurrency, sanitize, radioSvg, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
+import { addCategoryEventListener, formatCurrency, sanitize, radioSvg, initializeYearMonthInputs, uid, isPayingUser } from '../helpers/index.mjs';
 
 initializeYearMonthInputs(new URLSearchParams(window.location.search));
 
-updateBackLink();
 addCategoryEventListener();
 
 let key;

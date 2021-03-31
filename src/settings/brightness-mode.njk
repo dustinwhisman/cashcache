@@ -1,0 +1,51 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Settings: Brightness Mode | Cash Cache</title>
+  <meta name="description" content="Manage your brightness mode settings.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Settings: Brightness Mode
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <fieldset>
+    <legend>
+      Brightness
+    </legend>
+    <div class="stack" style="--stack-space: 0.5em">
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="light-mode">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Light Mode
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="dark-mode">
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Dark Mode
+        </span>
+      </label>
+      <label class="custom-checkbox">
+        <input type="radio" name="brightness-mode" value="" checked>
+        {% include "svgs/radio-svg.njk" %}
+        <span>
+          Use System Settings
+        </span>
+      </label>
+    </div>
+  </fieldset>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/settings/brightness-mode.js"></script>
+{% endblock %}
