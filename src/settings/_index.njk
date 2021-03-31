@@ -17,69 +17,6 @@
   </div>
 
   <h2>
-    Sorting Preferences: Income
-  </h2>
-  <form class="stack" data-income-preferences-form>
-    <label class="custom-checkbox">
-      <input type="checkbox" name="group-income-by-category">
-      {% include "svgs/checkbox-svg.njk" %}
-      <span>
-        Group By Category
-      </span>
-    </label>
-
-    <fieldset>
-      <legend>
-        Sort By
-      </legend>
-      <div class="stack" style="--stack-space: 0.5em">
-        <label class="custom-checkbox">
-          <input type="radio" name="sort-income-by" value="amount">
-          {% include "svgs/radio-svg.njk" %}
-          <span>
-            Amount
-          </span>
-        </label>
-        <label class="custom-checkbox">
-          <input type="radio" name="sort-income-by" value="day">
-          {% include "svgs/radio-svg.njk" %}
-          <span>
-            Date
-          </span>
-        </label>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <legend>
-        Sort Order
-      </legend>
-      <div class="stack" style="--stack-space: 0.5em">
-        <label class="custom-checkbox">
-          <input type="radio" name="income-sort-order" value="descending">
-          {% include "svgs/radio-svg.njk" %}
-          <span data-income-descending-label>
-            Descending
-          </span>
-        </label>
-        <label class="custom-checkbox">
-          <input type="radio" name="income-sort-order" value="ascending">
-          {% include "svgs/radio-svg.njk" %}
-          <span data-income-ascending-label>
-            Ascending
-          </span>
-        </label>
-      </div>
-    </fieldset>
-
-    <div>
-      <button type="submit" data-save-income-preferences>
-        Save Preferences
-      </button>
-    </div>
-  </form>
-
-  <h2>
     Sorting Preferences: Savings
   </h2>
   <form class="stack" data-savings-preferences-form>
