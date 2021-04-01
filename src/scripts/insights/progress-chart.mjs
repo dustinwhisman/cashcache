@@ -81,6 +81,7 @@ const drawChart = (progress, highestDollarAmount) => {
   }
 
   const yAxisLabels = [];
+  const gridLines = [];
   const yAxisInterval = Math.ceil(highestDollarAmount / 10000);
   for (let i = 0; i <= highestDollarAmount / 1000; i += 1) {
     if (i % Math.ceil(yAxisInterval) === 0) {
@@ -88,6 +89,9 @@ const drawChart = (progress, highestDollarAmount) => {
         <text x="-20" y="${1010 - (i * 100)}" style="text-anchor: end" fill="var(--text-color)">
           ${formatCurrency(i * 1000).replace('.00', '')}
         </text>
+      `);
+      gridLines.push(`
+        <polyline points="0 ${1000 - (i * 100)}, 1500 ${1000 - (i * 100)}" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
       `);
     }
   }
@@ -144,6 +148,7 @@ const drawChart = (progress, highestDollarAmount) => {
       <g>
         <line x1="0" x2="0" y1="1000" y2="000" stroke-width="6" stroke="var(--text-color)"></line>
         ${yAxisLabels.join('')}
+        ${gridLines.join('')}
       </g>
       <g>
         <line x1="0" x2="1500" y1="1000" y2="1000" stroke-width="6" stroke="var(--text-color)"></line>
