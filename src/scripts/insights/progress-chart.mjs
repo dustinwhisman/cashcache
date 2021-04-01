@@ -86,7 +86,7 @@ const drawChart = (progress, highestDollarAmount) => {
   for (let i = 0; i <= highestDollarAmount / 1000; i += 1) {
     if (i % Math.ceil(yAxisInterval) === 0) {
       yAxisLabels.push(`
-        <text x="180" y="${1110 - (i * 100)}" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)">
+        <text x="-20" y="${1010 - (i * 100)}" style="text-anchor: end" fill="var(--text-color)">
           ${formatCurrency(i * 1000).replace('.00', '')}
         </text>
       `);
@@ -98,7 +98,7 @@ const drawChart = (progress, highestDollarAmount) => {
   for (let i = 0; i < progress.length; i += 1) {
     if (i % Math.ceil(xAxisInterval) === 0) {
       xAxisLabels.push(`
-        <text x="${240 + (i * 1000 / progress.length)}" y="1120" style="text-anchor: end; font-size: 1.5rem" fill="var(--text-color)" transform="rotate(-45, ${240 + (i * 1000 / progress.length)}, 1160)">
+        <text x="${40 + (i * 1500 / progress.length)}" y="1020" style="text-anchor: end" fill="var(--text-color)" transform="rotate(-45, ${40 + (i * 1500 / progress.length)}, 1060)">
           ${progress[i].label}
         </text>
       `);
@@ -106,68 +106,54 @@ const drawChart = (progress, highestDollarAmount) => {
   }
 
   const expensesPoints = progress.map((month, index) => {
-    const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - ((month.expenses || 0) / (highestDollarAmount / 1000));
+    const x = (index * 1500 / progress.length);
+    const y = 1000 - ((month.expenses || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
 
   const incomePoints = progress.map((month, index) => {
-    const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - ((month.income || 0) / (highestDollarAmount / 1000));
+    const x = (index * 1500 / progress.length);
+    const y = 1000 - ((month.income || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
 
   const safeAmountPoints = progress.map((month, index) => {
-    const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
+    const x = (index * 1500 / progress.length);
+    const y = 1000 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
 
   const svgTemplate = `
-    <svg viewbox="0 0 1300 1300" aria-hidden="true" focusable="false">
+    <svg viewbox="-200 -200 1800 1500" aria-hidden="true" focusable="false">
       <g>
-        <circle cx="200" cy="40" r="10" fill="var(--red)"></circle>
-        <text x="220" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+        <polyline points="-135 -180, 0 -180" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+        <text x="20" y="-170" fill="var(--text-color)">
           Expenses
         </text>
-        <rect x="407" y="32" width="16" height="16" fill="var(--blue)"></rect>
-        <text x="435" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+        <polyline points="-135 -130, 0 -130" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+        <text x="20" y="-120" fill="var(--text-color)">
           Income
         </text>
-        <polygon points="590 48, 600 28, 610 48" fill="var(--yellow)"></polygon>
-        <text x="620" y="50" style="font-size: 1.5rem" fill="var(--text-color)">
+        <polyline points="-135 -80, 0 -80" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+        <text x="20" y="-70" fill="var(--text-color)">
           Safe Withdrawal Amount
         </text>
       </g>
       <g>
-        <line x1="200" x2="200" y1="1100" y2="100" stroke-width="2" stroke="var(--text-color)"></line>
+        <line x1="0" x2="0" y1="1000" y2="000" stroke-width="6" stroke="var(--text-color)"></line>
         ${yAxisLabels.join('')}
       </g>
       <g>
-        <line x1="200" x2="1200" y1="1100" y2="1100" stroke-width="2" stroke="var(--text-color)"></line>
+        <line x1="0" x2="1500" y1="1000" y2="1000" stroke-width="6" stroke="var(--text-color)"></line>
         ${xAxisLabels.join('')}
       </g>
       <g>
-        ${progress.map((month, index) => {
-          const x = 200 + (index * 1000 / progress.length);
-          const expenseY = 1100 - ((month.expenses || 0) / (highestDollarAmount / 1000));
-          const incomeY = 1100 - ((month.income || 0) / (highestDollarAmount / 1000));
-          const safeAmountY = 1100 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
-
-          return `
-            <circle cx="${x}" cy="${expenseY}" r="5" fill="var(--red)"></circle>
-            <rect x="${x - 4}" y="${incomeY - 4}" width="8" height="8" fill="var(--blue)"></rect>
-            <polygon points="${x - 5} ${safeAmountY + 4}, ${x} ${safeAmountY - 6}, ${x + 5} ${safeAmountY + 4}" fill="var(--yellow)"></polygon>
-          `;
-        }).join('')}
-      </g>
-      <g>
-        <polyline points="${expensesPoints}" fill="none" stroke="var(--red)" stroke-width="2"></polyline>
-        <polyline points="${incomePoints}" fill="none" stroke="var(--blue)" stroke-width="2"></polyline>
-        <polyline points="${safeAmountPoints}" fill="none" stroke="var(--yellow)" stroke-width="2"></polyline>
+        <polyline points="${expensesPoints}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+        <polyline points="${incomePoints}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+        <polyline points="${safeAmountPoints}" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
       </g>
     </svg>
   `;
