@@ -1,4 +1,4 @@
-import { formatMonthString, sortingFunction, getAllMonthlyTotalsFromCache, getAllMonthlyTotalsFromCloud } from './helpers.mjs';
+import { formatMonthString, sortingFunction, getAllMonthlyTotalsFromCache, getAllMonthlyTotalsFromCloud, chartMagicNumbers } from './helpers.mjs';
 import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTotalSavings) => {
@@ -67,8 +67,8 @@ const drawChart = (progress, highestDollarAmount) => {
     progressChartBlock.innerHTML = `
       <p>
         We don't have enough data to chart your progress right now. Once you
-        have expenses, income, and savings data for one month (other than the
-        current one), we'll be able to start plotting some points.
+        have expenses, income, and savings data for more than one month (other
+        than the current one), we'll be able to start plotting some points.
       </p>
       <p>
         You can come back next month, or you can add some historical data for
@@ -80,18 +80,41 @@ const drawChart = (progress, highestDollarAmount) => {
     return;
   }
 
+  const {
+    xMin,
+    yMin,
+    xMax,
+    yMax,
+    xLeft,
+    xRight,
+    yTop,
+    yBottom,
+    yAxisGap,
+    yAxisLabelVerticalOffset,
+    yAxisLabelHorizontalOffset,
+    xAxisLabelVerticalOffset,
+    xAxisLabelHorizontalOffset,
+    xAxisLabelRotationalOffset,
+    xLegendStart,
+    xLegendEnd,
+    yLegendStart,
+    yLegendGap,
+    xLegendLabelStart,
+    yLegendLabelOffset,
+  } = chartMagicNumbers;
+
   const yAxisLabels = [];
   const gridLines = [];
   const yAxisInterval = Math.ceil(highestDollarAmount / 10000);
   for (let i = 0; i <= highestDollarAmount / 1000; i += 1) {
     if (i % Math.ceil(yAxisInterval) === 0) {
       yAxisLabels.push(`
-        <text x="-20" y="${1010 - (i * 100)}" style="text-anchor: end" fill="var(--text-color)">
+        <text x="${yAxisLabelHorizontalOffset}" y="${(yBottom + yAxisLabelVerticalOffset) - (i * yAxisGap)}" style="text-anchor: end" fill="var(--text-color)">
           ${formatCurrency(i * 1000).replace('.00', '')}
         </text>
       `);
       gridLines.push(`
-        <polyline points="0 ${1000 - (i * 100)}, 1500 ${1000 - (i * 100)}" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+        <polyline points="${xLeft} ${yBottom - (i * yAxisGap)}, ${xRight} ${yBottom - (i * yAxisGap)}" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
       `);
     }
   }
@@ -101,7 +124,7 @@ const drawChart = (progress, highestDollarAmount) => {
   for (let i = 0; i < progress.length; i += 1) {
     if (i % Math.ceil(xAxisInterval) === 0) {
       xAxisLabels.push(`
-        <text x="${40 + (i * 1500 / progress.length)}" y="1020" style="text-anchor: end" fill="var(--text-color)" transform="rotate(-45, ${40 + (i * 1500 / progress.length)}, 1060)">
+        <text x="${xAxisLabelHorizontalOffset + (i * xRight / progress.length)}" y="${yBottom + xAxisLabelVerticalOffset}" style="text-anchor: end" fill="var(--text-color)" transform="rotate(-45, ${xAxisLabelHorizontalOffset + (i * xRight / progress.length)}, ${yBottom + xAxisLabelRotationalOffset})">
           ${progress[i].label}
         </text>
       `);
@@ -109,49 +132,49 @@ const drawChart = (progress, highestDollarAmount) => {
   }
 
   const expensesPoints = progress.map((month, index) => {
-    const x = (index * 1500 / progress.length);
-    const y = 1000 - ((month.expenses || 0) / (highestDollarAmount / 1000));
+    const x = (index * xRight / progress.length);
+    const y = yBottom - ((month.expenses || 0) / (highestDollarAmount / yBottom));
 
     return `${x},${y}`;
   }).join(' ');
 
   const incomePoints = progress.map((month, index) => {
-    const x = (index * 1500 / progress.length);
-    const y = 1000 - ((month.income || 0) / (highestDollarAmount / 1000));
+    const x = (index * xRight / progress.length);
+    const y = yBottom - ((month.income || 0) / (highestDollarAmount / yBottom));
 
     return `${x},${y}`;
   }).join(' ');
 
   const safeAmountPoints = progress.map((month, index) => {
-    const x = (index * 1500 / progress.length);
-    const y = 1000 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
+    const x = (index * xRight / progress.length);
+    const y = yBottom - ((month.safeAmount || 0) / (highestDollarAmount / yBottom));
 
     return `${x},${y}`;
   }).join(' ');
 
   const svgTemplate = `
-    <svg viewbox="-200 -200 1800 1500" aria-hidden="true" focusable="false">
+    <svg viewbox="${xMin} ${yMin} ${xMax} ${yMax}" aria-hidden="true" focusable="false">
       <g>
-        <polyline points="-135 -180, 0 -180" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
-        <text x="20" y="-170" fill="var(--text-color)">
+        <polyline points="${xLegendStart} ${yLegendStart}, ${xLegendEnd} ${yLegendStart}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset}" fill="var(--text-color)">
           Expenses
         </text>
-        <polyline points="-135 -130, 0 -130" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
-        <text x="20" y="-120" fill="var(--text-color)">
+        <polyline points="${xLegendStart} ${yLegendStart + yLegendGap}, ${xLegendEnd} ${yLegendStart + yLegendGap}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset + yLegendGap}" fill="var(--text-color)">
           Income
         </text>
-        <polyline points="-135 -80, 0 -80" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
-        <text x="20" y="-70" fill="var(--text-color)">
+        <polyline points="${xLegendStart} ${yLegendStart + (yLegendGap * 2)}, ${xLegendEnd} ${yLegendStart + (yLegendGap * 2)}" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset + (yLegendGap * 2)}" fill="var(--text-color)">
           Safe Withdrawal Amount
         </text>
       </g>
       <g>
-        <line x1="0" x2="0" y1="1000" y2="000" stroke-width="6" stroke="var(--text-color)"></line>
+        <line x1="${xLeft}" x2="${xLeft}" y1="${yBottom}" y2="${yTop}" stroke-width="6" stroke="var(--text-color)"></line>
         ${yAxisLabels.join('')}
         ${gridLines.join('')}
       </g>
       <g>
-        <line x1="0" x2="1500" y1="1000" y2="1000" stroke-width="6" stroke="var(--text-color)"></line>
+        <line x1="${xLeft}" x2="${xRight}" y1="${yBottom}" y2="${yBottom}" stroke-width="6" stroke="var(--text-color)"></line>
         ${xAxisLabels.join('')}
       </g>
       <g>

@@ -94,3 +94,26 @@ export const getAllMonthlyTotalsFromCloud = async (storeName) => {
     return null;
   }
 };
+
+export const chartMagicNumbers = {
+  xMin: -200,
+  yMin: -200,
+  xMax: 1800,
+  yMax: 1500,
+  xLeft: 0,
+  xRight: 1500,
+  yTop: 0,
+  yBottom: 1000,
+  yAxisGap: 100,
+  yAxisLabelVerticalOffset: 10,
+  yAxisLabelHorizontalOffset: -20,
+  xAxisLabelVerticalOffset: 20,
+  xAxisLabelHorizontalOffset: 40,
+  xAxisLabelRotationalOffset: 60,
+  xLegendStart: -135,
+  xLegendEnd: 0,
+  yLegendStart: -180,
+  yLegendGap: 50,
+  xLegendLabelStart: 20,
+  yLegendLabelOffset: 10,
+};
