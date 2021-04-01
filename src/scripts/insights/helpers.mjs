@@ -42,7 +42,7 @@ const formatMonthlyTotalData = (allData) => {
       return acc;
     }
 
-    if (record.year === thisYear && record.month > thisMonth) {
+    if (record.year === thisYear && record.month >= thisMonth) {
       return acc;
     }
 

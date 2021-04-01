@@ -3,7 +3,7 @@ import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
 
 const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTotalSavings) => {
   const monthlyProgress = {};
-  monthlyTotalExpenses.slice(0, -1).forEach((month) => {
+  monthlyTotalExpenses.forEach((month) => {
     if (monthlyProgress[formatMonthString(month.year, month.month)]) {
       monthlyProgress[formatMonthString(month.year, month.month)].expenses = month.total;
     } else {
@@ -15,7 +15,7 @@ const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTot
     }
   });
 
-  monthlyTotalIncome.slice(0, -1).forEach((month) => {
+  monthlyTotalIncome.forEach((month) => {
     if (monthlyProgress[formatMonthString(month.year, month.month)]) {
       monthlyProgress[formatMonthString(month.year, month.month)].income = month.total;
     } else {
@@ -27,7 +27,7 @@ const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTot
     }
   });
 
-  monthlyTotalSavings.slice(0, -1).forEach((month) => {
+  monthlyTotalSavings.forEach((month) => {
     if (monthlyProgress[formatMonthString(month.year, month.month)]) {
       monthlyProgress[formatMonthString(month.year, month.month)].safeAmount = month.total / 25 / 12;
     } else {
@@ -45,6 +45,7 @@ const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTot
       label: key,
     }))
     .sort(sortingFunction);
+  console.log(progress);
 
   return progress;
 };
@@ -106,21 +107,21 @@ const drawChart = (progress, highestDollarAmount) => {
 
   const expensesPoints = progress.map((month, index) => {
     const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - (month.expenses / (highestDollarAmount / 1000));
+    const y = 1100 - ((month.expenses || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
 
   const incomePoints = progress.map((month, index) => {
     const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - (month.income / (highestDollarAmount / 1000));
+    const y = 1100 - ((month.income || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
 
   const safeAmountPoints = progress.map((month, index) => {
     const x = 200 + (index * 1000 / progress.length);
-    const y = 1100 - (month.safeAmount / (highestDollarAmount / 1000));
+    const y = 1100 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
 
     return `${x},${y}`;
   }).join(' ');
@@ -152,9 +153,9 @@ const drawChart = (progress, highestDollarAmount) => {
       <g>
         ${progress.map((month, index) => {
           const x = 200 + (index * 1000 / progress.length);
-          const expenseY = 1100 - (month.expenses / (highestDollarAmount / 1000));
-          const incomeY = 1100 - (month.income / (highestDollarAmount / 1000));
-          const safeAmountY = 1100 - (month.safeAmount / (highestDollarAmount / 1000));
+          const expenseY = 1100 - ((month.expenses || 0) / (highestDollarAmount / 1000));
+          const incomeY = 1100 - ((month.income || 0) / (highestDollarAmount / 1000));
+          const safeAmountY = 1100 - ((month.safeAmount || 0) / (highestDollarAmount / 1000));
 
           return `
             <circle cx="${x}" cy="${expenseY}" r="5" fill="var(--red)"></circle>
