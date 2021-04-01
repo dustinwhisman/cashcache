@@ -15,6 +15,46 @@
       Go Back
     </a>
   </div>
+
+  <div class="stack" data-not-subscribed hidden>
+    <p>
+      You are not signed in, or you are not a paying user. You can access these
+      insights by <a href="/login">signing up</a>.
+    </p>
+  </div>
+
+  <div class="stack" data-is-subscribed>
+    <div data-chart></div>
+    <p>
+      This is your net worth chart. It shows your total savings minus your total
+      debt for every month of data that you have saved. Some scenarios to look
+      out for:
+    </p>
+    <ul>
+      <li>
+        Negative net worth and almost no savings: the priority here should be to
+        build up a small emergency fund, like $1,000 or one month of expenses,
+        then focus on paying off debt.
+      </li>
+      <li>
+        Negative net worth but lots of savings: it may be worth using some of
+        your savings to pay off a chunk of your debt. Without the interest
+        payments dragging you down, it will be easier to build up those savings
+        later.
+      </li>
+      <li>
+        Positive net worth with debt: in this case, it makes more sense to use
+        savings to pay off debt. Once debt free, any extra cash can go back into
+        savings.
+      </li>
+      <li>
+        Positive net worth and no debt: this is the goal – without debt dragging
+        you down, you can focus on building your savings, which will grow with
+        interest if they're invested well.
+      </li>
+    </ul>
+    <div data-table></div>
+  </div>
 {% endblock %}
 
 {% block scripts %}

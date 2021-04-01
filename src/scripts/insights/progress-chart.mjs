@@ -225,13 +225,13 @@ const drawTable = (progress) => {
                   ${month.label}
                 </th>
                 <td class="text-align:right">
-                  ${formatCurrency(month.expenses)}
+                  ${formatCurrency(month.expenses || 0)}
                 </td>
                 <td class="text-align:right">
-                  ${formatCurrency(month.income)}
+                  ${formatCurrency(month.income || 0)}
                 </td>
                 <td class="text-align:right">
-                  ${formatCurrency(month.safeAmount)}
+                  ${formatCurrency(month.safeAmount || 0)}
                 </td>
               </tr>
             `;
@@ -286,7 +286,5 @@ const drawTable = (progress) => {
         drawChart(monthlyProgress, highestDollarAmount);
         drawTable(monthlyProgress);
       })
-      .catch(() => {
-        // swallow error: the cache doesn't matter that much
-      });
+      .catch(console.error);
   })();
