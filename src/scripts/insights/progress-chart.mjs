@@ -63,7 +63,7 @@ const getHighestDollarAmount = (monthlyTotalExpenses, monthlyTotalIncome, monthl
 
 const drawChart = (progress, highestDollarAmount) => {
   const progressChartBlock = document.querySelector('[data-chart]');
-  if (!Object.keys(progress).length) {
+  if (!Object.keys(progress).length || Object.keys(progress).length < 2) {
     progressChartBlock.innerHTML = `
       <p>
         We don't have enough data to chart your progress right now. Once you
