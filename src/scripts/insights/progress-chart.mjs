@@ -45,7 +45,6 @@ const getMonthlyProgress = (monthlyTotalExpenses, monthlyTotalIncome, monthlyTot
       label: key,
     }))
     .sort(sortingFunction);
-  console.log(progress);
 
   return progress;
 };
