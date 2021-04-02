@@ -178,7 +178,7 @@ export const formatDuration = (numberOfMonths) => {
 };
 
 export const chartMagicNumbers = {
-  xMin: -200,
+  xMin: -250,
   yMin: -200,
   xMax: 1800,
   yMax: 1500,
