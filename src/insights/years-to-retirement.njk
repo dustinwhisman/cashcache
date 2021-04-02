@@ -24,7 +24,41 @@
   </div>
 
   <div class="stack" data-is-subscribed>
-    <div data-chart></div>
+    <div data-chart>
+      <svg viewbox="-250 -200 1800 1500" aria-hidden="true" focusable="false">
+        <g>
+          <polyline points="-135 -180, 0 -180" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+          <text x="20" y="-170" fill="var(--text-color)">
+            Pessimistic Case (3% Interest)
+          </text>
+          <polyline points="-135 -130, 0 -130" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+          <text x="20" y="-120" fill="var(--text-color)">
+            Optimistic Case (12% Interest)
+          </text>
+          <polyline points="-135 -80, 0 -80" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+          <text x="20" y="-70" fill="var(--text-color)">
+            Likely Case (7% Interest)
+          </text>
+        </g>
+        <g>
+          <line x1="0" x2="0" y1="1000" y2="0" stroke-width="6" stroke="var(--text-color)"></line>
+          <polyline points="0 1000, 1500 1000" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 900, 1500 900" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 800, 1500 800" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 700, 1500 700" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 600, 1500 600" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 500, 1500 500" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 400, 1500 400" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 300, 1500 300" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 200, 1500 200" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 100, 1500 100" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 0, 1500 0" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+        </g>
+        <g>
+          <line x1="0" x2="1500" y1="1000" y2="1000" stroke-width="6" stroke="var(--text-color)"></line>
+        </g>
+      </svg>
+    </div>
     <div class="stack" data-explanation></div>
     <div data-table></div>
   </div>
