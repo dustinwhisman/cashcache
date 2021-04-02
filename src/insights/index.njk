@@ -2,13 +2,19 @@
 
 {% block titleAndDescription %}
   <title>Insights | Cash Cache</title>
-  <meta name="description" content="See how well you're doing based on all of the data that you've recorded. See how close you are to retirement and how well you've been saving your money.">
+  <meta name="description" content="Take a closer look at your financial health, simulate the future, and analyze your history with money.">
 {% endblock %}
 
 {% block mainContent %}
   <h1>
     Insights
   </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
 
   <div class="stack" data-paywall-message hidden>
     <p>
@@ -17,24 +23,53 @@
     </p>
     <ul class="stack" style="--stack-space: 0.75em">
       <li>
-        A chart of your financial progress based on all of the data you've
-        entered. It shows your total expenses and income by month, as well as how
-        much money you could safely withdraw from your savings each month without
-        depleting them.
+        Financial Health Charts
+        <ul class="stack" style="--stack-space: 0.5em">
+          <li>
+            Progress Chart: view your expenses, income, and amount you could
+            safely withdraw every month.
+          </li>
+          <li>
+            Net Worth Chart: see how your net worth (savings minus debt) changes
+            over time.
+          </li>
+          <li>
+            Savings Rate Chart: see how your savings rate changes over time (a
+            higher rate is better).
+          </li>
+        </ul>
       </li>
       <li>
-        A measure of how long your savings would last if you suddenly had no
-        income, based on your expenses.
+        Projections and Simulations
+        <ul class="stack" style="--stack-space: 0.5em">
+          <li>
+            Emergency Runway: see how long your savings could last you in an
+            emergency, based on your average expenses.
+          </li>
+          <li>
+            Years Until Retirement: see how long it might take to retire, based
+            on your average savings rate.
+          </li>
+          <!-- <li>
+            Debt Payment Simulator: see how paying extra on your debt might
+            affect how much interest you pay over time and shorten your loan
+            durations.
+          </li> -->
+        </ul>
       </li>
-      <li>
-        An estimate of how much money you will need to retire, as well as how long
-        it will take to get there, based on your average expenses and your savings
-        rate.
-      </li>
-      <li>
-        A chart of your savings rate by month, including a rolling average. The
-        higher the better and the sooner you'll be able to retire.
-      </li>
+      <!-- <li>
+        Analysis
+        <ul class="stack" style="--stack-space: 0.5em"> -->
+          <!-- <li>
+            Totals Over Time: view your total expenses and income over periods
+            of time, and compare savings and debt over those periods.
+          </li> -->
+          <!-- <li>
+            Expenses Heat Map: see when you spend your money, potentially
+            revealing spending habits you can try to change.
+          </li> -->
+        <!-- </ul>
+      </li> -->
     </ul>
     <div data-cta-log-in hidden>
       <a href="/login" class="button">
@@ -49,84 +84,57 @@
   </div>
 
   <div class="stack" data-insights>
+    <h2>
+      Financial Health Charts
+    </h2>
     <p>
-      Here are the key takeaways from your entire backlog of data. Keep in mind that
-      this is not financial advice, and assumptions factor heavily into the
-      calculations that drive these estimates.
+      <a href="/insights/progress-chart">
+        Progress Chart
+      </a>
+    </p>
+    <p>
+      <a href="/insights/net-worth-chart">
+        Net Worth Chart
+      </a>
+    </p>
+    <p>
+      <a href="/insights/savings-rate-chart">
+        Savings Rate Chart
+      </a>
     </p>
 
-    <div>
-      <a href="/overview" data-back-link>
-        Go Back
+    <h2>
+      Projections and Simulations
+    </h2>
+    <p>
+      <a href="/insights/emergency-runway">
+        Emergency Runway
       </a>
-    </div>
-
-    <div>
-      <a href="/insights/monthly">
-        Insights by Month
+    </p>
+    <p>
+      <a href="/insights/years-to-retirement">
+        Years Until Retirement
       </a>
-    </div>
+    </p>
+    <!-- <p>
+      <a href="/insights/debt-payment-simulator">
+        Debt Payment Simulator
+      </a>
+    </p> -->
 
-    <div data-progress-chart class="stack" hidden>
-      <h2>
-        Progress Chart
-      </h2>
-      <details>
-        <summary>
-          Details
-        </summary>
-        <div class="stack">
-          <p>
-            This is your progress chart. It shows your expenses and income along with
-            the amount that you could safely withdraw each month (assuming you spend no
-            more than 4% of your total savings per year and your savings are invested).
-          </p>
-          <p>
-            Once the safe withdrawal amount is consistently higher than expenses, you
-            have "enough" and could consider retirement.
-          </p>
-        </div>
-      </details>
-      <div data-progress-chart-details></div>
-    </div>
-
-    <div data-runway class="stack" hidden>
-      <h2>
-        Runway
-      </h2>
-      <div class="stack" data-runway-details></div>
-    </div>
-
-    <div data-retirement class="stack" hidden>
-      <h2>
-        Retirement
-      </h2>
-      <div data-retirement-summary class="stack"></div>
-      <div data-retirement-details class="stack"></div>
-    </div>
-
-    <div data-savings-rate class="stack" hidden>
-      <h2>
-        Savings Rate
-      </h2>
-      <details>
-        <summary>
-          Details
-        </summary>
-        <div class="stack">
-          <p>
-            Your savings rate is an indicator of how much money you saved compared
-            to your total income. The closer you are to 100%, the better. If you
-            have a negative percentage, that means you spent more than you earned.
-          </p>
-          <p>
-            This chart breaks your savings rate down by month and shows a 12 month
-            rolling average.
-          </p>
-        </div>
-      </details>
-      <div data-savings-rate-details></div>
-    </div>
+    <!-- <h2>
+      Analysis
+    </h2> -->
+    <!-- <p>
+      <a href="/insights/totals-over-time">
+        Totals Over Time
+      </a>
+    </p> -->
+    <!-- <p>
+      <a href="/insights/expenses-heat-map">
+        Expenses Heat Map
+      </a>
+    </p> -->
   </div>
 {% endblock %}
 

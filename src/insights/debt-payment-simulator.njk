@@ -1,0 +1,22 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Debt Payment Simulator | Cash Cache</title>
+  <meta name="description" content="See how paying extra on your debts will help you pay them off sooner and save money on interest payments.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Debt Payment Simulator
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/debt-payment-simulator.mjs" type="module"></script>
+{% endblock %}

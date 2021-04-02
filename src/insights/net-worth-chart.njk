@@ -1,0 +1,96 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Net Worth Chart | Cash Cache</title>
+  <meta name="description" content="">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Net Worth Chart
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <div class="stack" data-not-subscribed hidden>
+    <p>
+      You are not signed in, or you are not a paying user. You can access these
+      insights by <a href="/login">signing up</a>.
+    </p>
+  </div>
+
+  <div class="stack" data-is-subscribed>
+    <div data-chart>
+      <svg viewbox="-250 -200 1800 1500" aria-hidden="true" focusable="false">
+        <g>
+          <polyline points="-135 -180, 0 -180" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+          <text x="20" y="-170" fill="var(--text-color)">
+            Savings
+          </text>
+          <polyline points="-135 -130, 0 -130" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+          <text x="20" y="-120" fill="var(--text-color)">
+            Debt
+          </text>
+          <polyline points="-135 -80, 0 -80" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+          <text x="20" y="-70" fill="var(--text-color)">
+            Net Worth
+          </text>
+        </g>
+        <g>
+          <line x1="0" x2="0" y1="1000" y2="0" stroke-width="6" stroke="var(--text-color)"></line>
+          <polyline points="0 1000, 1500 1000" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 900, 1500 900" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 800, 1500 800" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 700, 1500 700" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 600, 1500 600" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 500, 1500 500" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 400, 1500 400" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 300, 1500 300" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 200, 1500 200" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 100, 1500 100" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+          <polyline points="0 0, 1500 0" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+        </g>
+        <g>
+          <line x1="0" x2="1500" y1="1000" y2="1000" stroke-width="6" stroke="var(--text-color)"></line>
+        </g>
+      </svg>
+    </div>
+    <p>
+      This is your net worth chart. It shows your total savings minus your total
+      debt for every month of data that you have saved. Some scenarios to look
+      out for:
+    </p>
+    <ul>
+      <li>
+        Negative net worth and almost no savings: the priority here should be to
+        build up a small emergency fund, like $1,000 or one month of expenses,
+        then focus on paying off debt.
+      </li>
+      <li>
+        Negative net worth but lots of savings: it may be worth using some of
+        your savings to pay off a chunk of your debt. Without the interest
+        payments dragging you down, it will be easier to build up those savings
+        later.
+      </li>
+      <li>
+        Positive net worth with debt: in this case, it makes more sense to use
+        savings to pay off debt. Once debt free, any extra cash can go back into
+        savings.
+      </li>
+      <li>
+        Positive net worth and no debt: this is the goal – without debt dragging
+        you down, you can focus on building your savings, which will grow with
+        interest if they're invested well.
+      </li>
+    </ul>
+    <div data-table></div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/net-worth-chart.mjs" type="module"></script>
+{% endblock %}

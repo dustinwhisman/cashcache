@@ -1,0 +1,37 @@
+{% extends "layouts/simple-layout.njk" %}
+
+{% block titleAndDescription %}
+  <title>Insights: Emergency Runway | Cash Cache</title>
+  <meta name="description" content="See how long your saving would last you in an emergency, given your average expenses.">
+{% endblock %}
+
+{% block mainContent %}
+  <h1>
+    Insights: Emergency Runway
+  </h1>
+
+  <div>
+    <a href="/overview" data-back-link>
+      Go Back
+    </a>
+  </div>
+
+  <div class="stack" data-not-subscribed hidden>
+    <p>
+      You are not signed in, or you are not a paying user. You can access these
+      insights by <a href="/login">signing up</a>.
+    </p>
+  </div>
+
+  <div class="stack" data-is-subscribed>
+    <div class="stack" data-runway-info>
+      <p>
+        Hang on a second while we calculate your emergency runway...
+      </p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/scripts/insights/emergency-runway.mjs" type="module"></script>
+{% endblock %}

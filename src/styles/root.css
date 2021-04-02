@@ -1,8 +1,4 @@
 :root {
-  --red: #dc143c;
-  --yellow: #FBBF24;
-  --blue: #2B6CB0;
-  --green: #059669;
   --bg-color: #fafafa;
   --text-color: #202020;
   --scrollbar-color: #aaaaaa;
@@ -34,10 +30,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --red: #f9463b;
-    --yellow: #FBBF24;
-    --blue: #60A5FA;
-    --green: #059669;
     --bg-color: #202020;
     --text-color: #fafafa;
     --scrollbar-color: #555555;
@@ -50,10 +42,6 @@
 }
 
 .light-mode {
-  --red: #dc143c;
-  --yellow: #FBBF24;
-  --blue: #2B6CB0;
-  --green: #059669;
   --bg-color: #fafafa;
   --text-color: #202020;
   --scrollbar-color: #aaaaaa;
@@ -65,10 +53,6 @@
 }
 
 .dark-mode {
-  --red: #f9463b;
-  --yellow: #FBBF24;
-  --blue: #60A5FA;
-  --green: #059669;
   --bg-color: #202020;
   --text-color: #fafafa;
   --scrollbar-color: #555555;
