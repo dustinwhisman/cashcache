@@ -124,10 +124,6 @@ const drawChart = (netWorth, highestDollarAmount, lowestDollarAmount) => {
       gridLines.push(`
         <polyline points="${xLeft} ${yAtZero}, ${xRight} ${yAtZero}" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
       `);
-      console.log({
-        i,
-        yAtZero,
-      });
     }
   }
 
@@ -279,11 +275,6 @@ const drawTable = (netWorth) => {
 
         drawChart(monthlyNetWorth, highestDollarAmount, lowestDollarAmount);
         drawTable(monthlyNetWorth);
-        console.log({
-          monthlyNetWorth,
-          highestDollarAmount,
-          lowestDollarAmount,
-        });
       }
     })
     .catch(() => {
@@ -303,11 +294,6 @@ const drawTable = (netWorth) => {
 
         drawChart(monthlyNetWorth, highestDollarAmount, lowestDollarAmount);
         drawTable(monthlyNetWorth);
-        console.log({
-          monthlyNetWorth,
-          highestDollarAmount,
-          lowestDollarAmount,
-        });
       })
       .catch(console.error);
   })();
