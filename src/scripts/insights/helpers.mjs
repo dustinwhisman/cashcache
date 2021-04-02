@@ -1,4 +1,4 @@
-import { getAllFromObjectStore, getAllFromCloud } from '../db/index.mjs';
+import { getAllFromObjectStore, getAllFromCloud, getAllFromIndex, getAllFromCloudIndex } from '../db/index.mjs';
 import { uid } from '../helpers/index.mjs';
 
 export const formatMonthString = (year, month) => new Date(year, month, 1)
@@ -93,6 +93,88 @@ export const getAllMonthlyTotalsFromCloud = async (storeName) => {
   } catch {
     return null;
   }
+};
+
+const formatMonthlyCategoryData = (data) => {
+  const dataMap = data.reduce((acc, record) => {
+    if (acc[record.category]) {
+      acc[record.category].push(record);
+    } else {
+      acc[record.category] = [record];
+    }
+
+    return acc;
+  }, {});
+
+  const formattedData = Object.keys(dataMap)
+    .map((key) => {
+      return {
+        label: key,
+        total: dataMap[key].reduce((acc, record) => acc + record.amount, 0),
+      };
+    })
+    .sort((a, b) => {
+      if (a.total < b.total) {
+        return -1;
+      }
+
+      if (a.total > b.total) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+  return formattedData;
+};
+
+export const getTotalsByCategory = async (storeName, year, month) => {
+  try {
+    const data = await getAllFromIndex(storeName, 'year-month', year, month, uid());
+    return formatMonthlyCategoryData(data);
+  } catch {
+    return null;
+  }
+};
+
+export const getTotalsByCategoryFromCache = async (storeName, year, month) => {
+  try {
+    const response = await caches.match(`/api/get-all-from-index?storeName=${storeName}&year=${year}&month=${month}`);
+    const data = await response.json();
+    return formatMonthlyCategoryData(data);
+  } catch {
+    return null;
+  }
+};
+
+export const getTotalsByCategoryFromCloud = async (storeName, year, month) => {
+  try {
+    const data = await getAllFromCloudIndex(storeName, year, month, uid());
+    return formatMonthlyCategoryData(data);
+  } catch {
+    return null;
+  }
+};
+
+export const formatDuration = (numberOfMonths) => {
+  const years = Math.floor(numberOfMonths / 12);
+  const months = numberOfMonths % 12;
+
+  let yearPhrase = '';
+  if (years === 1) {
+    yearPhrase = '1 year';
+  } else if (years > 1) {
+    yearPhrase = `${years} years`;
+  }
+
+  let monthPhrase = '';
+  if (months === 1) {
+    monthPhrase = '1 month';
+  } else if (months > 1) {
+    monthPhrase = `${months} months`;
+  }
+
+  return `${yearPhrase}${yearPhrase && monthPhrase ? ' and ' : ''}${monthPhrase}`;
 };
 
 export const chartMagicNumbers = {

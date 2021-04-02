@@ -15,6 +15,17 @@
       Go Back
     </a>
   </div>
+
+  <div class="stack" data-not-subscribed hidden>
+    <p>
+      You are not signed in, or you are not a paying user. You can access these
+      insights by <a href="/login">signing up</a>.
+    </p>
+  </div>
+
+  <div class="stack" data-is-subscribed>
+    <div class="stack" data-runway-info></div>
+  </div>
 {% endblock %}
 
 {% block scripts %}
