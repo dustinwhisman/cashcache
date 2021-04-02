@@ -28,12 +28,12 @@ const getMonthlyNetWorth = (monthlyTotalSavings, monthlyTotalDebt) => {
   });
 
   const netWorth = Object.keys(monthlyNetWorth)
-  .map((key) => ({
-    ...monthlyNetWorth[key],
-    netWorth: (monthlyNetWorth[key].savings || 0) - (monthlyNetWorth[key].debt || 0),
-    label: key,
-  }))
-  .sort(sortingFunction);
+    .map((key) => ({
+      ...monthlyNetWorth[key],
+      netWorth: (monthlyNetWorth[key].savings || 0) - (monthlyNetWorth[key].debt || 0),
+      label: key,
+    }))
+    .sort(sortingFunction);
 
   return netWorth;
 };
@@ -64,8 +64,8 @@ const drawChart = (netWorth, highestDollarAmount, lowestDollarAmount) => {
     netWorthChartBlock.innerHTML = `
       <p>
         We don't have enough data to chart your net worth right now. Once you
-        have savings and data for more than one month (other than the current
-        one), we'll be able to start plotting some points.
+        have savings and debt data for more than one month (other than the
+        current one), we'll be able to start plotting some points.
       </p>
       <p>
         You can come back next month, or you can add some historical data for
