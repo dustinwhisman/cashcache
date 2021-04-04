@@ -1,6 +1,6 @@
 import { getAllFromCloudIndex } from '../db/index.mjs';
 import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
-import { formatMonthString, chartMagicNumbers } from './helpers.mjs'
+import { formatMonthString, formatDuration, chartMagicNumbers } from './helpers.mjs'
 
 let debtData = null;
 
@@ -316,6 +316,46 @@ const drawChart = (data, highestDollarAmount) => {
   chartBlock.innerHTML = svgTemplate;
 };
 
+const generateExplanation = (minPaymentSchedule, snowballSchedule, avalancheSchedule) => {
+  const explanationBlock = document.querySelector('[data-explanation]');
+
+  const template = `
+    <p>
+      If you were to only pay the minimum payment every month on all your loans,
+      it would take
+      <b>${formatDuration(minPaymentSchedule.monthlySnapshots.length - 1)}</b>
+      to pay off your debt. You would end up paying
+      <b>${formatCurrency(minPaymentSchedule.totalInterestPaid)}</b>
+      in interest over the lifetime of your loans.
+    </p>
+    <p>
+      If you were to use the Snowball Method to pay off your loans (paying extra
+      on the smallest balance, the minimum payment on everything else), it would
+      take
+      <b>${formatDuration(snowballSchedule.monthlySnapshots.length - 1)}</b>
+      to pay off your debt. You would end up paying
+      <b>${formatCurrency(snowballSchedule.totalInterestPaid)}</b>
+      in interest over the lifetime of your loans.
+    </p>
+    <p>
+      If you were to use the Avalanche Method to pay off your loans (paying
+      extra on the highest interest, the minimum payment on everything else), it
+      would take
+      <b>${formatDuration(avalancheSchedule.monthlySnapshots.length - 1)}</b>
+      to pay off your debt. You would end up paying
+      <b>${formatCurrency(avalancheSchedule.totalInterestPaid)}</b>
+      in interest over the lifetime of your loans.
+    </p>
+    <p>
+      For the Snowball and Avalanche methods, we assume that you are adding the
+      minimum payment of paid off loans to future payments, increasing the extra
+      cash you have available over time.
+    </p>
+  `;
+
+  explanationBlock.innerHTML = template;
+};
+
 const drawTable = (data) => {
   if (!Object.keys(data).length) {
     return;
@@ -407,6 +447,7 @@ const drawTable = (data) => {
         const highestDollarAmount = getHighestDollarAmount(chartData);
 
         drawChart(chartData, highestDollarAmount);
+        generateExplanation(minPaymentSchedule, snowballSchedule, avalancheSchedule);
         drawTable(chartData);
       }
     })
@@ -433,6 +474,7 @@ const drawTable = (data) => {
       const highestDollarAmount = getHighestDollarAmount(chartData);
 
       drawChart(chartData, highestDollarAmount);
+      generateExplanation(minPaymentSchedule, snowballSchedule, avalancheSchedule);
       drawTable(chartData);
     })
     .catch(console.error);
