@@ -79,7 +79,7 @@ const getLowestPercentage = (savingsRate) => {
 
 const drawChart = (savingsRate, highestPercentage, lowestPercentage) => {
   const savingsRateChartBlock = document.querySelector('[data-chart]');
-  if (!Object.keys(savingsRate).length || Object.keys(savingsRate).length < 2) {
+  if (savingsRate.length <= 1) {
     savingsRateChartBlock.innerHTML = `
       <p>
         We don't have enough data to chart your savings rate right now. Once you
@@ -203,7 +203,7 @@ const drawChart = (savingsRate, highestPercentage, lowestPercentage) => {
 };
 
 const drawTable = (savingsRate) => {
-  if (!Object.keys(savingsRate).length) {
+  if (savingsRate.length <= 1) {
     return;
   }
 

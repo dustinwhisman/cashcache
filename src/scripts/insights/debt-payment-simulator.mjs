@@ -186,7 +186,7 @@ const getHighestDollarAmount = (data) => {
 
 const drawChart = (data, highestDollarAmount) => {
   const chartBlock = document.querySelector('[data-chart]');
-  if (!Object.keys(data).length || Object.keys(data).length < 2) {
+  if (data.length <= 1) {
     chartBlock.innerHTML = `
       <p>
         We don't have enough data to simulate your debt repayment now. We
@@ -365,7 +365,7 @@ const generateExplanation = (minPaymentSchedule, snowballSchedule, avalancheSche
 };
 
 const drawTable = (data) => {
-  if (!Object.keys(data).length) {
+  if (data.length <= 1) {
     return;
   }
 
