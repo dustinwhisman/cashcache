@@ -102,7 +102,7 @@ const getHighestDollarAmount = (data) => {
 
 const drawChart = (data, highestDollarAmount, amountNeeded) => {
   const chartBlock = document.querySelector('[data-chart]');
-  if (!Object.keys(data).length || Object.keys(data).length < 2) {
+  if (!data.length) {
     chartBlock.innerHTML = `
       <p>
         We don't have enough data to project your years to retirement now. Once
@@ -282,7 +282,7 @@ const generateExplanation = (amountNeeded, pessimisticYears, optimisticYears, li
 };
 
 const drawTable = (data) => {
-  if (!Object.keys(data).length) {
+  if (!data.length) {
     return;
   }
 
@@ -376,8 +376,11 @@ const drawTable = (data) => {
         const highestDollarAmount = getHighestDollarAmount(chartData);
 
         drawChart(chartData, highestDollarAmount, amountNeeded);
-        generateExplanation(amountNeeded, pessimisticYears, optimisticYears, likelyYears);
         drawTable(chartData);
+
+        if (chartData.length) {
+          generateExplanation(amountNeeded, pessimisticYears, optimisticYears, likelyYears);
+        }
       }
     })
     .catch(() => {
@@ -407,8 +410,11 @@ const drawTable = (data) => {
         const highestDollarAmount = getHighestDollarAmount(chartData);
 
         drawChart(chartData, highestDollarAmount, amountNeeded);
-        generateExplanation(amountNeeded, pessimisticYears, optimisticYears, likelyYears);
         drawTable(chartData);
+
+        if (chartData.length > 1) {
+          generateExplanation(amountNeeded, pessimisticYears, optimisticYears, likelyYears);
+        }
       })
       .catch(console.error);
   })();

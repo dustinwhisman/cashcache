@@ -60,7 +60,7 @@ const getLowestDollarAmount = (monthlyNetWorth) => {
 
 const drawChart = (netWorth, highestDollarAmount, lowestDollarAmount) => {
   const netWorthChartBlock = document.querySelector('[data-chart]');
-  if (!Object.keys(netWorth).length || Object.keys(netWorth).length < 2) {
+  if (netWorth.length <= 1) {
     netWorthChartBlock.innerHTML = `
       <p>
         We don't have enough data to chart your net worth right now. Once you
@@ -196,7 +196,7 @@ const drawChart = (netWorth, highestDollarAmount, lowestDollarAmount) => {
 };
 
 const drawTable = (netWorth) => {
-  if (!Object.keys(netWorth).length) {
+  if (netWorth.length <= 1) {
     return;
   }
 
