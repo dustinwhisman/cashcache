@@ -1,8 +1,9 @@
 import { getAllFromCloudIndex } from '../db/index.mjs';
-import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
+import { formatCurrency, sanitize, uid, isPayingUser } from '../helpers/index.mjs';
 import { formatMonthString, formatDuration, chartMagicNumbers } from './helpers.mjs'
 
 let debtData = null;
+let extraCash = 100;
 
 const calculateMinPaymentSchedule = (debtData) => {
   let totalInterestPaid = 0;
@@ -36,7 +37,7 @@ const calculateMinPaymentSchedule = (debtData) => {
   };
 };
 
-const calculateAvalancheMethod = (debtData, extraCash = 100) => {
+const calculateAvalancheMethod = (debtData) => {
   let monthlyExtraCash = extraCash;
   let totalInterestPaid = 0;
   let totalBalance = debtData.reduce((acc, debt) => acc + debt.amount, 0);
@@ -92,7 +93,7 @@ const calculateAvalancheMethod = (debtData, extraCash = 100) => {
   };
 };
 
-const calculateSnowballMethod = (debtData, extraCash = 100) => {
+const calculateSnowballMethod = (debtData) => {
   let monthlyExtraCash = extraCash;
   let totalInterestPaid = 0;
   let totalBalance = debtData.reduce((acc, debt) => acc + debt.amount, 0);
@@ -203,6 +204,9 @@ const drawChart = (data, highestDollarAmount) => {
         and congratulations on being debt free!
       </p>
     `;
+
+    const extraCashForm = document.querySelector('[data-extra-cash-form]');
+    extraCashForm.setAttribute('hidden', true);
 
     return;
   }
@@ -317,6 +321,10 @@ const drawChart = (data, highestDollarAmount) => {
 };
 
 const generateExplanation = (minPaymentSchedule, snowballSchedule, avalancheSchedule) => {
+  if (minPaymentSchedule.monthlySnapshots.length <= 1) {
+    return;
+  }
+
   const explanationBlock = document.querySelector('[data-explanation]');
 
   const template = `
@@ -412,6 +420,18 @@ const drawTable = (data) => {
   tableBlock.innerHTML = tableTemplate;
 };
 
+const calculateDebtSchedules = () => {
+  const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
+  const avalancheSchedule = calculateAvalancheMethod(debtData);
+  const snowballSchedule = calculateSnowballMethod(debtData);
+  const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
+  const highestDollarAmount = getHighestDollarAmount(chartData);
+
+  drawChart(chartData, highestDollarAmount);
+  generateExplanation(minPaymentSchedule, snowballSchedule, avalancheSchedule);
+  drawTable(chartData);
+};
+
 (async () => {
   if (!uid() || !isPayingUser()) {
     const notSubscribed = document.querySelector('[data-not-subscribed]');
@@ -440,15 +460,8 @@ const drawTable = (data) => {
           interestRate: d.interestRate,
           minimumPayment: d.minimumPayment,
         }));
-        const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
-        const avalancheSchedule = calculateAvalancheMethod(debtData);
-        const snowballSchedule = calculateSnowballMethod(debtData);
-        const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
-        const highestDollarAmount = getHighestDollarAmount(chartData);
 
-        drawChart(chartData, highestDollarAmount);
-        generateExplanation(minPaymentSchedule, snowballSchedule, avalancheSchedule);
-        drawTable(chartData);
+        calculateDebtSchedules();
       }
     })
     .catch(() => {
@@ -467,15 +480,17 @@ const drawTable = (data) => {
         interestRate: d.interestRate,
         minimumPayment: d.minimumPayment,
       }));
-      const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
-      const avalancheSchedule = calculateAvalancheMethod(debtData);
-      const snowballSchedule = calculateSnowballMethod(debtData);
-      const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
-      const highestDollarAmount = getHighestDollarAmount(chartData);
 
-      drawChart(chartData, highestDollarAmount);
-      generateExplanation(minPaymentSchedule, snowballSchedule, avalancheSchedule);
-      drawTable(chartData);
+      calculateDebtSchedules();
     })
     .catch(console.error);
 })();
+
+document.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const { elements } = event.target;
+  extraCash = sanitize(elements['extra-cash'].value);
+
+  calculateDebtSchedules();
+});

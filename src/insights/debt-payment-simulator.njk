@@ -24,6 +24,19 @@
   </div>
 
   <div class="stack" data-is-subscribed>
+    <form class="stack" data-extra-cash-form>
+      <div>
+        <label for="extra-cash">
+          Extra Cash Per Month
+        </label>
+        <input id="extra-cash" type="text" name="extra-cash" value="100" inputmode="numeric" pattern="^(\s{1,})?\$?\d{1,3}(,?\d{3})*(\.\d+)?(\s{1,})?$" style="width: 12ch" autofill="false" autocomplete="off" required>
+      </div>
+      <div>
+        <button type="submit">
+          Simulate Debt Payments
+        </button>
+      </div>
+    </form>
     <div data-chart>
       <svg viewbox="-250 -200 1800 1500" aria-hidden="true" focusable="false">
         <g>
