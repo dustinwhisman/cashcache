@@ -1,5 +1,6 @@
 import { getAllFromCloudIndex } from '../db/index.mjs';
-import { uid, isPayingUser } from '../helpers/index.mjs';
+import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
+import { formatMonthString } from './helpers.mjs'
 
 let debtData = null;
 
@@ -147,6 +148,97 @@ const calculateSnowballMethod = (debtData, extraCash = 100) => {
   };
 };
 
+const generateChartData = (minPaymentData, avalancheData, snowballData) => {
+  const data = [];
+  const referenceDate = new Date();
+  referenceDate.setMonth(referenceDate.getMonth() - 1);
+  let year = referenceDate.getFullYear();
+  let month = referenceDate.getMonth();
+
+  for (let i = 0; i < minPaymentData.length; i += 1) {
+    data.push({
+      label: formatMonthString(year, month),
+      minPaymentBalance: minPaymentData[i] || 0,
+      avalancheBalance: avalancheData[i] || 0,
+      snowballBalance: snowballData[i] || 0,
+    });
+
+    referenceDate.setMonth(referenceDate.getMonth() + 1);
+      year = referenceDate.getFullYear();
+      month = referenceDate.getMonth();
+    }
+
+  return data;
+};
+
+const getHighestDollarAmount = (data) => {
+  const highestDollarAmount = Math.ceil(
+    Math.max(...[
+      ...data.map(m => m.minPaymentBalance),
+      ...data.map(m => m.avalancheBalance),
+      ...data.map(m => m.snowballBalance)
+    ]) / 1000
+  ) * 1000;
+
+  return highestDollarAmount;
+}
+
+const drawTable = (data) => {
+  if (!Object.keys(data).length) {
+    return;
+  }
+
+  const tableBlock = document.querySelector('[data-table]');
+
+  const tableTemplate = `
+    <details>
+      <summary>
+        See the numbers
+      </summary>
+      <table class="small">
+        <thead>
+          <tr>
+            <th class="text-align:right">
+              Month
+            </th>
+            <th class="text-align:right">
+              Minimum Payment Balance
+            </th>
+            <th class="text-align:right">
+              Avalanche Balance
+            </th>
+            <th class="text-align:right">
+              Snowball Balance
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map((year) => {
+            return `
+              <tr>
+                <th class="text-align:right">
+                  ${year.label}
+                </th>
+                <td class="text-align:right">
+                  ${formatCurrency(year.minPaymentBalance || 0)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(year.avalancheBalance || 0)}
+                </td>
+                <td class="text-align:right">
+                  ${formatCurrency(year.snowballBalance || 0)}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </details>
+  `;
+
+  tableBlock.innerHTML = tableTemplate;
+};
+
 (async () => {
   if (!uid() || !isPayingUser()) {
     const notSubscribed = document.querySelector('[data-not-subscribed]');
@@ -178,12 +270,14 @@ const calculateSnowballMethod = (debtData, extraCash = 100) => {
         const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
         const avalancheSchedule = calculateAvalancheMethod(debtData);
         const snowballSchedule = calculateSnowballMethod(debtData);
+        const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
+        const highestDollarAmount = getHighestDollarAmount(chartData);
+
+        drawTable(chartData);
         console.log({
-          minPaymentSchedule,
-          avalancheSchedule,
-          snowballSchedule,
+          chartData,
         });
-      }
+        }
     })
     .catch(() => {
       // swallow error: the cache doesn't matter that much
@@ -204,10 +298,12 @@ const calculateSnowballMethod = (debtData, extraCash = 100) => {
       const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
       const avalancheSchedule = calculateAvalancheMethod(debtData);
       const snowballSchedule = calculateSnowballMethod(debtData);
+      const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
+      const highestDollarAmount = getHighestDollarAmount(chartData);
+
+      drawTable(chartData);
       console.log({
-        minPaymentSchedule,
-        avalancheSchedule,
-        snowballSchedule,
+        chartData,
       });
 })
     .catch(console.error);
