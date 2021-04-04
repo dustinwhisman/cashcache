@@ -9,20 +9,74 @@ const calculateMinPaymentSchedule = (debtData) => {
   const monthlySnapshots = [totalBalance];
   let adjustedDebt = debtData;
   while (totalBalance > 0) {
+    adjustedDebt = adjustedDebt
+      .filter((debt) => debt.amount > 0)
+      .map((debt) => {
+        const addedInterest = debt.amount * ((debt.interestRate / 100) / 12);
+        totalInterestPaid += addedInterest;
+        const totalAfterInterest = debt.amount + addedInterest;
+        let totalAfterPayment = totalAfterInterest - debt.minimumPayment;
+        if (totalAfterPayment < 0) {
+          totalAfterPayment = 0;
+        }
+        return {
+          ...debt,
+          amount: totalAfterPayment,
+        };
+      });
+
+    totalBalance = adjustedDebt.reduce((acc, debt) => acc + debt.amount, 0);
+    monthlySnapshots.push(totalBalance);
+  }
+
+  return {
+    totalInterestPaid,
+    monthlySnapshots,
+  };
+};
+
+const calculateAvalancheMethod = (debtData, extraCash = 100) => {
+  let totalInterestPaid = 0;
+  let totalBalance = debtData.reduce((acc, debt) => acc + debt.amount, 0);
+  const monthlySnapshots = [totalBalance];
+  let adjustedDebt = debtData.sort((a, b) => {
+    if (a.interestRate > b.interestRate) {
+      return -1;
+    }
+
+    if (a.interestRate < b.interestRate) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  while (totalBalance > 0) {
     console.log(totalBalance);
-    adjustedDebt = adjustedDebt.map((debt) => {
-      const addedInterest = debt.amount * ((debt.interestRate / 100) / 12);
-      totalInterestPaid += addedInterest;
-      const totalAfterInterest = debt.amount + addedInterest;
-      let totalAfterPayment = totalAfterInterest - debt.minimumPayment;
-      if (totalAfterPayment < 0) {
-        totalAfterPayment = 0;
-      }
-      return {
-        ...debt,
-        amount: totalAfterPayment,
-      };
-    });
+    let remainingExtraCash = 0;
+    adjustedDebt = adjustedDebt
+      .filter((debt) => debt.amount > 0)
+      .map((debt, index) => {
+        const addedInterest = debt.amount * ((debt.interestRate / 100) / 12);
+        totalInterestPaid += addedInterest;
+        const totalAfterInterest = debt.amount + addedInterest;
+        let totalAfterPayment = totalAfterInterest - debt.minimumPayment;
+        if (index === 0) {
+          totalAfterPayment -= extraCash;
+        } else {
+          totalAfterPayment -= remainingExtraCash;
+        }
+
+        if (totalAfterPayment < 0) {
+          remainingExtraCash = totalAfterPayment * -1;
+          totalAfterPayment = 0;
+        }
+
+        return {
+          ...debt,
+          amount: totalAfterPayment,
+        };
+      });
 
     totalBalance = adjustedDebt.reduce((acc, debt) => acc + debt.amount, 0);
     monthlySnapshots.push(totalBalance);
@@ -63,9 +117,10 @@ const calculateMinPaymentSchedule = (debtData) => {
           minimumPayment: d.minimumPayment,
         }));
         const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
+        const avalancheSchedule = calculateAvalancheMethod(debtData);
         console.log({
-          debtData,
           minPaymentSchedule,
+          avalancheSchedule,
         });
       }
     })
@@ -86,9 +141,10 @@ const calculateMinPaymentSchedule = (debtData) => {
         minimumPayment: d.minimumPayment,
       }));
       const minPaymentSchedule = calculateMinPaymentSchedule(debtData);
+      const avalancheSchedule = calculateAvalancheMethod(debtData);
       console.log({
-        debtData,
         minPaymentSchedule,
+        avalancheSchedule,
       });
 })
     .catch(console.error);
