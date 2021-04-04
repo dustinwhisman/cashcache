@@ -1,6 +1,6 @@
 import { getAllFromCloudIndex } from '../db/index.mjs';
 import { formatCurrency, uid, isPayingUser } from '../helpers/index.mjs';
-import { formatMonthString } from './helpers.mjs'
+import { formatMonthString, chartMagicNumbers } from './helpers.mjs'
 
 let debtData = null;
 
@@ -183,6 +183,139 @@ const getHighestDollarAmount = (data) => {
   return highestDollarAmount;
 }
 
+const drawChart = (data, highestDollarAmount) => {
+  const chartBlock = document.querySelector('[data-chart]');
+  if (!Object.keys(data).length || Object.keys(data).length < 2) {
+    chartBlock.innerHTML = `
+      <p>
+        We don't have enough data to simulate your debt repayment now. We
+        calculate based on the previous month's debt entries, since the balances
+        might not be consistent for the current month, depending on when you
+        track it.
+      </p>
+      <p>
+        You can come back next month, or you can add some historical data for
+        past months. You can also bulk upload data via CSV files from the
+        <a href="/settings">settings</a> page, which may speed things up.
+      </p>
+      <p>
+        If you don't have any debt, then feel free to disregard these messages,
+        and congratulations on being debt free!
+      </p>
+    `;
+
+    return;
+  }
+
+  const {
+    xMin,
+    yMin,
+    xMax,
+    yMax,
+    xLeft,
+    xRight,
+    yTop,
+    yBottom,
+    yAxisGap,
+    yAxisLabelVerticalOffset,
+    yAxisLabelHorizontalOffset,
+    xAxisLabelVerticalOffset,
+    xAxisLabelHorizontalOffset,
+    xAxisLabelRotationalOffset,
+    xLegendStart,
+    xLegendEnd,
+    yLegendStart,
+    yLegendGap,
+    xLegendLabelStart,
+    yLegendLabelOffset,
+  } = chartMagicNumbers;
+
+
+  const yAxisLabels = [];
+  const gridLines = [];
+  const yAxisInterval = Math.ceil(highestDollarAmount / 10000);
+  let j = 0;
+  for (let i = 0; i <= yAxisInterval * 10; i += yAxisInterval) {
+    yAxisLabels.push(`
+      <text x="${yAxisLabelHorizontalOffset}" y="${(yBottom + yAxisLabelVerticalOffset) - (j * yAxisGap)}" style="text-anchor: end" fill="var(--text-color)">
+        ${formatCurrency(i * 1000).replace('.00', '')}
+      </text>
+    `);
+    gridLines.push(`
+      <polyline points="${xLeft} ${yBottom - (j * yAxisGap)}, ${xRight} ${yBottom - (j * yAxisGap)}" fill="none" stroke="var(--text-color)" stroke-width="2" style="opacity: 0.25"></polyline>
+    `);
+    j += 1;
+  }
+
+  const xAxisLabels = [];
+  const xAxisInterval = Math.ceil(data.length / 12);
+  for (let i = 0; i < data.length; i += 1) {
+    if (i % Math.ceil(xAxisInterval) === 0) {
+      xAxisLabels.push(`
+        <text x="${xAxisLabelHorizontalOffset + (i * xRight / data.length)}" y="${yBottom + xAxisLabelVerticalOffset}" style="text-anchor: end" fill="var(--text-color)" transform="rotate(-45, ${xAxisLabelHorizontalOffset + (i * xRight / data.length)}, ${yBottom + xAxisLabelRotationalOffset})">
+          ${data[i].label}
+        </text>
+      `);
+    }
+  }
+
+  const minPaymentPoints = data.map((year, index) => {
+    const x = (index * xRight / data.length);
+    const y = yBottom - ((year.minPaymentBalance || 0) / (highestDollarAmount / yBottom));
+
+    return `${x},${y}`;
+  }).join(' ');
+
+  const snowballPoints = data.map((year, index) => {
+    const x = (index * xRight / data.length);
+    const y = yBottom - ((year.snowballBalance || 0) / (highestDollarAmount / yBottom));
+
+    return `${x},${y}`;
+  }).join(' ');
+
+  const avalanchePoints = data.map((year, index) => {
+    const x = (index * xRight / data.length);
+    const y = yBottom - ((year.avalancheBalance || 0) / (highestDollarAmount / yBottom));
+
+    return `${x},${y}`;
+  }).join(' ');
+
+  const svgTemplate = `
+    <svg viewbox="${xMin} ${yMin} ${xMax} ${yMax}" aria-hidden="true" focusable="false">
+      <g>
+        <polyline points="${xLegendStart} ${yLegendStart}, ${xLegendEnd} ${yLegendStart}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset}" fill="var(--text-color)">
+          Minimum Payment Only
+        </text>
+        <polyline points="${xLegendStart} ${yLegendStart + yLegendGap}, ${xLegendEnd} ${yLegendStart + yLegendGap}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset + yLegendGap}" fill="var(--text-color)">
+          Snowball Method
+        </text>
+        <polyline points="${xLegendStart} ${yLegendStart + (yLegendGap * 2)}, ${xLegendEnd} ${yLegendStart + (yLegendGap * 2)}" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+        <text x="${xLegendLabelStart}" y="${yLegendStart + yLegendLabelOffset + (yLegendGap * 2)}" fill="var(--text-color)">
+          Avalanche Method
+        </text>
+      </g>
+      <g>
+        <line x1="${xLeft}" x2="${xLeft}" y1="${yBottom}" y2="${yTop}" stroke-width="6" stroke="var(--text-color)"></line>
+        ${yAxisLabels.join('')}
+        ${gridLines.join('')}
+      </g>
+      <g>
+        <line x1="${xLeft}" x2="${xRight}" y1="${yBottom}" y2="${yBottom}" stroke-width="6" stroke="var(--text-color)"></line>
+        ${xAxisLabels.join('')}
+      </g>
+      <g>
+        <polyline points="${minPaymentPoints}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="5"></polyline>
+        <polyline points="${snowballPoints}" fill="none" stroke="var(--text-color)" stroke-width="6" stroke-dasharray="15"></polyline>
+        <polyline points="${avalanchePoints}" fill="none" stroke="var(--text-color)" stroke-width="6"></polyline>
+      </g>
+    </svg>
+  `;
+
+  chartBlock.innerHTML = svgTemplate;
+};
+
 const drawTable = (data) => {
   if (!Object.keys(data).length) {
     return;
@@ -273,11 +406,9 @@ const drawTable = (data) => {
         const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
         const highestDollarAmount = getHighestDollarAmount(chartData);
 
+        drawChart(chartData, highestDollarAmount);
         drawTable(chartData);
-        console.log({
-          chartData,
-        });
-        }
+      }
     })
     .catch(() => {
       // swallow error: the cache doesn't matter that much
@@ -301,10 +432,8 @@ const drawTable = (data) => {
       const chartData = generateChartData(minPaymentSchedule.monthlySnapshots, avalancheSchedule.monthlySnapshots, snowballSchedule.monthlySnapshots);
       const highestDollarAmount = getHighestDollarAmount(chartData);
 
+      drawChart(chartData, highestDollarAmount);
       drawTable(chartData);
-      console.log({
-        chartData,
-      });
-})
+    })
     .catch(console.error);
 })();
