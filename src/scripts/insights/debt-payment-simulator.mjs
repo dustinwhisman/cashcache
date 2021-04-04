@@ -71,6 +71,8 @@ const calculateAvalancheMethod = (debtData, extraCash = 100) => {
           remainingExtraCash = totalAfterPayment * -1;
           totalAfterPayment = 0;
           monthlyExtraCash += debt.minimumPayment;
+        } else {
+          remainingExtraCash = 0;
         }
 
         return {
@@ -125,6 +127,8 @@ const calculateSnowballMethod = (debtData, extraCash = 100) => {
           remainingExtraCash = totalAfterPayment * -1;
           totalAfterPayment = 0;
           monthlyExtraCash += debt.minimumPayment;
+        } else {
+          remainingExtraCash = 0;
         }
 
         return {
