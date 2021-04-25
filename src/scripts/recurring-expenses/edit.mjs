@@ -1,5 +1,5 @@
 import { getAllCategories, getAllCategoriesFromCloud, getFromDb, getFromCloudDb, addToDb, deleteFromDb } from '../db/index.mjs';
-import { addCategoryEventListener, initializeComplexDates, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners, uid, isPayingUser } from '../helpers/index.mjs';
+import { addCategoryEventListener, initializeComplexDates, formatCurrency, sanitize, radioSvg, getCurrentSpecifiedDate, updateDateInputs, initializeDateChangeListeners, recalculateDays, uid, isPayingUser } from '../helpers/index.mjs';
 
 const { year, month, day } = getCurrentSpecifiedDate(new URLSearchParams(window.location.search));
 updateDateInputs(year, month, day);
@@ -164,6 +164,7 @@ const populateForm = (expense) => {
         if (!networkCategoriesLoaded) {
           renderCategories(categories);
           populateForm(expense);
+          recalculateDays();
         }
       });
   } catch (error) {
@@ -213,6 +214,7 @@ document.addEventListener('token-confirmed', async () => {
         if (!cachedCategoriesLoaded) {
           renderCategories(categories);
           populateForm(expense);
+          recalculateDays();
         } else {
           const form = document.querySelector('form');
           const category = form.elements['category'].value;
@@ -229,6 +231,7 @@ document.addEventListener('token-confirmed', async () => {
           }
 
           populateForm(expense);
+          recalculateDays();
         }
       })
       .catch(console.error);

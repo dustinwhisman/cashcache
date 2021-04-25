@@ -137,7 +137,7 @@ export const updateDateInputs = (year, month, day) => {
   }
 };
 
-const recalculateDays = () => {
+export const recalculateDays = () => {
   const yearInput = document.querySelector('#year');
   const monthInput = document.querySelector('#month');
   const dayInput = document.querySelector('#day');
