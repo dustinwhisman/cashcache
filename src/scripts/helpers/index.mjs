@@ -1,10 +1,17 @@
 export const updateBackLink = () => {
-  if (document.referrer) {
-    const backLink = document.querySelector('[data-back-link]');
+  const backLink = document.querySelector('[data-back-link]');
+  if (backLink == null) {
+    return;
+  }
 
-    if (backLink) {
-      backLink.href = document.referrer;
-    }
+  if (document.referrer) {
+    backLink.href = document.referrer;
+  } else {
+    backLink.href = '#0';
+    backLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.history.back();
+    });
   }
 }
 
