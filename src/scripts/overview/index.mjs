@@ -88,9 +88,9 @@ const fetchExpenses = (shouldRender = false) => {
     });
 };
 
-const loadExpenses = (shouldRender = false) => {
+const loadExpenses = (shouldRender = false, skipCache = false) => {
   const userId = uid();
-  if (userId && isPayingUser()) {
+  if (!skipCache && userId && isPayingUser()) {
     fetchExpenses(shouldRender);
   }
 
@@ -126,9 +126,9 @@ const fetchIncome = (shouldRender = false) => {
     });
 };
 
-const loadIncome = (shouldRender = false) => {
+const loadIncome = (shouldRender = false, skipCache = false) => {
   const userId = uid();
-  if (userId && isPayingUser()) {
+  if (!skipCache && userId && isPayingUser()) {
     fetchIncome(shouldRender);
   }
 
@@ -164,9 +164,9 @@ const fetchSavings = (shouldRender = false) => {
     });
 };
 
-const loadSavings = (shouldRender = false) => {
+const loadSavings = (shouldRender = false, skipCache = false) => {
   const userId = uid();
-  if (userId && isPayingUser()) {
+  if (!skipCache && userId && isPayingUser()) {
     fetchSavings(shouldRender);
   }
 
@@ -202,9 +202,9 @@ const fetchDebt = (shouldRender = false) => {
     });
 };
 
-const loadDebt = async (shouldRender = false) => {
+const loadDebt = async (shouldRender = false, skipCache = false) => {
   const userId = uid();
-  if (userId && isPayingUser()) {
+  if (!skipCache && userId && isPayingUser()) {
     fetchDebt(shouldRender);
   }
 
@@ -319,7 +319,7 @@ document.addEventListener('click', async (event) => {
       await bulkAddToDb('savings', savingsToAdd);
     }
 
-    loadSavings(true);
+    loadSavings(true, true);
   }
 
   if (event.target.matches('[data-copy-debt] button')) {
@@ -346,7 +346,7 @@ document.addEventListener('click', async (event) => {
       await bulkAddToDb('debt', debtToAdd);
     }
 
-    loadDebt(true);
+    loadDebt(true, true);
   }
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -533,7 +533,7 @@ document.addEventListener('click', async (event) => {
       await bulkAddToDb('expenses', expensesToAdd);
     }
 
-    loadExpenses(true);
+    loadExpenses(true, true);
   }
 
   if (event.target.matches('[data-copy-income] button')) {
@@ -719,6 +719,6 @@ document.addEventListener('click', async (event) => {
       await bulkAddToDb('income', incomeToAdd);
     }
 
-    loadIncome(true);
+    loadIncome(true, true);
   }
 });
