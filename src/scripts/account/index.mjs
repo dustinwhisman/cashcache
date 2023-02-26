@@ -56,7 +56,7 @@ document.addEventListener('click', async (event) => {
     const user = firebase.auth().currentUser;
     if (user) {
       firebase.auth().sendSignInLinkToEmail(user.email, {
-        url: `${window.location.origin}/account/change-email-address`,
+        url: `${window.location.origin}/account/change-email-address/`,
         handleCodeInApp: true,
       })
         .then(() => {
@@ -71,7 +71,7 @@ document.addEventListener('click', async (event) => {
   if (event.target.matches('[data-delete-account-button]')) {
     const user = firebase.auth().currentUser;
     firebase.auth().sendSignInLinkToEmail(user.email, {
-      url: `${window.location.origin}/account/delete-account`,
+      url: `${window.location.origin}/account/delete-account/`,
       handleCodeInApp: true,
     })
       .then(() => {

@@ -1,7 +1,8 @@
 require('dotenv').config();
 const Stripe = require('stripe');
 const MongoClient = require('mongodb').MongoClient;
-const admin = require('firebase-admin');
+const { initializeApp, cert, getApps, getApp } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -54,17 +55,20 @@ const getCustomerId = async (db, uid) => {
 
 const handler = async (event, context) => {
   try {
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+    let app;
+    if (!getApps().length) {
+      app = initializeApp({
+        credential: cert(serviceAccount),
       });
+    } else {
+      app = getApp();
     }
 
     let uid;
     let token = event.headers.authorization;
     token = token.replace(/^Bearer\s+/, '');
     if (token) {
-      const decodedToken = await admin.auth().verifyIdToken(token);
+      const decodedToken = await getAuth(app).verifyIdToken(token);
       uid = decodedToken.uid;
     } else {
       return {
