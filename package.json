@@ -12,7 +12,7 @@
   "author": "Dustin Whisman",
   "license": "ISC",
   "dependencies": {
-    "firebase-admin": "^10.3.0",
+    "firebase-admin": "^11.5.0",
     "mongodb": "^5.1.0",
     "stripe": "^8.129.0"
   },
