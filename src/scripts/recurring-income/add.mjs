@@ -9,7 +9,7 @@ addCategoryEventListener();
 initializeComplexDates();
 
 if (!uid() || !isPayingUser()) {
-  window.location.href = '/recurring-income';
+  window.location.href = '/recurring-income/';
 }
 
 const storeName = 'income';
@@ -74,7 +74,7 @@ document.addEventListener('submit', async (event) => {
     button.innerHTML = savedMessage;
     statusElement.innerHTML = savedMessage;
 
-    window.location.href = `/recurring-income`;
+    window.location.href = `/recurring-income/`;
   } catch (error) {
     button.innerHTML = failedMessage;
     statusElement.innerHTML = failedMessage;

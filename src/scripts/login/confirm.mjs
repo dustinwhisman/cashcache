@@ -99,11 +99,11 @@ const associateDataToAccount = async (idToken) => {
       .then(() => {
         statusUpdate.innerHTML += `
           <p>
-            All done! Redirecting you to the <a href="/overview">overview page</a>
+            All done! Redirecting you to the <a href="/overview/">overview page</a>
             now.
           </p>
         `;
-        window.location.href = '/overview';
+        window.location.href = '/overview/';
       });
   } else {
     saveCustomerId(idToken);

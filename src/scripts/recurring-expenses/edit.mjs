@@ -9,7 +9,7 @@ addCategoryEventListener();
 initializeComplexDates();
 
 if (!uid() || !isPayingUser()) {
-  window.location.href = '/recurring-expenses';
+  window.location.href = '/recurring-expenses/';
 }
 
 let key;
@@ -75,7 +75,7 @@ document.addEventListener('submit', async (event) => {
     button.innerHTML = savedMessage;
     statusElement.innerHTML = savedMessage;
 
-    window.location.href = `/recurring-expenses`;
+    window.location.href = `/recurring-expenses/`;
   } catch (error) {
     button.innerHTML = failedMessage;
     statusElement.innerHTML = failedMessage;
@@ -191,7 +191,7 @@ document.addEventListener('click', async (event) => {
         if (document.referrer) {
           window.location.href = document.referrer;
         } else {
-          window.location.href = `/overview`;
+          window.location.href = `/overview/`;
         }
       } catch (error) {
         window.alert(error.message);

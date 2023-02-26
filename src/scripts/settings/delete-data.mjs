@@ -35,7 +35,7 @@ document.addEventListener('click', async (event) => {
       deleteDataProgressBlock.innerHTML = `
         <p>
           All done. You should have a clean slate on the
-          <a href="/overview">overview page</a> now.
+          <a href="/overview/">overview page</a> now.
         </p>
       `;
     }

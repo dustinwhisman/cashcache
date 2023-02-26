@@ -25,14 +25,14 @@ const nextMonth = month + 1 <= 11 ? month + 1 : 0;
 const nextYear = nextMonth === 0 ? year + 1 : year;
 
 const previousLink = document.querySelector('[data-previous-link]');
-previousLink.href = `/overview?m=${prevMonth}&y=${prevYear}`;
+previousLink.href = `/overview/?m=${prevMonth}&y=${prevYear}`;
 previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
   month: 'short',
   year: 'numeric',
 });
 
 const nextLink = document.querySelector('[data-next-link]');
-nextLink.href = `/overview?m=${nextMonth}&y=${nextYear}`;
+nextLink.href = `/overview/?m=${nextMonth}&y=${nextYear}`;
 nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
   month: 'short',
   year: 'numeric',
@@ -49,10 +49,10 @@ const addIncomeLink = document.querySelector('[data-add-income-link]');
 const addSavingsLink = document.querySelector('[data-add-savings-link]');
 const addDebtLink = document.querySelector('[data-add-debt-link]');
 
-addExpenseLink.href = `/add/expense?m=${month}&y=${year}`;
-addIncomeLink.href = `/add/income?m=${month}&y=${year}`;
-addSavingsLink.href = `/add/savings?m=${month}&y=${year}`;
-addDebtLink.href = `/add/debt?m=${month}&y=${year}`;
+addExpenseLink.href = `/add/expense/?m=${month}&y=${year}`;
+addIncomeLink.href = `/add/income/?m=${month}&y=${year}`;
+addSavingsLink.href = `/add/savings/?m=${month}&y=${year}`;
+addDebtLink.href = `/add/debt/?m=${month}&y=${year}`;
 
 let lastMonth = month - 1;
 let lastMonthYear = year;

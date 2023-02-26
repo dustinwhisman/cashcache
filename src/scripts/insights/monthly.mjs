@@ -21,14 +21,14 @@ const nextMonth = month + 1 <= 11 ? month + 1 : 0;
 const nextYear = nextMonth === 0 ? year + 1 : year;
 
 const previousLink = document.querySelector('[data-previous-link]');
-previousLink.href = `/insights/monthly?m=${prevMonth}&y=${prevYear}`;
+previousLink.href = `/insights/monthly/?m=${prevMonth}&y=${prevYear}`;
 previousLink.innerHTML = new Date(prevYear, prevMonth, 1).toLocaleString('en-US', {
   month: 'short',
   year: 'numeric',
 });
 
 const nextLink = document.querySelector('[data-next-link]');
-nextLink.href = `/insights/monthly?m=${nextMonth}&y=${nextYear}`;
+nextLink.href = `/insights/monthly/?m=${nextMonth}&y=${nextYear}`;
 nextLink.innerHTML = new Date(nextYear, nextMonth, 1).toLocaleString('en-US', {
   month: 'short',
   year: 'numeric',

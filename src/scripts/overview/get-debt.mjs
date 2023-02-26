@@ -12,7 +12,7 @@ if (!uid()) {
   copyDebtBlock = `
     <div data-copy-debt hidden>
       <p class="small font-style:italic">
-        If you <a href="/login">sign up</a>, you can speed things up by copying
+        If you <a href="/login/">sign up</a>, you can speed things up by copying
         your debt from last month.
       </p>
     </div>
@@ -21,7 +21,7 @@ if (!uid()) {
   copyDebtBlock = `
     <div data-copy-debt hidden>
       <p class="small font-style:italic">
-        If you <a href="/account">subscribe</a>, you can speed things up by
+        If you <a href="/account/">subscribe</a>, you can speed things up by
         copying your debt from last month.
       </p>
     </div>
@@ -80,7 +80,7 @@ const generateBodyHtml = (debts) => {
               <div>
                 <div class="cluster small">
                   <div class="justify-content:space-between" style="align-items: flex-end">
-                    <a href="/edit/debt?key=${loan.key}" style="max-width: 50%">
+                    <a href="/edit/debt/?key=${loan.key}" style="max-width: 50%">
                       ${loan.description}
                     </a>
                     <p style="margin-inline-start: auto">
@@ -138,7 +138,7 @@ const generateBodyHtml = (debts) => {
               <div>
                 <div class="cluster small">
                   <div class="justify-content:space-between" style="align-items: flex-end">
-                    <a href="/edit/debt?key=${loan.key}" style="max-width: 50%">
+                    <a href="/edit/debt/?key=${loan.key}" style="max-width: 50%">
                       ${loan.description}
                     </a>
                     <p style="margin-inline-start: auto">

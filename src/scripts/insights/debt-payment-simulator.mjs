@@ -197,7 +197,7 @@ const drawChart = (data, highestDollarAmount) => {
       <p>
         You can come back next month, or you can add some historical data for
         past months. You can also bulk upload data via CSV files from the
-        <a href="/settings">settings</a> page, which may speed things up.
+        <a href="/settings/">settings</a> page, which may speed things up.
       </p>
       <p>
         If you don't have any debt, then feel free to disregard these messages,

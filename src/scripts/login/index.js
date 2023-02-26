@@ -7,7 +7,7 @@ document.addEventListener('submit', (event) => {
   })
     .then(() => {
       localStorage.setItem('emailForSignIn', email);
-      window.location.href = '/login/awaiting-login-confirmation';
+      window.location.href = '/login/awaiting-login-confirmation/';
     })
     .catch(console.error);
 });

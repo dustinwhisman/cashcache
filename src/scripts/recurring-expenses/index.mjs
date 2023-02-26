@@ -172,7 +172,7 @@ const displayRecurringExpenses = (expenses) => {
         <div>
           <div class="cluster">
             <div class="justify-content:space-between" style="align-items: flex-end">
-              <a href="/recurring-expenses/edit?key=${expense.key}" style="max-width: 50%">
+              <a href="/recurring-expenses/edit/?key=${expense.key}" style="max-width: 50%">
                 ${expense.description}
               </a>
               <p style="margin-inline-start: auto">

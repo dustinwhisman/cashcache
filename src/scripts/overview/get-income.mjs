@@ -17,7 +17,7 @@ if (!uid()) {
   recurringIncomeBlock = `
     <div data-manage-recurring-income hidden>
       <p class="small font-style:italic">
-        If you <a href="/login">sign up</a>, you can speed things up by setting
+        If you <a href="/login/">sign up</a>, you can speed things up by setting
         up recurring income that you can copy at the beginning of each month.
       </p>
     </div>
@@ -26,7 +26,7 @@ if (!uid()) {
   recurringIncomeBlock = `
     <div data-manage-recurring-income hidden>
       <p class="small font-style:italic">
-        If you <a href="/account">subscribe</a>, you can speed things up by
+        If you <a href="/account/">subscribe</a>, you can speed things up by
         setting up recurring income that you can copy at the beginning of each
         month.
       </p>
@@ -139,7 +139,7 @@ const generateBodyHtml = (income) => {
                     </p>
                     <div class="cluster small">
                       <div class="justify-content:space-between" style="align-items: flex-end">
-                        <a href="/edit/income?key=${income.key}" style="max-width: 50%">
+                        <a href="/edit/income/?key=${income.key}" style="max-width: 50%">
                           ${income.description}
                         </a>
                         <p style="margin-inline-start: auto">
@@ -173,7 +173,7 @@ const generateBodyHtml = (income) => {
                 </p>
                 <div class="cluster small">
                   <div class="justify-content:space-between" style="align-items: flex-end">
-                    <a href="/edit/income?key=${income.key}" style="max-width: 50%">
+                    <a href="/edit/income/?key=${income.key}" style="max-width: 50%">
                       ${income.description}
                     </a>
                     <p style="margin-inline-start: auto">
