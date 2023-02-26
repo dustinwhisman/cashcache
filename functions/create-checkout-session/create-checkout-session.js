@@ -1,6 +1,7 @@
 require('dotenv').config();
 const Stripe = require('stripe');
-const admin = require('firebase-admin');
+const { initializeApp, cert, getApps, getApp } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -16,7 +17,7 @@ const handler = async (event) => {
   let token = event.headers.authorization;
   token = token.replace(/^Bearer\s+/, '');
   if (token) {
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await getAuth(app).verifyIdToken(token);
     uid = decodedToken.uid;
   } else {
     return {
