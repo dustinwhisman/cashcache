@@ -2,7 +2,7 @@ document.addEventListener('submit', (event) => {
   event.preventDefault();
   const email = event.target.elements.email.value;
   firebase.auth().sendSignInLinkToEmail(email, {
-    url: `${window.location.origin}/login/confirm`,
+    url: `${window.location.origin}/login/confirm/`,
     handleCodeInApp: true,
   })
     .then(() => {
