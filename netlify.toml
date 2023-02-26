@@ -5,8 +5,3 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/404/index.html"
-  status = 404
