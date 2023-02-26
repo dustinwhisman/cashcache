@@ -172,7 +172,7 @@ const displayRecurringIncome = (income) => {
         <div>
           <div class="cluster">
             <div class="justify-content:space-between" style="align-items: flex-end">
-              <a href="/recurring-income/edit?key=${income.key}" style="max-width: 50%">
+              <a href="/recurring-income/edit/?key=${income.key}" style="max-width: 50%">
                 ${income.description}
               </a>
               <p style="margin-inline-start: auto">

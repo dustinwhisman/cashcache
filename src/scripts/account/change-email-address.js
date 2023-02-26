@@ -20,7 +20,7 @@ document.addEventListener('submit', (event) => {
     if (user) {
       user.updateEmail(event.target.elements['new-email'].value)
         .then(() => {
-          window.location.href = '/account';
+          window.location.href = '/account/';
         })
         .catch(console.error);
     } else {

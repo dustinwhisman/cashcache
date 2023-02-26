@@ -69,7 +69,7 @@ document.addEventListener('submit', async (event) => {
 
     const month = Number(elements['month'].value) - 1;
     const year = Number(elements['year'].value);
-    window.location.href = `/overview?m=${month}&y=${year}`;
+    window.location.href = `/overview/?m=${month}&y=${year}`;
   } catch (error) {
     button.innerHTML = failedMessage;
     statusElement.innerHTML = failedMessage;
@@ -159,7 +159,7 @@ document.addEventListener('click', async (event) => {
         if (document.referrer) {
           window.location.href = document.referrer;
         } else {
-          window.location.href = `/overview`;
+          window.location.href = `/overview/`;
         }
       } catch (error) {
         window.alert(error.message);

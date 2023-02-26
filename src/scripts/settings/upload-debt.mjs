@@ -39,7 +39,7 @@ document.addEventListener('change', (event) => {
         importProgressIndicator.innerHTML = `
           <p>
             All done! You should see all your data on the
-            <a href="/overview">overview page</a> now.
+            <a href="/overview/">overview page</a> now.
           </p>
         `;
       } catch (error) {
