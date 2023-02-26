@@ -7,10 +7,13 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const handler = async (event) => {
-  if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+  let app;
+  if (!getApps().length) {
+    app = initializeApp({
+      credential: cert(serviceAccount),
     });
+  } else {
+    app = getApp();
   }
 
   let uid;
