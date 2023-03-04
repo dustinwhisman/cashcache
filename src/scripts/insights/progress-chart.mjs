@@ -189,7 +189,7 @@ const drawChart = (progress, highestDollarAmount) => {
 };
 
 const drawTable = (progress) => {
-  if (!progress.length <= 1) {
+  if (progress.length <= 1) {
     return;
   }
 
