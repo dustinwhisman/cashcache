@@ -54,7 +54,7 @@ const getHighestDollarAmount = (monthlyTotalExpenses, monthlyTotalIncome, monthl
     Math.max(...[
       ...monthlyTotalExpenses.map(e => e.total),
       ...monthlyTotalIncome.map(i => i.total),
-      ...monthlyTotalSavings.map(s => s.total / 25)
+      ...monthlyTotalSavings.map(s => s.total / 25 / 12)
     ]) / 1000
   ) * 1000;
 
@@ -189,7 +189,7 @@ const drawChart = (progress, highestDollarAmount) => {
 };
 
 const drawTable = (progress) => {
-  if (!progress.length <= 1) {
+  if (progress.length <= 1) {
     return;
   }
 
