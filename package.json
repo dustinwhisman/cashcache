@@ -14,7 +14,7 @@
   "dependencies": {
     "firebase-admin": "^11.11.0",
     "mongodb": "^5.9.1",
-    "stripe": "^12.18.0"
+    "stripe": "^14.2.0"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
