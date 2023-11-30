@@ -1,15 +1,15 @@
 <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script>
   // Your web app's Firebase configuration
   var firebaseConfig = {
-    apiKey: '{{ env.firebaseApiKey }}',
-    authDomain: '{{ env.firebaseAuthDomain }}.firebaseapp.com',
-    projectId: '{{ env.firebaseAuthDomain }}',
-    storageBucket: '{{ env.firebaseAuthDomain }}.appspot.com',
-    messagingSenderId: '{{ env.firebaseMessagingSenderId }}',
-    appId: '1:{{ env.firebaseMessagingSenderId }}:web:{{ env.firebaseAppId }}',
+    apiKey: "{{ env.firebaseApiKey }}",
+    authDomain: "{{ env.firebaseAuthDomain }}.firebaseapp.com",
+    projectId: "{{ env.firebaseAuthDomain }}",
+    storageBucket: "{{ env.firebaseAuthDomain }}.appspot.com",
+    messagingSenderId: "{{ env.firebaseMessagingSenderId }}",
+    appId: "1:{{ env.firebaseMessagingSenderId }}:web:{{ env.firebaseAppId }}",
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
